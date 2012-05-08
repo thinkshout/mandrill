@@ -88,8 +88,10 @@ class MandrillMailSystem implements MailSystemInterface {
     catch (Mandrill_Exception $e) {
       watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
         array(
-          '%from' => $from, '%to' => print_r($to, TRUE),
-          '@code' => $e->getCode(), '@message' => $e->getMessage(),
+          '%from' => $from,
+          '%to' => $message['to'],
+          '@code' => $e->getCode(),
+          '@message' => $e->getMessage(),
         ),
         WATCHDOG_ERROR
       );
