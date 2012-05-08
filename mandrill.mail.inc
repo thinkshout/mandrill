@@ -42,10 +42,12 @@ class MandrillMailSystem implements MailSystemInterface {
   public function mail(array $message) {
     if (!$from = variable_get('mandrill_from', '')) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
-          array('!link' => l('add a verified from address',
-              'admin/config/services/mandrill'
-            ))
-        ), 'error');
+        array(
+          '!link' => l('add a verified from address',
+            'admin/config/services/mandrill'
+          )
+        )
+      ), 'error');
       return FALSE;
     }
 
@@ -80,7 +82,7 @@ class MandrillMailSystem implements MailSystemInterface {
     // send the email passing the message id as the tag for use in reporting
     $mailer = mandrill_get_api_object();
 
-    try{
+    try {
       $result = $mailer->messages_send($mandrill_message);
       // @todo: look for rejected messages and log
       return TRUE;
@@ -118,10 +120,12 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
   public function mail(array$message) {
     if (!$from = variable_get('mandrill_from', '')) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
-          array('!link' => l('add a verified from address',
-              'admin/config/services/mailchimp/sts'
-            ))
-        ), 'error');
+        array(
+          '!link' => l('add a verified from address',
+            'admin/config/services/mailchimp/sts'
+          )
+        )
+      ), 'error');
       return FALSE;
     }
     $to = mandrill_get_to($message['to']);
@@ -134,8 +138,8 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
       WATCHDOG_NOTICE
     );
     drupal_set_message(t('Mandrill test email sent from %from to %to.',
-        array('%from' => $from, '%to' => print_r($to))
-      ), 'notice');
+      array('%from' => $from, '%to' => print_r($to))
+    ), 'notice');
     return TRUE;
   }
 }

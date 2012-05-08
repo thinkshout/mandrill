@@ -23,22 +23,22 @@ function mandrill_admin_settings($form, &$form_state) {
 
   if ($key) {
     $form['mandrill_status'] = array(
-      '#type'          => 'radios',
-      '#title'         => t('Mandrill Mail interface status'),
+      '#type' => 'radios',
+      '#title' => t('Mandrill Mail interface status'),
       '#default_value' => variable_get('mandrill_status', MANDRILL_STATUS_OFF),
-      '#options'       => array(
+      '#options' => array(
         MANDRILL_STATUS_ON => t('On'),
         MANDRILL_STATUS_TEST => t('Test'),
         MANDRILL_STATUS_OFF => t('Off')
       ),
-      '#description'   => t('Setting to on routes all site emails through the Mandrill
+      '#description' => t('Setting to on routes all site emails through the Mandrill
         API. Test mode implements an alternate mail interface,
         TestingMailChimpMandrillMailSystem, that does not send any emails, it just
         displays a message and logs the event.'),
     );
 
     $form['email_options'] = array(
-      '#type'  => 'fieldset',
+      '#type' => 'fieldset',
       '#collapsible' => TRUE,
       '#title' => t('Email options'),
     );
@@ -49,10 +49,10 @@ function mandrill_admin_settings($form, &$form_state) {
       '#default_value' => variable_get('mandrill_from', variable_get('site_mail'))
     );
     $form['email_options']['mandrill_from_name'] = array(
-      '#type'          => 'textfield',
-      '#title'         => t('From name'),
+      '#type' => 'textfield',
+      '#title' => t('From name'),
       '#default_value' => variable_get('mandrill_from_name', ''),
-      '#description'   => t('Optionally enter a from name to be used.'),
+      '#description' => t('Optionally enter a from name to be used.'),
     );
 
     $formats = filter_formats();
@@ -67,7 +67,7 @@ function mandrill_admin_settings($form, &$form_state) {
       '#options' => $options,
       '#default_value' => array(variable_get('mandrill_filter_format', 'full_html')),
     );
-    
+
     $form['send_options'] = array(
       '#title' => t('Send options'),
       '#type' => 'fieldset',
@@ -93,7 +93,7 @@ function mandrill_admin_settings($form, &$form_state) {
     );
 
     $form['analytics'] = array(
-      '#type'  => 'fieldset',
+      '#type' => 'fieldset',
       '#collapsible' => TRUE,
       '#title' => t('Google analytics'),
     );
@@ -132,17 +132,17 @@ function mandrill_admin_settings_submit($form, &$form_state) {
       variable_set('mail_system', array('default-system' => 'MandrillMailSystem'));
       drupal_set_message(t('Mandrill will be used to deliver all site emails.'));
       watchdog('mandrill', 'Mandrill has been enabled.');
-    break;
+      break;
     case MANDRILL_STATUS_TEST:
       variable_set('mail_system', array('default-system' => 'TestingMandrillMailSystem'));
       drupal_set_message(t('Mandrill will be used in test mode. Emails will not actually be sent, just logged.'));
       watchdog('mandrill', 'Mandrill has been placed in test mode.');
-    break;
+      break;
     case MANDRILL_STATUS_OFF:
       variable_set('mail_system', array('default-system' => 'DefaultMailSystem'));
       drupal_set_message(t('The default mail system will be used to deliver all site emails.'));
       watchdog('mandrill', 'Mandrill has been disabled.');
-    break;
+      break;
   }
 }
 
@@ -151,6 +151,7 @@ function mandrill_admin_settings_submit($form, &$form_state) {
  *
  * @param string $form
  * @param string $form_state
+ *
  * @return array $form
  */
 function mandrill_test_form($form, &$form_state) {
@@ -186,6 +187,7 @@ function mandrill_test_form($form, &$form_state) {
  *
  * @param string $form
  * @param string $form_state
+ *
  * @return void
  */
 function mandrill_test_form_submit($form, &$form_state) {
