@@ -10,9 +10,9 @@
  * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
  */
 
-define('mandrill_STATUS_ON', 'on');
-define('mandrill_STATUS_OFF', 'off');
-define('mandrill_STATUS_TEST', 'test');
+define('MANDRILL_STATUS_ON', 'on');
+define('MANDRILL_STATUS_OFF', 'off');
+define('MANDRILL_STATUS_TEST', 'test');
 
 /**
  * Implements hook_help().
@@ -30,11 +30,17 @@ function mandrill_help($path, $arg) {
 function mandrill_menu() {
   $items['admin/config/services/mandrill'] = array(
     'title' => 'Mandrill',
-    'page callback' => 'mandrill_admin_page',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_admin_settings'),
     'access arguments' => array('administer mandrill'),
     'description' => 'Allow for site emails to be sent through MailChimp STS.',
     'file' => 'mandrill.admin.inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/services/mandrill/settings'] = array(
+    'title' => 'Settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
   );
   $items['admin/config/services/mandrill/test'] = array(
     'title' => 'Send test email',
@@ -43,7 +49,8 @@ function mandrill_menu() {
     'access callback' => 'mandrill_test_access',
     'description' => 'Send a test email using the Mandrill API.',
     'file' => 'mandrill.admin.inc',
-    'type' => MENU_LOCAL_ACTION,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1
   );
   $items['admin/reports/mandrill'] = array(
     'title' => 'Mandrill Reports',
@@ -74,7 +81,7 @@ function mandrill_menu() {
  */
 function mandrill_test_access() {
   return user_access('administer mandrill') &
-    (variable_get('mandrill_status', mandrill_STATUS_OFF) != mandrill_STATUS_OFF);
+    (variable_get('mandrill_status', MANDRILL_STATUS_OFF) != MANDRILL_STATUS_OFF);
 }
 
 /**
@@ -220,8 +227,8 @@ function mandrill_get_tags() {
   $ret = array();
 
   $mandrill = mandrill_get_api_object();
-  $tags = $mandrill->get_tags();
-  if (!$mandrill->errorCode) {
+  $tags = $mandrill->tags_list();
+  if ($tags) {
     foreach ($tags as $tag) {
       $ret[$tag['tag_id']] = $tag;
     }
@@ -239,16 +246,7 @@ function mandrill_get_api_object() {
     return FALSE;
   }
 
-  $api = new Mandrill($api_key);
-
-  // set the timeout to something reasonsable to avoid taking down the Drupal site
-  $api->set_timeout(60);
-
-  if ($api->errorCode) {
-    watchdog('mandrill', 'Error: %errmsg',
-      array('!errmsg' => $api->errorMessage), WATCHDOG_ERROR);
-    return NULL;
-  }
+  $api = new Mandrill($api_key, 60);
 
   return $api;
 }
