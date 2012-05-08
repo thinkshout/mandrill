@@ -119,24 +119,6 @@ class Mandrill {
   }
 
   /**
-   * @link https://mandrillapp.com/api/docs/users.html#method=disable-sender
-   *
-   * @return array|Mandrill_Exception
-   */
-  function users_disable_sender($domain) {
-    return $this->request('users/disable-senders', array('domain' => $domain));
-  }
-
-  /**
-   * @link https://mandrillapp.com/api/docs/users.html#method=verify-sender
-   *
-   * @return array|Mandrill_Exception
-   */
-  function users_verify_sender($email) {
-    return $this->request('users/verify-senders', array('domain' => $email));
-  }
-
-  /**
    * @link https://mandrillapp.com/api/docs/senders.html#method=domains
    *
    * @return array|Mandrill_Exception
