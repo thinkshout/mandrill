@@ -66,14 +66,15 @@ class MandrillMailSystem implements MailSystemInterface {
       'to' => $to,
       // optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
       'headers' => $message['headers'],
-      'track_opens' => TRUE,
-      'track_clicks' => TRUE,
-      'auto_text' => TRUE,
-      'url_strip_qs' => TRUE,
+      'track_opens' => variable_get('mandrill_track_opens', TRUE),
+      'track_clicks' => variable_get('mandrill_track_clicks', TRUE),
+      // we're handling this with drupal_html_to_text().
+      'auto_text' => FALSE,
+      'url_strip_qs' => variable_get('mandrill_url_strip_qs', FALSE),
       'bcc_address' => isset($message['bcc_email']) ? $message['bcc_email'] : NULL,
       'tags' => array($message['id']),
-      'google_analytics_domains' => array(),
-      'google_analytics_campaign' => array(),
+      'google_analytics_domains' => (variable_get('mandrill_analytics_domains', NULL)) ? explode(',', variable_get('mandrill_analytics_domains')) : array(),
+      'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
     );
 
     // send the email passing the message id as the tag for use in reporting

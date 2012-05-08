@@ -42,14 +42,12 @@ function mandrill_admin_settings($form, &$form_state) {
       '#collapsible' => TRUE,
       '#title' => t('Email options'),
     );
-
     $form['email_options']['mandrill_from'] = array(
       '#title' => t('From address'),
       '#type' => 'textfield',
       '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is.'),
       '#default_value' => variable_get('mandrill_from', variable_get('site_mail'))
     );
-
     $form['email_options']['mandrill_from_name'] = array(
       '#type'          => 'textfield',
       '#title'         => t('From name'),
@@ -68,6 +66,48 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('If selected, the input format to apply to the message body before sending to the Mandrill API.'),
       '#options' => $options,
       '#default_value' => array(variable_get('mandrill_filter_format', 'full_html')),
+    );
+    
+    $form['send_options'] = array(
+      '#title' => t('Send options'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+    );
+    $form['send_options']['mandrill_track_opens'] = array(
+      '#title' => t('Track opens'),
+      '#type' => 'checkbox',
+      '#description' => t('Whether or not to turn on open tracking for messages.'),
+      '#default_value' => variable_get('mandrill_track_opens', TRUE)
+    );
+    $form['send_options']['mandrill_track_clicks'] = array(
+      '#title' => t('Track clicks'),
+      '#type' => 'checkbox',
+      '#description' => t('Whether or not to turn on click tracking for messages.'),
+      '#default_value' => variable_get('mandrill_track_clicks', TRUE)
+    );
+    $form['send_options']['mandrill_url_strip_qs'] = array(
+      '#title' => t('Strip query string'),
+      '#type' => 'checkbox',
+      '#description' => t('Whether or not to strip the query string from URLs when aggregating tracked URL data.'),
+      '#default_value' => variable_get('mandrill_url_strip_qs', FALSE)
+    );
+
+    $form['analytics'] = array(
+      '#type'  => 'fieldset',
+      '#collapsible' => TRUE,
+      '#title' => t('Google analytics'),
+    );
+    $form['analytics']['mandrill_analytics_domains'] = array(
+      '#title' => t('Google analytics domains'),
+      '#type' => 'textfield',
+      '#description' => t('One or more domains for which any matching URLs will automatically have Google Analytics parameters appended to their query string. Separate each domain with a comma.'),
+      '#default_value' => variable_get('mandrill_analytics_domains', '')
+    );
+    $form['analytics']['mandrill_analytics_campaign'] = array(
+      '#title' => t('Google analytics campaign'),
+      '#type' => 'textfield',
+      '#description' => t('The value to set for the utm_campaign tracking parameter. If this isn\'t provided the messages from address will be used instead.'),
+      '#default_value' => variable_get('mandrill_analytics_campaign', '')
     );
 
     $form['#submit'][] = 'mandrill_admin_settings_submit';
