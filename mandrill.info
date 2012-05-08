@@ -1,0 +1,11 @@
+name = Mandrill
+description = "Allow for site emails to be sent through Mandrill."
+core = 7.x
+package = MailChimp
+
+configure = admin/config/services/mandrill
+
+files[] = mandrill.module
+files[] = mandrill.admin.inc
+files[] = mandrill.mail.inc
+files[] = mandrill.class.php

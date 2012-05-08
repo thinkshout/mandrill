@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Enables Drupal to send email directly through MailChimp STS.
+ *
+ * Overriding mail handling in Drupal to make MailChimp STS the default
+ * transport layer, requires to change the mail_system variable's
+ * default value array('default-system' => 'DefaultMailSystem').
+ * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
+ */
+
+define('mandrill_STATUS_ON', 'on');
+define('mandrill_STATUS_OFF', 'off');
+define('mandrill_STATUS_TEST', 'test');
+
+/**
+ * Implements hook_help().
+ */
+function mandrill_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#mandrill':
+      return t('Allow for site emails to be sent through Mandrill.');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function mandrill_menu() {
+  $items['admin/config/services/mandrill'] = array(
+    'title' => 'Mandrill',
+    'page callback' => 'mandrill_admin_page',
+    'access arguments' => array('administer mandrill'),
+    'description' => 'Allow for site emails to be sent through MailChimp STS.',
+    'file' => 'mandrill.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/config/services/mandrill/test'] = array(
+    'title' => 'Send test email',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_test_form'),
+    'access callback' => 'mandrill_test_access',
+    'description' => 'Send a test email using the Mandrill API.',
+    'file' => 'mandrill.admin.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/reports/mandrill'] = array(
+    'title' => 'Mandrill Reports',
+    'page callback' => 'mandrill_quota',
+    'access arguments' => array('administer mandrill'),
+    'description' => 'View Mandrill quotas.',
+  );
+  $items['admin/reports/mandrill/quota'] = array(
+    'title' => 'Mandrill Quota',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/reports/mandrill/send_stats'] = array(
+    'title' => 'Mandrill Send Statistics',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_send_stats'),
+    'access arguments' => array('administer mandrill'),
+    'description' => 'View Mandrill sending statistics.',
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Access callback for sending test email.
+ *
+ * @return bool
+ */
+function mandrill_test_access() {
+  return user_access('administer mandrill') &
+    (variable_get('mandrill_status', mandrill_STATUS_OFF) != mandrill_STATUS_OFF);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function mandrill_permission() {
+  return array(
+    'administer mandrill' => array(
+      'title' => t('Administer Mandrill'),
+      'description' => t('Perform administration tasks for the Mandrill email service.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mandrill_mail($key, &$message, $params) {
+  if ($key == 'mandrill-test') {
+    $message['subject'] = $params['subject'];
+    $message['body'] = $params['body'];
+  }
+}
+
+/**
+ * Page callback for showing MailChimp STS send statistics along with tag filter
+ * form.
+ */
+function mandrill_send_stats($form, &$form_state) {
+  $mandrill = mandrill_get_api_object();
+  $rows = array();
+
+  // get the since date to filter reports by
+  $since = NULL;
+  if (isset($form_state['values']['since'])) {
+    if (!empty($form_state['values']['since'])) {
+      $since = $form_state['values']['since'];      
+    }
+  }
+  else {
+    $since = date('Y-m-d', mktime(0, 0, 0, date('n'), 1));
+  }
+
+  // get the tag to filter reports by
+  $tag = isset($form_state['values']['tag']) ? $form_state['values']['tag'] : 1;
+
+  $stats = $mandrill->get_mc_send_stats($tag, $since);
+
+  $tags = mandrill_get_tags();
+  if (!$mandrill->errorCode) {
+    foreach ($stats as $stat) {
+      if (isset($stat['hour'])) {
+        $rows[] = array($stat['hour'], $tags[$stat['tag_id']]['tag'], 
+          $stat['sent'], $stat['bounces'], $stat['rejects'], 
+          $stat['complaints'], $stat['opens'], $stat['clicks'],
+        );        
+      }
+    }
+  }
+
+  $options = array();
+  foreach ($tags as $tag) {
+    $options[$tag['tag_id']] = $tag['tag'];
+  }
+
+  $form['tag'] = array(
+    '#type' => 'select',
+    '#title' => t('Tags'),
+    '#description' => t('Filter statisitcs by this tag.'),
+    '#options' => $options,
+    '#default value' => $tag,
+  );
+
+  $since_options = array('' => t('-- All --'));
+  $month = date('n');
+  for ($x = 0; $x < 12; $x++) {
+    $formatted_date = date('Y-m-d', mktime(0,0,0,$month - $x,1));
+    $since_options[$formatted_date] = $formatted_date;
+  }  
+  $form['since'] = array(
+    '#type' => 'select',
+    '#title' => t('Since'),
+    '#description' => t('Return statistics since the selected month.'),
+    '#options' => $since_options,
+    '#default_value' => $since,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Filter'),
+  );
+
+  $headers = array(t('Hour'), t('Tag'), t('Sent'), t('Bounces'), t('Rejects'),
+    t('Complaints'), t('Opens'), t('Clicks'),
+  );
+
+  $form['stats'] = array(
+    '#theme' => 'table',
+    '#header' => $headers,
+    '#rows' => $rows,
+    '#empty' => t('No statistics available.'),
+  );
+
+  return $form;
+}
+
+/**
+ * Process mandrill_send_stats form submissions.
+ */
+function mandrill_send_stats_submit($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Page callback for showing basic sts usage and quotas
+ */
+function mandrill_quota() {
+  $mandrill = mandrill_get_api_object();
+  $quota = $mandrill->get_send_quota();
+  if (!$mandrill->errorCode) {
+    $rows = array();
+    foreach (array(
+        'SentLast24Hours' => t('Emails sent in the past 24 hours:'),
+        'Max24HourSend' => t('Maximum number of emails you can send per 24 hours:'),
+        'MaxSendRate' => t('Maximum number of emails you can send per second:'
+        ),
+      ) AS $k => $v) {
+      $rows[] = array($v, str_replace('.0', '', (string) $quota[$k]));
+    }
+    $output = theme('table', array('header' => array(array('data' => 'Quota', 'colspan' => 2)), 'rows' => $rows));
+  }
+
+  $output .= l(t('Configure MailChimp STS'), 'admin/config/services/mailchimp/sts');
+  return $output;
+}
+
+/**
+ * Get all available MailChimp STS tags
+ *
+ * @return array of tag objects
+ */
+function mandrill_get_tags() {
+  $ret = array();
+
+  $mandrill = mandrill_get_api_object();
+  $tags = $mandrill->get_tags();
+  if (!$mandrill->errorCode) {
+    foreach ($tags as $tag) {
+      $ret[$tag['tag_id']] = $tag;
+    }
+  }
+
+  return $ret;
+}
+
+/**
+ * Get a Mandrill API object for communication with the mailchimp server.
+ */
+function mandrill_get_api_object() {
+  $api_key = variable_get('mandrill_api_key', '');
+  if (empty($api_key)) {
+    return FALSE;
+  }
+
+  $api = new Mandrill($api_key);
+
+  // set the timeout to something reasonsable to avoid taking down the Drupal site
+  $api->set_timeout(60);
+
+  if ($api->errorCode) {
+    watchdog('mandrill', 'Error: %errmsg',
+      array('!errmsg' => $api->errorMessage), WATCHDOG_ERROR);
+    return NULL;
+  }
+
+  return $api;
+}
