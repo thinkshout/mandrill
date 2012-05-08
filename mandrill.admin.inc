@@ -166,7 +166,7 @@ function mandrill_test_form($form, &$form_state) {
   $form['mandrill_test_body'] = array(
     '#type' => 'textarea',
     '#title' => t('Test body contents'),
-    '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email.'),
+    '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This <a href="http://drupal.org">link</a> is here to test click tracking.'),
   );
   $form['test_submit'] = array(
     '#type' => 'submit',
