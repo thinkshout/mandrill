@@ -30,17 +30,24 @@ function mandrill_help($path, $arg) {
 function mandrill_menu() {
   $items['admin/config/services/mandrill'] = array(
     'title' => 'Mandrill',
+    'page callback' => 'mandrill_user_info_page',
+    'access arguments' => array('administer mandrill'),
+    'description' => 'View summary information for the API connected user.',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/services/mandrill/info'] = array(
+    'title' => 'User info',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
+  );
+  $items['admin/config/services/mandrill/settings'] = array(
+    'title' => 'Settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mandrill_admin_settings'),
     'access arguments' => array('administer mandrill'),
     'description' => 'Allow for site emails to be sent through MailChimp STS.',
     'file' => 'mandrill.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/config/services/mandrill/settings'] = array(
-    'title' => 'Settings',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
+    'type' => MENU_LOCAL_TASK,
   );
   $items['admin/config/services/mandrill/test'] = array(
     'title' => 'Send test email',
@@ -107,115 +114,63 @@ function mandrill_mail($key, &$message, $params) {
 }
 
 /**
- * Page callback for showing MailChimp STS send statistics along with tag filter
- * form.
+ * Displays summary information for the active API user.
  */
-function mandrill_send_stats($form, &$form_state) {
-  $mandrill = mandrill_get_api_object();
+function mandrill_user_info_page() {
+  $info = mandrill_user_info();
+
+  $header = array(
+    t('Range'),
+    t('Sent'),
+    t('hard_bounces'),
+    t('soft_bounces'),
+    t('Rejects'),
+    t('Complaints'),
+    t('Unsubs'),
+    t('Opens'),
+    t('unique_opens'),
+    t('Clicks'),
+    t('unique_clicks'),
+  );
+
   $rows = array();
-
-  // get the since date to filter reports by
-  $since = NULL;
-  if (isset($form_state['values']['since'])) {
-    if (!empty($form_state['values']['since'])) {
-      $since = $form_state['values']['since'];      
-    }
-  }
-  else {
-    $since = date('Y-m-d', mktime(0, 0, 0, date('n'), 1));
-  }
-
-  // get the tag to filter reports by
-  $tag = isset($form_state['values']['tag']) ? $form_state['values']['tag'] : 1;
-
-  $stats = $mandrill->get_mc_send_stats($tag, $since);
-
-  $tags = mandrill_get_tags();
-  if (!$mandrill->errorCode) {
-    foreach ($stats as $stat) {
-      if (isset($stat['hour'])) {
-        $rows[] = array($stat['hour'], $tags[$stat['tag_id']]['tag'], 
-          $stat['sent'], $stat['bounces'], $stat['rejects'], 
-          $stat['complaints'], $stat['opens'], $stat['clicks'],
-        );        
-      }
-    }
+  foreach ($info['stats'] as $key => $stat) {
+    $rows[] = array(
+      str_replace('_', ' ', $key),
+      $stat['sent'],
+      $stat['hard_bounces'],
+      $stat['soft_bounces'],
+      $stat['rejects'],
+      $stat['complaints'],
+      $stat['unsubs'],
+      $stat['opens'],
+      $stat['unique_opens'],
+      $stat['clicks'],
+      $stat['unique_clicks']
+    );
   }
 
-  $options = array();
-  foreach ($tags as $tag) {
-    $options[$tag['tag_id']] = $tag['tag'];
-  }
-
-  $form['tag'] = array(
-    '#type' => 'select',
-    '#title' => t('Tags'),
-    '#description' => t('Filter statisitcs by this tag.'),
-    '#options' => $options,
-    '#default value' => $tag,
+  $render = array(
+    'info' => array(
+      '#theme' => 'table',
+      '#rows' => array(
+        array(t('Username'), $info['username']),
+        array(t('Reputation'), $info['reputation']),
+        array(t('Hourly quota'), $info['hourly_quota']),
+        array(t('Backlog'), $info['backlog']),
+      ),
+      '#header' => array(t('Attribute'), t('Value')),
+      '#caption' => t('Active API user information.')
+    ),
+    'stats' => array(
+      '#theme' => 'table',
+      '#rows' => $rows,
+      '#header' => $header,
+      '#caption' => t('This table contains an aggregate summary of the account\'s sending stats.')
+    )
   );
 
-  $since_options = array('' => t('-- All --'));
-  $month = date('n');
-  for ($x = 0; $x < 12; $x++) {
-    $formatted_date = date('Y-m-d', mktime(0,0,0,$month - $x,1));
-    $since_options[$formatted_date] = $formatted_date;
-  }  
-  $form['since'] = array(
-    '#type' => 'select',
-    '#title' => t('Since'),
-    '#description' => t('Return statistics since the selected month.'),
-    '#options' => $since_options,
-    '#default_value' => $since,
-  );
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Filter'),
-  );
-
-  $headers = array(t('Hour'), t('Tag'), t('Sent'), t('Bounces'), t('Rejects'),
-    t('Complaints'), t('Opens'), t('Clicks'),
-  );
-
-  $form['stats'] = array(
-    '#theme' => 'table',
-    '#header' => $headers,
-    '#rows' => $rows,
-    '#empty' => t('No statistics available.'),
-  );
-
-  return $form;
-}
-
-/**
- * Process mandrill_send_stats form submissions.
- */
-function mandrill_send_stats_submit($form, &$form_state) {
-  $form_state['rebuild'] = TRUE;
-}
-
-/**
- * Page callback for showing basic sts usage and quotas
- */
-function mandrill_quota() {
-  $mandrill = mandrill_get_api_object();
-  $quota = $mandrill->get_send_quota();
-  if (!$mandrill->errorCode) {
-    $rows = array();
-    foreach (array(
-        'SentLast24Hours' => t('Emails sent in the past 24 hours:'),
-        'Max24HourSend' => t('Maximum number of emails you can send per 24 hours:'),
-        'MaxSendRate' => t('Maximum number of emails you can send per second:'
-        ),
-      ) AS $k => $v) {
-      $rows[] = array($v, str_replace('.0', '', (string) $quota[$k]));
-    }
-    $output = theme('table', array('header' => array(array('data' => 'Quota', 'colspan' => 2)), 'rows' => $rows));
-  }
-
-  $output .= l(t('Configure MailChimp STS'), 'admin/config/services/mailchimp/sts');
-  return $output;
+  return $render;
 }
 
 /**
@@ -249,4 +204,18 @@ function mandrill_get_api_object() {
   $api = new Mandrill($api_key, 60);
 
   return $api;
+}
+
+/**
+ * Returns user information for the active API user.
+ *
+ * @return array
+ */
+function mandrill_user_info() {
+  $info = drupal_static(__FUNCTION__);
+  if (!$info) {
+    $mandrill = mandrill_get_api_object();
+    $info = $mandrill->users_info();
+  }
+  return $info;
 }
