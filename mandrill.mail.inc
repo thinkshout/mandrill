@@ -39,7 +39,7 @@ class MandrillMailSystem implements MailSystemInterface {
    * @return
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
-  public function mail(array$message) {
+  public function mail(array $message) {
     if (!$from = variable_get('mandrill_from', '')) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
           array('!link' => l('add a verified from address',
@@ -49,8 +49,6 @@ class MandrillMailSystem implements MailSystemInterface {
       return FALSE;
     }
 
-    $to = mandrill_get_to($message['to']);
-
     // apply input format to body
     $html = $message['body'];
     $format = variable_get('mandrill_filter_format', '');
@@ -58,44 +56,47 @@ class MandrillMailSystem implements MailSystemInterface {
       $html = check_markup($message['body'], $format);
     }
 
-    $sts_message = array(
+    $to = mandrill_get_to($message['to']);
+    $mandrill_message = array(
       'html' => $html,
       'text' => drupal_html_to_text($message['body']),
       'subject' => $message['subject'],
       'from_name' => variable_get('mandrill_from_name', ''),
       'from_email' => $from,
-      'to_email' => $to,
-      'to_name' => isset($message['to_name']) ? $message['to_name'] : array(),
-      'cc_email' => isset($message['cc_email']) ? $message['cc_email'] : array(),
-      'cc_name' => isset($message['cc_name']) ? $message['cc_name'] : array(),
-      'bcc_email' => isset($message['bcc_email']) ? $message['bcc_email'] : array(),
-      'bcc_name' => isset($message['bcc_name']) ? $message['bcc_name'] : array(),
+      'to' => $to,
+      // optional extra headers to add to the message (currently only Reply-To and X-* headers are allowed)
+      'headers' => $message['headers'],
+      'track_opens' => TRUE,
+      'track_clicks' => TRUE,
+      'auto_text' => TRUE,
+      'url_strip_qs' => TRUE,
+      'bcc_address' => isset($message['bcc_email']) ? $message['bcc_email'] : NULL,
+      'tags' => array($message['id']),
+      'google_analytics_domains' => array(),
+      'google_analytics_campaign' => array(),
     );
-
-    // Handle custom headers
-    foreach ($message['headers'] as $name => $value) {
-      if ($name == 'Reply-To') {
-        $sts_message['reply_to'] = $value;
-      }
-    }
 
     // send the email passing the message id as the tag for use in reporting
     $mailer = mandrill_get_api_object();
-    $status = $mailer->send_email($sts_message, TRUE, TRUE, array($message['id']));
 
-    if (isset($status->aws_code) && !empty($status->aws_code)) {
+    try{
+      $result = $mailer->messages_send($mandrill_message);
+      // @todo: look for rejected messages and log
+      return TRUE;
+    }
+    catch (Mandrill_Exception $e) {
       watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
         array(
           '%from' => $from, '%to' => print_r($to, TRUE),
-          '@code' => $status->aws_code, '@message' => $status->message,
+          '@code' => $e->getCode(), '@message' => $e->getMessage(),
         ),
         WATCHDOG_ERROR
       );
+
       return FALSE;
     }
-
-    return TRUE;
   }
+
 }
 
 /**
@@ -124,13 +125,13 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
 
     watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: @message',
       array(
-        '%from' => $from, '%to' => implode(', ', $to),
+        '%from' => $from, '%to' => print_r($to),
         '@message' => print_r($message),
       ),
       WATCHDOG_NOTICE
     );
     drupal_set_message(t('Mandrill test email sent from %from to %to.',
-        array('%from' => $from, '%to' => implode(', ', $to))
+        array('%from' => $from, '%to' => print_r($to))
       ), 'notice');
     return TRUE;
   }
@@ -144,6 +145,17 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
  * @return array
  */
 function mandrill_get_to($to) {
-  return (count(explode(',', $to) > 1) ? explode(',', $to) : $to);
+  //@todo: extract name and add to associative array.
+
+  $recipients = array();
+  if ($to_array = explode(',', $to)) {
+    foreach ($to_array as $email) {
+      $recipients[] = array('email' => $email);
+    }
+  }
+  else {
+    $recipients[] = array('email' => $to);
+  }
+  return $recipients;
 }
 
