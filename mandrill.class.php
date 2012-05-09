@@ -264,8 +264,8 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function urls_time_series($name) {
-    return $this->request('urls/time-series', array('name' => $name));
+  function urls_time_series($url) {
+    return $this->request('urls/time-series', array('url' => $url));
   }
 
   /**
