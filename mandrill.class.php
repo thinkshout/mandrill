@@ -355,6 +355,15 @@ class Mandrill {
     return $this->request('messages/send-template', compact('template_name', 'template_content', 'message'));
   }
 
+  /**
+   * Handle HTTP requests.
+   *
+   * @param $url
+   * @param null $params
+   * @param string $method
+   *
+   * @return array
+   */
   function http_request($url, $params = NULL, $method = 'POST') {
     if (!ini_get('safe_mode')) {
       set_time_limit($this->timeout);
@@ -379,7 +388,6 @@ class Mandrill {
   }
 
   static function getAttachmentStruct($path) {
-
     $struct = array();
 
     try {
@@ -436,6 +444,14 @@ class Mandrill {
     return $struct;
   }
 
+  /**
+   * Helper to determine attachment is valid.
+   *
+   * @static
+   * @param $ct
+   *
+   * @return bool
+   */
   static function isValidContentType($ct) {
     $valids = self::getValidContentTypes();
 
@@ -448,6 +464,12 @@ class Mandrill {
     return FALSE;
   }
 
+  /**
+   * Return an array of valid content types.
+   * @static
+   *
+   * @return array
+   */
   static function getValidContentTypes() {
     return array(
       'image/',
