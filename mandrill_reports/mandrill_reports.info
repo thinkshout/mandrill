@@ -1,0 +1,6 @@
+name = Mandrill Reports
+description = "Providing reporting on activity through Mandrill."
+core = 7.x
+package = MailChimp
+
+dependencies[] = mandrill
