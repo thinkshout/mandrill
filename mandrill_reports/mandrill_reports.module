@@ -25,9 +25,12 @@ function mandrill_reports_menu() {
  * @return array
  */
 function mandrill_reports_data() {
-  $api = mandrill_get_api_object();
+  if ($cache = cache_get('mandrill_report_data') ) {
+    return $cache->data;
+  }
 
   $data = array();
+  $api = mandrill_get_api_object();
 
   // basic user info
   $data['user'] = $api->users_info();
@@ -56,6 +59,7 @@ function mandrill_reports_data() {
     $data['urls'][$url['url']]['time_series'] = $api->urls_time_series($url['url']);
   }
 
+  cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
   return $data;
 }
 
@@ -67,43 +71,41 @@ function mandrill_reports_data() {
 function mandrill_reports_page() {
   $data = mandrill_reports_data();
   foreach ($data['all_time_series'] as $series) {
-    $time = strtotime($series['time']);
     $settings['mandrill_reports']['volume'][] = array(
-      'date' => $time,
-      'delivered' => $series['sent'],
+      'date' => $series['time'],
+      'sent' => $series['sent'],
       'bounced' => $series['hard_bounces'] + $series['soft_bounces'],
       'rejected' => $series['rejects']
     );
     $settings['mandrill_reports']['engagement'][] = array(
-      'date' => $time,
+      'date' => $series['time'],
       'open_rate' => $series['unique_opens']/$series['sent'],
       'click_rate' => $series['unique_clicks']/$series['sent']
     );
   }
 
-  // sort by timestamp of the results
-  sort($settings['mandrill_reports']['volume']);
-  sort($settings['mandrill_reports']['engagement']);
-
   $path = drupal_get_path('module', 'mandrill_reports');
   $render = array(
     '#attached' => array(
       'js' => array(
-        $path . '/amcharts.js',
+        array(
+          'data' => 'https://www.google.com/jsapi',
+          'type' => 'external'
+        ),
         $path . '/mandrill_reports.js',
         array(
-          'type' => 'setting',
           'data' => $settings,
+          'type' => 'setting'
         )
       )
     ),
     'volume' => array(
       '#prefix' => '<h2>' . t('Sending Volume') . '</h2>',
-      '#markup' => '<div id="volume-chart"></div>'
+      '#markup' => '<div id="mandrill-volume-chart"></div>'
     ),
     'engagement' => array(
       '#prefix' => '<h2>' . t('Average Open and Click Rate') . '</h2>',
-      '#markup' => '<div id="engage-chart"></div>'
+      '#markup' => '<div id="mandrill-engage-chart"></div>'
     ),
     'urls' => array(
       '#prefix' => '<h2>' . t('Tracked URLs') . '</h2>',
