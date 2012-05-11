@@ -30,24 +30,17 @@ function mandrill_help($path, $arg) {
 function mandrill_menu() {
   $items['admin/config/services/mandrill'] = array(
     'title' => 'Mandrill',
-    'page callback' => 'mandrill_user_info_page',
-    'access arguments' => array('administer mandrill'),
-    'description' => 'View summary information for the API connected user.',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/config/services/mandrill/info'] = array(
-    'title' => 'User info',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
-  );
-  $items['admin/config/services/mandrill/settings'] = array(
-    'title' => 'Settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mandrill_admin_settings'),
     'access arguments' => array('administer mandrill'),
-    'description' => 'Allow for site emails to be sent through MailChimp STS.',
+    'description' => 'Send emails through the Mandrill transactional email service.',
     'file' => 'mandrill.admin.inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/services/mandrill/settings'] = array(
+    'title' => 'Settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
   );
   $items['admin/config/services/mandrill/test'] = array(
     'title' => 'Send test email',
@@ -96,66 +89,6 @@ function mandrill_mail($key, &$message, $params) {
 }
 
 /**
- * Displays summary information for the active API user.
- */
-function mandrill_user_info_page() {
-  $info = mandrill_user_info();
-
-  $header = array(
-    t('Range'),
-    t('Sent'),
-    t('hard_bounces'),
-    t('soft_bounces'),
-    t('Rejects'),
-    t('Complaints'),
-    t('Unsubs'),
-    t('Opens'),
-    t('unique_opens'),
-    t('Clicks'),
-    t('unique_clicks'),
-  );
-
-  $rows = array();
-  foreach ($info['stats'] as $key => $stat) {
-    $rows[] = array(
-      str_replace('_', ' ', $key),
-      $stat['sent'],
-      $stat['hard_bounces'],
-      $stat['soft_bounces'],
-      $stat['rejects'],
-      $stat['complaints'],
-      $stat['unsubs'],
-      $stat['opens'],
-      $stat['unique_opens'],
-      $stat['clicks'],
-      $stat['unique_clicks']
-    );
-  }
-
-  $render = array(
-    'info' => array(
-      '#theme' => 'table',
-      '#rows' => array(
-        array(t('Username'), $info['username']),
-        array(t('Reputation'), $info['reputation']),
-        array(t('Hourly quota'), $info['hourly_quota']),
-        array(t('Backlog'), $info['backlog']),
-      ),
-      '#header' => array(t('Attribute'), t('Value')),
-      '#caption' => t('Active API user information.')
-    ),
-    'stats' => array(
-      '#theme' => 'table',
-      '#rows' => $rows,
-      '#header' => $header,
-      '#caption' => t('This table contains an aggregate summary of the account\'s sending stats.')
-    )
-  );
-
-  return $render;
-}
-
-/**
  * Get all available MailChimp STS tags
  *
  * @return array of tag objects
@@ -187,18 +120,3 @@ function mandrill_get_api_object() {
 
   return $api;
 }
-
-/**
- * Returns user information for the active API user.
- *
- * @return array
- */
-function mandrill_user_info() {
-  $info = drupal_static(__FUNCTION__);
-  if (!$info) {
-    $mandrill = mandrill_get_api_object();
-    $info = $mandrill->users_info();
-  }
-  return $info;
-}
-
