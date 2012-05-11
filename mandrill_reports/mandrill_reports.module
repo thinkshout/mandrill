@@ -113,6 +113,15 @@ function mandrill_reports_page() {
         )
       )
     ),
+    'message' => array(
+      '#markup' => t(
+        'The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your !dashboard. !cache to ensure the data is current.',
+        array(
+          '!dashboard' => l('Mandrill Dashboard', 'https://mandrillapp.com/'),
+          '!cache' => l('Clear your cache', 'http://local.drupal7/admin/config/development/performance')
+        )
+      )
+    ),
     'volume' => array(
       '#prefix' => '<h2>' . t('Sending Volume') . '</h2>',
       '#markup' => '<div id="mandrill-volume-chart"></div>'
