@@ -1,34 +1,38 @@
 Integration with Mandrill transactional emails, a service by the folks behind
-MailChimp. Learn more about Mandrill and how to sign up at http://mandrill.com.
+MailChimp. Learn more about Mandrill and how to sign up on [their website](http://mandrill.com).
 
 ## Settings
 
-### Mandrill Mail interface status 
-* On: Setting to "On" routes all site emails through the STS API. 
-* Test: Test mode implements an alternate mail interface, 
-TestingMailChimpMandrillMailSystem, that does not send any emails, it just displays
-a message and logs the event. You can view the logs in the Mandrill Reports 
-located at http://example.com/admin/reports/mandrill
-*Off: Setting Mandrill off routes all email through site's server.
+### Mandrill Mail interface status
+#### On
+Routes all site emails through the STS API.
 
-### Email options
-* Email from address - Select the email address you want your emails to be sent 
-from.
-* From name
-* Input format - This selection allows you to select the optional input format
-to apply to the message body before sending to the STS API.
+#### Test
+Enables an alternate mail interface, TestingMailChimpMandrillMailSystem, that displays a message and logs the event without sending any emails.
 
-### Send options
-* Track opens: Whether or not to turn on open tracking for messages.
-* Track clicks: Whether or not to turn on click tracking for messages.
-* Strip query string params: Whether or not to strip the query string from URLs when aggregating tracked URL data
+Logs can be viewed through Mandrill Reports at <http://example.com/admin/reports/mandrill>.
+#### Off
+Disables Mandrill and routes all email through the site's server.
 
-### Google analytics
-* Domains: One or more domains for which any matching URLs will automatically have Google Analytics parameters appended to their query string. Separate each domain with a comma.
-* Campaign: The value to set for the utm_campaign tracking parameter. If this isn't provided the messages from address will be used instead.
+### Email Options
+* **Email from address:** The email address that emails should be sent from
+* **From name:** The name to use for sending
+* **_Input format_:** An optional input format to apply to the message body before sending emails
 
-## Reports are available in the mandrill_reports sub module.
-* The dashboard charts volume and engagement using Google Charts, in addition
-to providing a tabular list of URL interactions for the last 30 days.
-* The account summary contains account information, quotas, and all time usage
-stats.
+### Send Options
+* **Track opens:** Toggles open tracking for messages
+* **Track clicks:** Toggles click tracking for messages
+* **Strip query string:** Strips the query string from URLs when aggregating tracked URL data
+
+### Google Analytics
+* **Domains:** One or more domains for which any matching URLs will automatically have Google Analytics parameters appended to their query string. Separate each domain with a comma.
+* **Campaign:** The value to set for the utm_campaign tracking parameter. If empty, the from address of the message will be used instead.
+
+## Reports
+The mandrill_reports sub-module provides reports on various metrics.
+
+### Dashboard
+Displays charts that show volume and engagement, along with a tabular list of URL interactions for the past 30 days.
+
+### Account Summary
+Shows account information, quotas, and all-time usage stats.
