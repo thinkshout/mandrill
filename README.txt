@@ -8,7 +8,8 @@ MailChimp. Learn more about Mandrill and how to sign up on [their website](http:
 Routes all site emails through the STS API.
 
 #### Test
-Enables an alternate mail interface, TestingMailChimpMandrillMailSystem, that displays a message and logs the event without sending any emails.
+Enables an alternate mail interface, TestingMailChimpMandrillMailSystem, that
+displays a message and logs the event without sending any emails.
 
 Logs can be viewed through Mandrill Reports at <http://example.com/admin/reports/mandrill>.
 #### Off
@@ -25,14 +26,18 @@ Disables Mandrill and routes all email through the site's server.
 * **Strip query string:** Strips the query string from URLs when aggregating tracked URL data
 
 ### Google Analytics
-* **Domains:** One or more domains for which any matching URLs will automatically have Google Analytics parameters appended to their query string. Separate each domain with a comma.
-* **Campaign:** The value to set for the utm_campaign tracking parameter. If empty, the from address of the message will be used instead.
+* **Domains:** One or more domains for which any matching URLs will
+automatically have Google Analytics parameters appended to their query string.
+Separate each domain with a comma.
+* **Campaign:** The value to set for the utm_campaign tracking parameter. If
+empty, the from address of the message will be used instead.
 
 ## Reports
 The mandrill_reports sub-module provides reports on various metrics.
 
 ### Dashboard
-Displays charts that show volume and engagement, along with a tabular list of URL interactions for the past 30 days.
+Displays charts that show volume and engagement, along with a tabular list of
+URL interactions for the past 30 days.
 
 ### Account Summary
 Shows account information, quotas, and all-time usage stats.
