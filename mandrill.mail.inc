@@ -132,13 +132,14 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
 
     watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: @message',
       array(
-        '%from' => $from, '%to' => print_r($to),
+        '%from' => $from, '%to' => $to[0]['email'],
         '@message' => print_r($message),
       ),
       WATCHDOG_NOTICE
     );
+    
     drupal_set_message(t('Mandrill test email sent from %from to %to.',
-      array('%from' => $from, '%to' => print_r($to))
+      array('%from' => $from, '%to' => $to[0]['email'])
     ), 'notice');
     return TRUE;
   }
