@@ -20,7 +20,7 @@ class MandrillMailSystem implements MailSystemInterface {
    * @return
    *   The formatted $message.
    */
-  public function format(array$message) {
+  public function format(array $message) {
     // Join the body array into one string.
     if (is_array($message['body'])) {
       $message['body'] = implode("\n\n", $message['body']);
@@ -117,7 +117,7 @@ class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystem
    * @param $message
    *   An e-mail message.
    */
-  public function mail(array$message) {
+  public function mail(array $message) {
     if (!$from = variable_get('mandrill_from', '')) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
         array(
