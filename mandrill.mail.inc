@@ -51,6 +51,9 @@ class MandrillMailSystem implements MailSystemInterface {
       return FALSE;
     }
 
+    // send the email passing the message id as the tag for use in reporting
+    $mailer = mandrill_get_api_object();
+
     // apply input format to body
     $html = $message['body'];
     $format = variable_get('mandrill_filter_format', '');
@@ -59,6 +62,16 @@ class MandrillMailSystem implements MailSystemInterface {
     }
 
     $to = mandrill_get_to($message['to']);
+
+    $attachments = array();
+    if (isset($message['attachments']) && !empty($message['attachments'])) {
+      foreach ($message['attachments'] as $attachment) {
+        if (is_file($attachment)) {
+          $attachments[] = $mailer->getAttachmentStruct($attachment);
+        }
+      }
+    }
+
     $mandrill_message = array(
       'html' => $html,
       'text' => drupal_html_to_text($message['body']),
@@ -77,10 +90,8 @@ class MandrillMailSystem implements MailSystemInterface {
       'tags' => array($message['id']),
       'google_analytics_domains' => (variable_get('mandrill_analytics_domains', NULL)) ? explode(',', variable_get('mandrill_analytics_domains')) : array(),
       'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
+      'attachments' => $attachments
     );
-
-    // send the email passing the message id as the tag for use in reporting
-    $mailer = mandrill_get_api_object();
 
     try {
       $result = $mailer->messages_send($mandrill_message);

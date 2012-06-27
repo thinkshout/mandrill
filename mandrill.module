@@ -85,6 +85,10 @@ function mandrill_mail($key, &$message, $params) {
   if ($key == 'mandrill-test') {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
+    if ($params['include_attachment']) {
+      $message['attachments'][] = drupal_realpath('misc/druplicon.png');
+      $message['body'] .= '  ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
+    }
   }
 }
 

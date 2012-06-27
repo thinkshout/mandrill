@@ -169,6 +169,13 @@ function mandrill_test_form($form, &$form_state) {
     '#title' => t('Test body contents'),
     '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This <a href="http://drupal.org">link</a> is here to test click tracking.'),
   );
+  $form['include_attachment'] = array(
+    '#title' => t('Include attachment'),
+    '#type' => 'checkbox',
+    '#description' => t('If checked, the Drupal icon will be included as an attachment with the test email.'),
+    '#default_value' => TRUE
+  );
+
   $form['test_submit'] = array(
     '#type' => 'submit',
     '#value' => t('Send test email'),
@@ -196,6 +203,7 @@ function mandrill_test_form_submit($form, &$form_state) {
   global $language;
   $params['subject'] = t('Drupal Mandrill test email');
   $params['body'] = $form_state['values']['mandrill_test_body'];
+  $params['include_attachment'] = $form_state['values']['include_attachment'];
   $result = drupal_mail('mandrill', 'mandrill-test', $test_address, $language, $params, variable_get('mandrill_from', ''));
   if (isset($result['result']) && $result['result'] === true) {
     drupal_set_message(t('A test email has been sent to @email.', array('@email' => $test_address)));
