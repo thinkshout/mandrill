@@ -53,24 +53,31 @@ class Mandrill {
     $dot_output = ('json' == $output) ? '' : ".{$output}";
 
     $url = self::END_POINT . "{$api_version}/{$method}{$dot_output}";
-    $params = http_build_query($args);
+    $params = drupal_json_encode($args);
 
     switch ($http) {
       case 'GET':
         $url .= '?' . $params;
-        $response = $this->http_request($url, NULL, 'GET');
+        $response = drupal_http_request($url, array(
+          'method' => 'GET',
+          'timeout' => $this->timeout,
+        ));
         break;
 
       case 'POST':
-        $response = $this->http_request($url, $params, 'POST');
+        $response = drupal_http_request($url, array(
+          'method' => 'POST',
+          'data' => $params,
+          'timeout' => $this->timeout,
+        ));
         break;
 
       default:
         throw new Mandrill_Exception('Unknown request type');
     }
 
-    $response_code = $response['header']['http_code'];
-    $body = $response['body'];
+    $response_code = $response->code;
+    $body = $response->data;
 
     switch ($output) {
       case 'json':
@@ -355,38 +362,6 @@ class Mandrill {
     return $this->request('messages/send-template', compact('template_name', 'template_content', 'message'));
   }
 
-  /**
-   * Handle HTTP requests.
-   *
-   * @param $url
-   * @param null $params
-   * @param string $method
-   *
-   * @return array
-   */
-  function http_request($url, $params = NULL, $method = 'POST') {
-    if (!ini_get('safe_mode')) {
-      set_time_limit($this->timeout);
-    }
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_POST, $method == 'POST');
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60 * 60 * 1000);
-
-    $response = curl_exec($ch);
-    $info = curl_getinfo($ch);
-    $error = curl_error($ch);
-
-    curl_close($ch);
-
-    return array('header' => $info, 'body' => $response, 'error' => $error);
-  }
-
   static function getAttachmentStruct($path) {
     $struct = array();
 
@@ -448,6 +423,7 @@ class Mandrill {
    * Helper to determine attachment is valid.
    *
    * @static
+   *
    * @param $ct
    *
    * @return bool
@@ -466,6 +442,7 @@ class Mandrill {
 
   /**
    * Return an array of valid content types.
+   *
    * @static
    *
    * @return array
