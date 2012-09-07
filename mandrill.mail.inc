@@ -93,6 +93,8 @@ class MandrillMailSystem implements MailSystemInterface {
       'attachments' => $attachments
     );
 
+    drupal_alter('mandrill_mail', $mandrill_message, $message);
+
     try {
       $result = $mailer->messages_send($mandrill_message);
       // @todo: look for rejected messages and log
