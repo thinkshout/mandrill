@@ -40,35 +40,41 @@ function mandrill_reports_data() {
   $data = array();
   $api = mandrill_get_api_object();
 
-  // basic user info
-  $data['user'] = $api->users_info();
+  if ($api) {
+      // basic user info
+    $data['user'] = $api->users_info();
 
-  // tags
-  $tags = $api->tags_list();
-  foreach ($tags as $tag) {
-    $data['tags'][$tag['tag']] = $api->tags_info($tag['tag']);
-    $data['tags'][$tag['tag']]['time_series'] = $api->tags_time_series($tag['tag']);
+    // tags
+    $tags = $api->tags_list();
+    foreach ($tags as $tag) {
+      $data['tags'][$tag['tag']] = $api->tags_info($tag['tag']);
+      $data['tags'][$tag['tag']]['time_series'] = $api->tags_time_series($tag['tag']);
+    }
+
+    // all time
+    $data['all_time_series'] = $api->tags_all_time_series();
+
+    // senders
+    $senders = $api->senders_list();
+    foreach ($senders as $sender) {
+      $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
+      $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
+    }
+
+    // urls
+    $urls = $api->urls_list();
+    foreach ($urls as $url) {
+      $data['urls'][$url['url']] = $url;
+      $data['urls'][$url['url']]['time_series'] = $api->urls_time_series($url['url']);
+    }
+
+    cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
+    return $data;
   }
-
-  // all time
-  $data['all_time_series'] = $api->tags_all_time_series();
-
-  // senders
-  $senders = $api->senders_list();
-  foreach ($senders as $sender) {
-    $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
-    $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
+  else {
+    drupal_set_message(t('Please enter a Mandrill API key to use reports.'));
+    drupal_goto('admin/config/services/mandrill');
   }
-
-  // urls
-  $urls = $api->urls_list();
-  foreach ($urls as $url) {
-    $data['urls'][$url['url']] = $url;
-    $data['urls'][$url['url']]['time_series'] = $api->urls_time_series($url['url']);
-  }
-
-  cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
-  return $data;
 }
 
 /**
