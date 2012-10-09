@@ -91,6 +91,12 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('Whether or not to strip the query string from URLs when aggregating tracked URL data.'),
       '#default_value' => variable_get('mandrill_url_strip_qs', FALSE)
     );
+    $form['send_options']['mandrill_mail_key_blacklist'] = array(
+      '#title' => t('Content logging blacklist'),
+      '#type' => 'textarea',
+      '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
+      '#default_value' => mandrill_mail_key_blacklist()
+    );
 
     $form['analytics'] = array(
       '#type' => 'fieldset',

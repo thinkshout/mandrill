@@ -74,6 +74,7 @@ function mandrill_permission() {
     'administer mandrill' => array(
       'title' => t('Administer Mandrill'),
       'description' => t('Perform administration tasks for the Mandrill email service.'),
+      "restrict access" => TRUE
     ),
   );
 }
@@ -123,4 +124,13 @@ function mandrill_get_api_object() {
   $api = new Mandrill($api_key, 60);
 
   return $api;
+}
+
+/**
+ * Helper to return a comma delimited list of mail keys to not log content for.
+ *
+ * @return string
+ */
+function mandrill_mail_key_blacklist() {
+  return variable_get('mandrill_mail_key_blacklist', 'user_password_reset');
 }
