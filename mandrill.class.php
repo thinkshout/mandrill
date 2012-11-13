@@ -378,7 +378,7 @@ class Mandrill {
           return FALSE;
         }
       }
-      if (!function_exists('st_magic_quotes')) {
+      if (!function_exists('set_magic_quotes')) {
         function set_magic_quotes($value) {
           return TRUE;
         }
