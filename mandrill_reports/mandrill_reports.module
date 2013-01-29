@@ -95,8 +95,8 @@ function mandrill_reports_dashboard_page() {
     );
     $settings['mandrill_reports']['engagement'][] = array(
       'date' => $series['time'],
-      'open_rate' => $series['unique_opens']/$series['sent'],
-      'click_rate' => $series['unique_clicks']/$series['sent']
+      'open_rate' => $series['sent'] == 0 ? 0 : $series['unique_opens']/$series['sent'],
+      'click_rate' => $series['sent'] == 0 ? 0 : $series['unique_clicks']/$series['sent']
     );
   }
 
