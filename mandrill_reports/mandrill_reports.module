@@ -84,7 +84,6 @@ function mandrill_reports_data() {
  */
 function mandrill_reports_dashboard_page() {
   $data = mandrill_reports_data();
-
   // all time series chart data
   foreach ($data['all_time_series'] as $series) {
     $settings['mandrill_reports']['volume'][] = array(

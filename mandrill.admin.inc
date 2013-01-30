@@ -132,20 +132,23 @@ function mandrill_admin_settings($form, &$form_state) {
  */
 function mandrill_admin_settings_submit($form, &$form_state) {
   $values = $form_state['values'];
-
+  $mail_system = variable_get('mail_system');
   switch ($form_state['values']['mandrill_status']) {
     case MANDRILL_STATUS_ON:
-      variable_set('mail_system', array('default-system' => 'MandrillMailSystem'));
+      $mail_system['default-system'] = 'MandrillMailSystem';
+      variable_set('mail_system', $mail_system);
       drupal_set_message(t('Mandrill will be used to deliver all site emails.'));
       watchdog('mandrill', 'Mandrill has been enabled.');
       break;
     case MANDRILL_STATUS_TEST:
-      variable_set('mail_system', array('default-system' => 'TestingMandrillMailSystem'));
+      $mail_system['default-system'] = 'TestingMandrillMailSystem';
+      variable_set('mail_system', $mail_system);
       drupal_set_message(t('Mandrill will be used in test mode. Emails will not actually be sent, just logged.'));
       watchdog('mandrill', 'Mandrill has been placed in test mode.');
       break;
     case MANDRILL_STATUS_OFF:
-      variable_set('mail_system', array('default-system' => 'DefaultMailSystem'));
+      $mail_system['default-system'] = 'DefaultMailSystem';
+      variable_set('mail_system', $mail_system);
       drupal_set_message(t('The default mail system will be used to deliver all site emails.'));
       watchdog('mandrill', 'Mandrill has been disabled.');
       break;

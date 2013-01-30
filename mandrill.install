@@ -18,6 +18,8 @@ function mandrill_uninstall() {
  */
 function mandrill_disable() {
   // reset to default mail system
-  variable_set('mail_system', array('default-system' => 'DefaultMailSystem'));
+  $mail_system = variable_get('mail_system');
+  $mail_system['default-system'] = 'DefaultMailSystem';
+  variable_set('mail_system', $mail_system);
   watchdog('mandrill', 'Mandrill has been disabled.');
 }
