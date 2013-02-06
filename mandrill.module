@@ -62,8 +62,9 @@ function mandrill_menu() {
  * @return bool
  */
 function mandrill_test_access() {
-  return user_access('administer mandrill') &
-    (variable_get('mandrill_status', MANDRILL_STATUS_OFF) != MANDRILL_STATUS_OFF);
+  $a = user_access('administer mandrill');
+  $b = variable_get('mandrill_api_key');
+  return $a & !empty($b);
 }
 
 /**
