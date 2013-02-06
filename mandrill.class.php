@@ -21,7 +21,7 @@ class Mandrill {
     try {
       $response = $this->request('users/ping', array('key' => $api_key));
       if ($response != 'PONG!') {
-        throw new Mandrill_Exception('Invalid API key');
+        throw new Mandrill_Exception('Invalid API key: ' . $response);
       }
 
       $this->api = $api_key;
@@ -77,6 +77,9 @@ class Mandrill {
     }
 
     $response_code = $response->code;
+    if (0 == $response_code) {
+      return $response->error;
+    }
     $body = $response->data;
 
     switch ($output) {
