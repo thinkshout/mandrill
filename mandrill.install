@@ -8,7 +8,6 @@ function mandrill_uninstall() {
   // delete other variables
   variable_del('mandrill_filter_format');
   variable_del('mandrill_from');
-  variable_del('mandrill_status');
   variable_del('mandrill_test_address');
   variable_del('mandrill_test_body');
 }

@@ -10,10 +10,6 @@
  * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
  */
 
-define('MANDRILL_STATUS_ON', 'on');
-define('MANDRILL_STATUS_OFF', 'off');
-define('MANDRILL_STATUS_TEST', 'test');
-
 /**
  * Implements hook_help().
  */

@@ -200,7 +200,6 @@ function mandrill_admin_settings($form, &$form_state) {
  */
 function mandrill_admin_settings_submit($form, &$form_state) {
   $values = $form_state['values'];
-
 }
 
 /**
