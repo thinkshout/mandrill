@@ -261,7 +261,7 @@ function mandrill_test_form_submit($form, &$form_state) {
   $params['subject'] = t('Drupal Mandrill test email');
   $params['body'] = $form_state['values']['mandrill_test_body'];
   $params['include_attachment'] = $form_state['values']['include_attachment'];
-  $result = drupal_mail('mandrill', 'mandrill-test', $test_address, $language, $params, variable_get('mandrill_from', ''));
+  $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params, variable_get('mandrill_from', ''));
   if (isset($result['result']) && $result['result'] === true) {
     drupal_set_message(t('A test email has been sent to @email.', array('@email' => $test_address)));
   }

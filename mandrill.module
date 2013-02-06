@@ -84,7 +84,7 @@ function mandrill_permission() {
  * Implements hook_mail().
  */
 function mandrill_mail($key, &$message, $params) {
-  if ($key == 'mandrill-test') {
+  if ($key == 'mandrill_test') {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
     if ($params['include_attachment']) {
