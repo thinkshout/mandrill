@@ -22,20 +22,40 @@ function mandrill_admin_settings($form, &$form_state) {
   );
 
   if ($key) {
-    $form['mandrill_status'] = array(
-      '#type' => 'radios',
-      '#title' => t('Mandrill Mail interface status'),
-      '#default_value' => variable_get('mandrill_status', MANDRILL_STATUS_OFF),
-      '#options' => array(
-        MANDRILL_STATUS_ON => t('On'),
-        MANDRILL_STATUS_TEST => t('Test'),
-        MANDRILL_STATUS_OFF => t('Off')
-      ),
-      '#description' => t('Setting to on routes all site emails through the Mandrill
-        API. Test mode implements an alternate mail interface,
-        TestingMailChimpMandrillMailSystem, that does not send any emails, it just
-        displays a message and logs the event.'),
-    );
+    $mailsystem_config_keys = mailsystem_get();
+    $in_use = FALSE;
+    $usage_rows = array();
+    foreach($mailsystem_config_keys as $key => $sys) {
+      if ($sys === 'MandrillMailSystem' || $sys === 'TestingMandrillMailSystem') {
+        $in_use = TRUE;
+        $usage_rows[] = array(
+          $key,
+          $sys,
+        );
+      }
+    }
+    if ($in_use) {
+      $usage_array = array(
+        '#theme' => 'table',
+        '#header' => array(
+          t('Module Key'),
+          t('Mail System'),
+          ),
+        '#rows' => $usage_rows,
+      );
+      $form['mandrill_status'] = array(
+        '#type' => 'markup',
+        '#markup' => t('Mandrill is currently configured to be used by the following Mail Systems. To change these settings or configure additional systems to use Mandrill, use !link:<br /><br />' . drupal_render($usage_array),
+          array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),
+      );
+    }
+    else {
+      $form['mandrill_status'] = array(
+        '#type' => 'markup',
+        '#markup' =>  t('PLEASE NOTE: Mandrill is not currently configured for use by the mail system. In order to set Mandrill as your system email handler, you must configure !link to use MandrillMailSystem.',
+          array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),
+      );
+    }
 
     $form['email_options'] = array(
       '#type' => 'fieldset',
