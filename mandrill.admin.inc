@@ -45,7 +45,7 @@ function mandrill_admin_settings($form, &$form_state) {
       );
       $form['mandrill_status'] = array(
         '#type' => 'markup',
-        '#markup' => t('Mandrill is currently configured to be used by the following Mail Systems. To change these settings or configure additional systems to use Mandrill, use !link:<br /><br />' . drupal_render($usage_array),
+        '#markup' => t('Mandrill is currently configured to be used by the following Modules. To change these settings or configure additional systems to use Mandrill, use !link:<br /><br />' . drupal_render($usage_array),
           array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),
       );
     }
@@ -224,7 +224,8 @@ function mandrill_test_form($form, &$form_state) {
   $form['mandrill_test_body'] = array(
     '#type' => 'textarea',
     '#title' => t('Test body contents'),
-    '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This <a href="http://drupal.org">link</a> is here to test click tracking.'),
+    '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: !link',
+      array('!link' => l('link', 'http://www.drupal.org/project/mandrill'))),
   );
   $form['include_attachment'] = array(
     '#title' => t('Include attachment'),
