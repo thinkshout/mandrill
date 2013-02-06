@@ -5,6 +5,8 @@ package = MailChimp
 
 configure = admin/config/services/mandrill
 
+dependencies[] = mailsystem
+
 files[] = mandrill.module
 files[] = mandrill.admin.inc
 files[] = mandrill.mail.inc
