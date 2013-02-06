@@ -14,12 +14,20 @@ function mandrill_uninstall() {
 }
 
 /**
+ * Implements hook_enable().
+ */
+
+function mandrill_enable() {
+  mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
+  mailsystem_set(array('mandrill_test' => 'MandrillMailSystemTest'));
+}
+
+/**
  * Implements hook_disable().
  */
 function mandrill_disable() {
-  // reset to default mail system
-  $mail_system = variable_get('mail_system');
-  $mail_system['default-system'] = 'DefaultMailSystem';
-  variable_set('mail_system', $mail_system);
+  // tell mailsystem to remove mandrill and restore to defaults
+  mailsystem_clear(array('mandrill' => 'MandrillMailSystem'));
+  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystemTest'));
   watchdog('mandrill', 'Mandrill has been disabled.');
 }
