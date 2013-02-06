@@ -87,7 +87,55 @@ function mandrill_admin_settings($form, &$form_state) {
       '#options' => $options,
       '#default_value' => array(variable_get('mandrill_filter_format', 'full_html')),
     );
+/* experimenting with templates
+        // templates function based on mandrill_template_support-1721562-14.patch by
+        // basvredeling with help from persand & jtbayly
+        // only show the template settings if the mandrill api can be called.
+        try {
+          if ($mailer = mandrill_get_api_object()) {
+            // create a list of selectable templates
+            $options = array('' => t('-- None --'));
+            $regions = array();
+            $templates = $mailer->templates_list();
+            foreach ($templates as $template) {
+              $options[$template['name']] = $template['name'];
+              $regions[$template['name']] = mandrill_parse_regions($template['code'], 'mc:edit');
+            }
 
+            // check if the currently configured template still exists
+            $current_template = variable_get('mandrill_template', '');
+            if (!array_key_exists($current_template, $options) && strlen($current_template)) {
+              drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'));
+            }
+            else {
+              $default_value = array($current_template);
+            }
+            $form['email_options']['mandrill_template'] = array(
+              '#type' => 'select',
+              '#title' => t('Email Template'),
+              '#description' => t('Select a Mandrill template.'), //https://mandrillapp.com/templates/my-templates
+              '#options' => $options,
+              '#default_value' => $default_value,
+            );
+            $form['email_options']['mandrill_template_region'] = array(
+              '#type' => 'select',
+              '#title' => t('Regions'),
+              '#description' => t('Select a Region.'), //https://mandrillapp.com/templates/my-templates
+              '#options' => $regions[$current_template],
+            );
+
+          }
+          else {
+            $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
+          }
+        }
+
+    catch (Mandrill_Exception $e) {
+      drupal_set_message('Mandrill: ' . $e->getMessage(), 'error');
+      watchdog('mandrill', $e->getMessage(), array(), WATCHDOG_ERROR);
+      watchdog_exception('mandrill', $e);
+    }
+*/
     $form['send_options'] = array(
       '#title' => t('Send options'),
       '#type' => 'fieldset',
@@ -217,4 +265,18 @@ function mandrill_test_form_submit($form, &$form_state) {
   if (isset($result['result']) && $result['result'] === true) {
     drupal_set_message(t('A test email has been sent to @email.', array('@email' => $test_address)));
   }
+}
+
+function mandrill_parse_regions($html, $tag){
+  $instances = array();
+  $offset = 0;
+  $inst = NULL;
+  while ($offset = strpos($html, $tag, $offset)) {
+    $start = 1 + strpos($html, '"', $offset);
+    $length = strpos($html, '"', $start) - $start;
+    $inst = substr($html, $start, $length);
+    $instances[$inst] = $inst;
+    $offset = $start + $length;
+  }
+  return $instances;
 }
