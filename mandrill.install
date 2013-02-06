@@ -30,3 +30,10 @@ function mandrill_disable() {
   mailsystem_clear(array('mandrill_test' => 'MandrillMailSystemTest'));
   watchdog('mandrill', 'Mandrill has been disabled.');
 }
+
+/**
+ * Implements hook_update_N().
+ */
+function mandrill_update_7102() {
+  variable_del('mandrill_status');
+}
