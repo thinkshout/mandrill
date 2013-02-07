@@ -18,7 +18,6 @@ function mandrill_uninstall() {
 
 function mandrill_enable() {
   mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
-  mailsystem_set(array('mandrill_test' => 'MandrillMailSystemTest'));
 }
 
 /**
@@ -27,7 +26,6 @@ function mandrill_enable() {
 function mandrill_disable() {
   // tell mailsystem to remove mandrill and restore to defaults
   mailsystem_clear(array('mandrill' => 'MandrillMailSystem'));
-  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystemTest'));
   watchdog('mandrill', 'Mandrill has been disabled.');
 }
 
