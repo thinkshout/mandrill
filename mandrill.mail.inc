@@ -139,47 +139,6 @@ class MandrillMailSystem implements MailSystemInterface {
 }
 
 /**
- * A mail sending implementation that captures sent messages to watchdog.
- *
- * This class is for running tests or for development.
- */
-class TestingMandrillMailSystem extends MandrillMailSystem implements MailSystemInterface {
-
-  /**
-   * Accept an e-mail message and store it in a variable.
-   *
-   * @param $message
-   *   An e-mail message.
-   */
-  public function mail(array $message) {
-    if (!$from = variable_get('mandrill_from', '')) {
-      drupal_set_message(t('Mandrill can\'t send email. Please !link.',
-        array(
-          '!link' => l('add a verified from address',
-            'admin/config/services/mailchimp/sts'
-          )
-        )
-      ), 'error');
-      return FALSE;
-    }
-    $to = mandrill_get_to($message['to']);
-
-    watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: <pre>@message</pre>',
-      array(
-        '%from' => $from, '%to' => $to[0]['email'],
-	      '@message' => print_r($message, TRUE),
-      ),
-      WATCHDOG_NOTICE
-    );
-
-    drupal_set_message(t('Mandrill test email sent from %from to %to.',
-      array('%from' => $from, '%to' => $to[0]['email'])
-    ), 'notice');
-    return TRUE;
-  }
-}
-
-/**
  * Helper to generate an array of recipients.
  *
  * @param mixed $to
