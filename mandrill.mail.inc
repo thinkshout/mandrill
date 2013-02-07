@@ -109,6 +109,16 @@ class MandrillMailSystem implements MailSystemInterface {
     try {
       $result = $mailer->messages_send($mandrill_message);
       // @todo: look for rejected messages and log
+      if ($message['key'] == 'mandrill_test') {
+        watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: <pre>@message</pre>',
+          array(
+            '%from' => $from, '%to' => $to[0]['email'],
+          ),
+        );
+        drupal_set_message(t('Mandrill test email sent from %from to %to.',
+                              array('%from' => $from, '%to' => $to[0]['email'])
+                            ), 'notice');
+      }
       return TRUE;
     }
     catch (Mandrill_Exception $e) {
