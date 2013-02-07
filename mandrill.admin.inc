@@ -26,7 +26,7 @@ function mandrill_admin_settings($form, &$form_state) {
     $in_use = FALSE;
     $usage_rows = array();
     foreach($mailsystem_config_keys as $key => $sys) {
-      if ($sys === 'MandrillMailSystem' || $sys === 'TestingMandrillMailSystem') {
+      if ($sys === 'MandrillMailSystem' && $key != 'mandrill') {
         $in_use = TRUE;
         $usage_rows[] = array(
           $key,
@@ -51,11 +51,8 @@ function mandrill_admin_settings($form, &$form_state) {
       );
     }
     else {
-      $form['mandrill_status'] = array(
-        '#type' => 'markup',
-        '#markup' =>  t('PLEASE NOTE: Mandrill is not currently configured for use by the mail system. In order to set Mandrill as your system email handler, you must configure !link to use MandrillMailSystem.',
-          array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),
-      );
+      drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
+        array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),'warning');
     }
 
     $form['email_options'] = array(
