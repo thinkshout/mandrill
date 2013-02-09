@@ -208,7 +208,154 @@ function mandrill_test_form_submit($form, &$form_state) {
   }
 }
 
-function mandrill_parse_regions($html, $tag){
+/**
+ * Return a form for adding/editing a Mandrill template map.
+ *
+ * @param array $form
+ * @param array $form_state
+ * @param object $list
+ */
+function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $map = NULL, $op = 'edit') {
+  if ($op == 'clone') {
+    $map->label .= ' (cloned)';
+    $map->name = '';
+  }
+  // store the existing list for updating on submit
+  if (isset($map)) {
+    $form_state['map'] = $map;
+  }
+
+  $form['label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Label'),
+    '#description' => t('The name of this Template Mapping.'),
+    '#size' => 35,
+    '#maxlength' => 32,
+    '#default_value' => $map ? $map->label : '',
+    '#required' => TRUE
+  );
+
+  // Machine-readable list name.
+  $form['name'] = array(
+    '#type' => 'machine_name',
+    '#default_value' => isset($map->name) ? $map->name : '',
+    '#maxlength' => 32,
+    '#machine_name' => array(
+      'exists' => 'mandrill_template_map_load_entities',
+      'source' => array('label'),
+    ),
+    '#description' => t('A unique machine-readable name for this template map. It must only contain lowercase letters, numbers, and underscores.'),
+  );
+
+  $form['map_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Template Map Settings'),
+    '#collapsible' => TRUE,
+  );
+
+  $templates = mandrill_get_templates();
+  // check if the currently configured template still exists
+  if (!empty($map->template_id) && !array_key_exists($map->template_id, $templates)) {
+    drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'));
+  }
+  if (!empty($templates)) {
+    $options = array('' => t('-- Select --'));
+    $regions = array();
+    foreach ($templates as $template) {
+      $options[$template['name']] = $template['name'];
+      $regions[$template['name']] = _mandrill_parse_regions($template['publish_code'], 'mc:edit');
+    }
+    $form['map_settings']['template_id'] = array(
+      '#type' => 'select',
+      '#title' => t('Email Template'),
+      '#description' => t('Select a Mandrill template.'), //https://mandrillapp.com/templates/my-templates
+      '#options' => $options,
+      '#default_value' => isset($map->template_id) ? $map->template_id : '',
+    );/*
+    $form['map_settings']['main_section'] = array(
+      '#type' => 'select',
+      '#title' => t('Select the main content region'),
+      '#options' => $regions[$map->template_id],
+      '#default_value' => isset($map->main_section) ? $map->main_section : '',
+    );*/
+
+  }
+  else {
+    $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
+  }
+
+  $form['save'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+/*
+  $form['delete'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete'),
+    '#access' => isset($map),
+    '#submit' => array('mandrill_template_map_delete_submit'),
+  );
+*/
+  $form['cancel'] = array(
+    '#type' => 'link',
+    '#title' => t('Cancel'),
+    '#href' => 'admin/config/services/mandrill/templates'
+  );
+
+  return $form;
+}
+
+function mandrill_template_maps_overview_page() {
+  //$maps = mandrill_template_map_load_entities();
+
+  $rows = array();
+  /*
+  foreach ($maps as $map) {
+  $mc_list = mailchimp_get_list($list->mc_list_id);
+  $actions = array(
+    l(t('Edit'), 'admin/config/services/mailchimp/lists/' . $list->id . '/edit'),
+    l(t('Delete'), 'admin/config/services/mailchimp/lists/' . $list->id . '/delete')
+  );
+  if ($list->list_type !== MAILCHIMP_LISTTYPE_FREEFORM && isset($list->settings['cron']) && $list->settings['cron']) {
+    $actions[] = l(t('Queue existing'), 'mailchimp/lists/' . $list->id . '/queue_existing');
+  }
+  $rows[] = array(
+    l($list->label, 'admin/config/services/mailchimp/lists/' . $list->id . '/edit'),
+    l($mc_list['name'], 'https://admin.mailchimp.com/lists/dashboard/overview?id=' . $mc_list['web_id']),
+    $list->description,
+    $list->list_type,
+    implode(' | ', $actions)
+  );
+  }
+  */
+  $table = array(
+    'header' => array(
+      t('Name'),
+      t('Mandrill Template'),
+      t('Primary Zone'),
+      t('In Use'),
+    ),
+    'rows' => $rows,
+  );
+  /*$mc_lists = mailchimp_get_lists();
+  if (empty($mc_lists)) {
+    drupal_set_message(t('You don\'t have any lists configured in your MailChimp account, (or you haven\'t configured your API key correctly on the Global Settings tab). Head over to !link and create some lists, then come back here and click "Refresh lists from MailChimp!"',
+      array('!link' => l('MailChimp', 'https://admin.mailchimp.com/lists/'))),'warning');
+  }
+  else {
+    $options = 'Currently Available MailChimp lists:<i>';
+    foreach ($mc_lists as $mc_list) {
+      $options .= ' ' . $mc_list['name'] . ',';
+    }
+    $options = rtrim($options,',');
+    $options .= ".</i>";
+    $table['caption'] = $options;
+  }
+  */
+  return theme('table', $table);
+}
+
+function _mandrill_parse_regions($html, $tag){
   $instances = array();
   $offset = 0;
   $inst = NULL;
@@ -216,7 +363,7 @@ function mandrill_parse_regions($html, $tag){
     $start = 1 + strpos($html, '"', $offset);
     $length = strpos($html, '"', $start) - $start;
     $inst = substr($html, $start, $length);
-    $instances[$inst] = $inst;
+    $instances[$inst] = '';
     $offset = $start + $length;
   }
   return $instances;
