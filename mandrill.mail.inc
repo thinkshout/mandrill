@@ -103,7 +103,7 @@ class MandrillMailSystem implements MailSystemInterface {
       'attachments' => $attachments,
       'view_content_link' => $view_content
     );
-
+    // todo: document
     drupal_alter('mandrill_mail', $mandrill_message, $message);
 
     try {

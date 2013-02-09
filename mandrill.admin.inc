@@ -189,18 +189,7 @@ function mandrill_admin_settings($form, &$form_state) {
 }
 
 /**
- * Submission for the administrative settings form.
- *
- * @param form
  *   An associative array containing the structure of the form.
- * @param form_state
- *   A keyed array containing the current state of the form.
- */
-function mandrill_admin_settings_submit($form, &$form_state) {
-  $values = $form_state['values'];
-}
-
-/**
  * Return a form for sending a test email.
  *
  * @param string $form
