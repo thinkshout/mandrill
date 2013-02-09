@@ -36,7 +36,7 @@ function mandrill_menu() {
   $items['admin/config/services/mandrill/settings'] = array(
     'title' => 'Settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
+    'weight' => 0,
   );
   $items['admin/config/services/mandrill/test'] = array(
     'title' => 'Send test email',
@@ -46,10 +46,74 @@ function mandrill_menu() {
     'description' => 'Send a test email using the Mandrill API.',
     'file' => 'mandrill.admin.inc',
     'type' => MENU_LOCAL_TASK,
-    'weight' => 1
+    'weight' => 1,
+  );
+  $items['admin/config/services/mandrill/templates'] = array(
+    'title' => 'Templates',
+    'page callback' => 'mandrill_template_maps_overview_page',
+    'access callback' => 'mandrill_template_map_access',
+    'description' => 'Configure mappings and usage for Mandrill Templates.',
+    'file' => 'mandrill.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+  $items['admin/config/services/mandrill/templates/add'] = array(
+    'title' => 'Add a template map',
+    'description' => 'Add a mapping for a Mandrill template.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_template_map_form'),
+    'access arguments' => array('mandrill_template_map_access'),
+    'file' => 'mandrill.admin.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function mandrill_entity_info(){
+  $return = array(
+    'mandrill_template_map' => array(
+      'label' => t('Mandrill Template Map'),
+      'plural label' => t('Mandrill Template Maps'),
+      'controller class' => 'EntityAPIControllerExportable',
+      'base table' => 'mandrill',
+      'uri callback' => 'entity_class_uri',
+      'fieldable' => FALSE,
+      'exportable' => TRUE,
+      'label callback' => 'entity_class_label',
+      'module' => 'mandrill',
+      'access callback' => 'mandrill_template_map_access',
+      'entity keys' => array(
+        'id' => 'mandrill_template_map_entity_id',
+        'name' => 'name',
+        'mailsystem_key' => 'mailsystem_key',
+      ),
+      'bundles' => array(
+        'mandrill_template_map' => array(
+          'label' => t('Mandrill Template Map'),
+        ),
+      ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full'),
+          'custom settings' => FALSE,
+        ),
+      ),
+    ),
   );
 
-  return $items;
+  return $return;
+}
+
+/**
+ * Access callback for mandrill_template_map
+ *
+ * @return bool
+ */
+function mandrill_template_map_access() {
+  return user_access('administer mandrill');
 }
 
 /**
@@ -90,24 +154,6 @@ function mandrill_mail($key, &$message, $params) {
   }
 }
 
-/**
- * Get all available MailChimp STS tags
- *
- * @return array of tag objects
- */
-function mandrill_get_tags() {
-  $ret = array();
-
-  $mandrill = mandrill_get_api_object();
-  $tags = $mandrill->tags_list();
-  if ($tags) {
-    foreach ($tags as $tag) {
-      $ret[$tag['tag_id']] = $tag;
-    }
-  }
-
-  return $ret;
-}
 
 /**
  * Get a Mandrill API object for communication with the mailchimp server.
@@ -124,10 +170,62 @@ function mandrill_get_api_object() {
 }
 
 /**
+ * Get a list of mandrill template objects.
+ */
+
+function mandrill_get_templates(){
+  // templates function based on mandrill_template_support-1721562-14.patch by
+  // basvredeling with help from persand & jtbayly
+  // only show the template settings if the mandrill api can be called.
+  $templates = NULL;
+  try {
+    $mailer = mandrill_get_api_object();
+    $templates = $mailer->templates_list();
+  }
+  catch (Mandrill_Exception $e) {
+    drupal_set_message('Mandrill: ' . $e->getMessage(), 'error');
+    watchdog('mandrill', $e->getMessage(), array(), WATCHDOG_ERROR);
+    watchdog_exception('mandrill', $e);
+  }
+  return $templates;
+}
+
+/**
  * Helper to return a comma delimited list of mail keys to not log content for.
  *
  * @return string
  */
 function mandrill_mail_key_blacklist() {
   return variable_get('mandrill_mail_key_blacklist', 'user_password_reset');
+}
+
+/**
+ * Loads a single mandrill_template_map or all of them if no name provided.
+ *
+ * @param null $name
+ *
+ * @return array
+ */
+function mandrill_template_map_load_entities($name = NULL) {
+  $maps = entity_load_multiple_by_name('mandrill_template_map', isset($name) ? array($name) : FALSE);
+  return isset($name) ? reset($maps) : $maps;
+}
+
+/**
+ * Get all available MailChimp STS tags
+ *
+ * @return array of tag objects
+ */
+function _mandrill_get_tags() {
+  $ret = array();
+
+  $mandrill = mandrill_get_api_object();
+  $tags = $mandrill->tags_list();
+  if ($tags) {
+    foreach ($tags as $tag) {
+      $ret[$tag['tag_id']] = $tag;
+    }
+  }
+
+  return $ret;
 }
