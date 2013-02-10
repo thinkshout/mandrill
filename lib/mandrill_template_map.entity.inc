@@ -3,15 +3,12 @@
  * @file
  * Redhen Contact entity classses
  */
-<?php
 
 class MandrillTemplateMap extends Entity {
   public
     $mandrill_template_map_entity_id,
     $name,
     $label,
-    $entity_type,
-    $bundle,
     $mailsystem_key,
     $template_id,
     $main_section,
