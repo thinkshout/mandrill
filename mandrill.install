@@ -28,6 +28,13 @@ function mandrill_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+/*      'type' => array(
+        'description' => 'The type of this mandrill_template_map.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),*/
       'mailsystem_key' => array(
         'description' => 'The mailsystem_key that is using this mandrill_template_map.',
         'type' => 'varchar',
@@ -78,7 +85,6 @@ function mandrill_schema() {
     'indexes' => array(
       'mandrill_template_map_updated' => array('updated'),
       'mandrill_template_map_created' => array('created'),
-      'mandrill_template_map_type' => array(array('type', 4)),
       'mandrill_template_map_author' => array('author_uid'),
     ),
     'unique keys' => array(
@@ -92,10 +98,6 @@ function mandrill_schema() {
       'mandrill_template_map_user' => array(
         'table' => 'users',
         'columns' => array('uid' => 'uid'),
-      ),
-      'mandrill_template_map_type' => array(
-        'table' => 'mandrill_template_map_type',
-        'columns' => array('type' => 'name'),
       ),
     ),
     'primary key' => array('mandrill_template_map_entity_id'),
