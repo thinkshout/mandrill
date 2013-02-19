@@ -333,34 +333,29 @@ function mandrill_template_map_form_submit($form, &$form_state) {
 }
 
 function mandrill_template_maps_overview_page() {
-  //$maps = mandrill_template_map_load_entities();
+  $maps = mandrill_template_map_load_entities();
 
   $rows = array();
-  /*
   foreach ($maps as $map) {
-  $mc_list = mailchimp_get_list($list->mc_list_id);
-  $actions = array(
-    l(t('Edit'), 'admin/config/services/mailchimp/lists/' . $list->id . '/edit'),
-    l(t('Delete'), 'admin/config/services/mailchimp/lists/' . $list->id . '/delete')
-  );
-  if ($list->list_type !== MAILCHIMP_LISTTYPE_FREEFORM && isset($list->settings['cron']) && $list->settings['cron']) {
-    $actions[] = l(t('Queue existing'), 'mailchimp/lists/' . $list->id . '/queue_existing');
+    $actions = array(
+      l(t('Edit'), 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/edit'),
+      l(t('Delete'), 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/delete')
+    );
+    $rows[] = array(
+      l($map->label, 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/edit'),
+      l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
+      $map->main_section,
+      $map->mailsystem_key,
+      implode(' | ', $actions)
+    );
   }
-  $rows[] = array(
-    l($list->label, 'admin/config/services/mailchimp/lists/' . $list->id . '/edit'),
-    l($mc_list['name'], 'https://admin.mailchimp.com/lists/dashboard/overview?id=' . $mc_list['web_id']),
-    $list->description,
-    $list->list_type,
-    implode(' | ', $actions)
-  );
-  }
-  */
   $table = array(
     'header' => array(
       t('Name'),
       t('Mandrill Template'),
       t('Primary Zone'),
       t('In Use'),
+      t('Actions'),
     ),
     'rows' => $rows,
   );
