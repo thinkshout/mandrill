@@ -308,6 +308,29 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
 
   return $form;
 }
+/*
+ * Submit handler for mandrill_template_map(), creates the entity.
+ *
+ * @param string $form
+ * @param string $form_state
+ *
+ * @return void
+ */
+function mandrill_template_map_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $map = array();
+  if ($form_state['op'] == 'add' || $form_state['op'] == 'clone') {
+    $map = entity_create('mandrill_template_map', $values);
+  }
+  else {
+    $$map = $form_state['mandrill_template_map'];
+    foreach ($values as $key => $val) {
+      $map->{$key} = $val;
+    }
+  }
+  $map->save();
+  $form_state['redirect'] = 'admin/config/services/mandrill/templates';
+}
 
 function mandrill_template_maps_overview_page() {
   //$maps = mandrill_template_map_load_entities();
