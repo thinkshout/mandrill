@@ -77,11 +77,12 @@ function mandrill_entity_info(){
     'mandrill_template_map' => array(
       'label' => t('Mandrill Template Map'),
       'plural label' => t('Mandrill Template Maps'),
-      'controller class' => 'EntityAPIControllerExportable',
-      'base table' => 'mandrill',
+      'controller class' => 'MandrillTemplateMapEntityController',
+      'entity class' => 'MandrillTemplateMap',
+      'base table' => 'mandrill_template_map',
       'uri callback' => 'entity_class_uri',
       'fieldable' => FALSE,
-      'exportable' => TRUE,
+      'exportable' => FALSE,
       'label callback' => 'entity_class_label',
       'module' => 'mandrill',
       'access callback' => 'mandrill_template_map_access',
@@ -94,6 +95,11 @@ function mandrill_entity_info(){
         'mandrill_template_map' => array(
           'label' => t('Mandrill Template Map'),
         ),
+      ),
+      'admin ui' => array(
+        'path' => 'admin/config/services/mandrill/templates',
+        'file' => 'mandrill.admin.inc',
+        'controller class' => 'MandrillTemplateMapEntityController'
       ),
       'view modes' => array(
         'full' => array(
