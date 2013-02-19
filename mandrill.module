@@ -119,7 +119,9 @@ function mandrill_entity_info(){
  * @return bool
  */
 function mandrill_template_map_access() {
-  return user_access('administer mandrill');
+  $a = user_access('administer mandrill');
+  $b = variable_get('mandrill_api_key');
+  return $a & !empty($b);
 }
 
 /**
