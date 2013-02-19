@@ -216,13 +216,17 @@ function mandrill_test_form_submit($form, &$form_state) {
  * @param object $list
  */
 function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $map = NULL, $op = 'edit') {
-  if ($op == 'clone') {
+  $form_state['op'] = $op;
+  if ($form_state['op'] == 'clone') {
     $map->label .= ' (cloned)';
     $map->name = '';
   }
   // store the existing list for updating on submit
   if (isset($map)) {
     $form_state['map'] = $map;
+  }
+  else {
+    $form_state['op'] = 'add';
   }
 
   $form['label'] = array(
