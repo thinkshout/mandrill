@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * The controller for the contact entity containing the CRUD operations.
+ * The controller for the template map entity containing the CRUD operations.
  */
 
 /**
@@ -13,10 +13,10 @@ class MandrillTemplateMapEntityController extends EntityAPIController {
    * Saves a template map.
    *
    * @param $map
-   *   The full contact object to save.
+   *   The full template map object to save.
    *
    * @return
-   *   The saved contact object.
+   *   The saved template map object.
    */
   //@todo: review save & delete functions-- templated strictly from redhen_contact
   public function save($map, DatabaseTransaction $transaction = NULL) {
@@ -24,7 +24,7 @@ class MandrillTemplateMapEntityController extends EntityAPIController {
     try {
       $map->updated = REQUEST_TIME;
 
-      // New contact, set created prop.
+      // New map, set created prop.
       if (isset($map->is_new) && $map->is_new) {
         $map->created = REQUEST_TIME;
       }
@@ -40,11 +40,6 @@ class MandrillTemplateMapEntityController extends EntityAPIController {
       }
 
       parent::save($map, $transaction);
-
-      // Set the contact user.
-      if ($map->uid) {
-        $this->setUser($map, $transaction);
-      }
 
       return $map;
     }
