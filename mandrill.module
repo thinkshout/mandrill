@@ -63,7 +63,7 @@ function mandrill_menu() {
     'description' => 'Add a mapping for a Mandrill template.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mandrill_template_map_form'),
-    'access arguments' => array('mandrill_template_map_access'),
+    'access callback' => 'mandrill_template_map_access',
     'file' => 'mandrill.admin.inc',
     'type' => MENU_LOCAL_ACTION,
   );
