@@ -24,6 +24,7 @@ function mandrill_help($path, $arg) {
  * Implements hook_menu().
  */
 function mandrill_menu() {
+  $items = array();
   $items['admin/config/services/mandrill'] = array(
     'title' => 'Mandrill',
     'page callback' => 'drupal_get_form',
@@ -65,6 +66,16 @@ function mandrill_menu() {
     'access arguments' => array('mandrill_template_map_access'),
     'file' => 'mandrill.admin.inc',
     'type' => MENU_LOCAL_ACTION,
+  );
+  $items['admin/config/services/mandrill/templates/%mandrill_template_map/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_template_map_form', 5),
+    'access arguments' => array('mandrill_template_map_access'),
+    'load arguments' => array(5),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'mandrill.admin.inc',
+    'weight' => 2
   );
   return $items;
 }
