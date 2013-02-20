@@ -51,7 +51,7 @@ function mandrill_menu() {
   );
   $items['admin/config/services/mandrill/templates'] = array(
     'title' => 'Templates',
-    'page callback' => 'mandrill_template_maps_overview_page',
+    'page callback' => 'mandrill_template_map_overview_page',
     'access callback' => 'mandrill_template_map_access',
     'description' => 'Configure mappings and usage for Mandrill Templates.',
     'file' => 'mandrill.admin.inc',
