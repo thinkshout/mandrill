@@ -213,7 +213,7 @@ function mandrill_test_form_submit($form, &$form_state) {
  *
  * @param array $form
  * @param array $form_state
- * @param object $list
+ * @param object $map
  */
 function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $map = NULL, $op = 'edit') {
   $form_state['op'] = $op;
@@ -342,7 +342,7 @@ function mandrill_template_maps_overview_page() {
       l(t('Delete'), 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/delete')
     );
     $rows[] = array(
-      l($map->label, 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/edit'),
+      l($map->label, 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id),
       l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
       $map->main_section,
       $map->mailsystem_key,
