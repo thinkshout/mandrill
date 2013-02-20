@@ -81,7 +81,7 @@ function mandrill_entity_info(){
       'controller class' => 'MandrillTemplateMapEntityController',
       'entity class' => 'MandrillTemplateMap',
       'base table' => 'mandrill_template_map',
-      'uri callback' => 'entity_class_uri',
+      'uri callback' => 'mandrill_template_map_uri',
       'fieldable' => FALSE,
       'exportable' => FALSE,
       'label callback' => 'entity_class_label',
@@ -89,8 +89,7 @@ function mandrill_entity_info(){
       'access callback' => 'mandrill_template_map_access',
       'entity keys' => array(
         'id' => 'mandrill_template_map_entity_id',
-        'name' => 'name',
-        'mailsystem_key' => 'mailsystem_key',
+        'label' => 'label',
       ),
       'bundles' => array(
         'mandrill_template_map' => array(
@@ -100,7 +99,7 @@ function mandrill_entity_info(){
       'admin ui' => array(
         'path' => 'admin/config/services/mandrill/templates',
         'file' => 'mandrill.admin.inc',
-        'controller class' => 'MandrillTemplateMapEntityController'
+        'controller class' => 'MandrillTemplateMapUIController',
       ),
       'view modes' => array(
         'full' => array(
