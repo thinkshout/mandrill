@@ -389,7 +389,7 @@ function _mandrill_parse_regions($html, $tag){
     $start = 1 + strpos($html, '"', $offset);
     $length = strpos($html, '"', $start) - $start;
     $inst = substr($html, $start, $length);
-    $instances[$inst] = '';
+    $instances[$inst] = $inst;
     $offset = $start + $length;
   }
   return $instances;
