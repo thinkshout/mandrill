@@ -221,7 +221,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $map->label .= ' (cloned)';
     $map->name = '';
   }
-  // store the existing list for updating on submit
+  // store the existing map for updating on submit
   if (isset($map)) {
     $form_state['map'] = $map;
   }
@@ -258,8 +258,12 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   );
 
   $templates = mandrill_get_templates();
+  $template_names = array();
+  foreach ($templates as $template) {
+    $template_names[$template['name']] = $template;
+  }
   // check if the currently configured template still exists
-  if (!empty($map->template_id) && !array_key_exists($map->template_id, $templates)) {
+  if (!empty($map->template_id) && !array_key_exists($map->template_id, $template_names)) {
     drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'));
   }
   if (!empty($templates)) {
@@ -275,13 +279,13 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
       '#description' => t('Select a Mandrill template.'), //https://mandrillapp.com/templates/my-templates
       '#options' => $options,
       '#default_value' => isset($map->template_id) ? $map->template_id : '',
-    );/*
+    );
     $form['map_settings']['main_section'] = array(
       '#type' => 'select',
       '#title' => t('Select the main content region'),
       '#options' => $regions[$map->template_id],
       '#default_value' => isset($map->main_section) ? $map->main_section : '',
-    );*/
+    );
 
   }
   else {
@@ -323,7 +327,7 @@ function mandrill_template_map_form_submit($form, &$form_state) {
     $map = entity_create('mandrill_template_map', $values);
   }
   else {
-    $$map = $form_state['mandrill_template_map'];
+    $map = $form_state['mandrill_template_map'];
     foreach ($values as $key => $val) {
       $map->{$key} = $val;
     }
