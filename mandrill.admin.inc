@@ -336,17 +336,17 @@ function mandrill_template_map_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/config/services/mandrill/templates';
 }
 
-function mandrill_template_maps_overview_page() {
+function mandrill_template_map_overview_page() {
   $maps = mandrill_template_map_load_entities();
 
   $rows = array();
   foreach ($maps as $map) {
     $actions = array(
-      l(t('Edit'), 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/edit'),
-      l(t('Delete'), 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id . '/delete')
+      l(t('Edit'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/edit'),
+      l(t('Delete'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/delete')
     );
     $rows[] = array(
-      l($map->label, 'admin/config/services/mandrill/templates/' . $map->mandrill_template_map_entity_id),
+      l($map->label, 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id),
       l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
       $map->main_section,
       $map->mailsystem_key,
