@@ -300,6 +300,24 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
         '#required' => TRUE,
       );
     }
+    $mailsystem_config_keys = mailsystem_get();
+    $mandrill_in_use = FALSE;
+    $mailsystem_options = array('' => t('-- Select --'));
+    foreach($mailsystem_config_keys as $key => $sys) {
+      if ($sys === 'MandrillMailSystem') {
+        $mandrill_in_use = TRUE;
+        $mailsystem_options[$key] = $key;
+      }
+    }
+    if($mandrill_in_use && isset($map) && isset($map->main_section)) {
+      $form['mailsystem_key'] = array(
+        '#type' => 'select',
+        '#title' => t('Module Key'),
+        '#description' => t('Select a module key to use this template for outgoing email.'),
+        '#options' => $mailsystem_options,
+        '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',
+      );
+    }
   }
   else {
     $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
