@@ -28,7 +28,13 @@ class MandrillTemplateMap extends Entity {
   /**
    * Send email through Mandrill using this template map
    */
-  public function send() {
-
+  public function send($mandrill_message, Mandrill $mailer) {
+    $template_content = array(
+      '0' => array(
+        'name' => $this->main_section,
+        'content' => $mandrill_message['text'],
+      )
+    );
+    return $mailer->messages_send_template($this->template_id, $template_content, $mandrill_message);
   }
 }
