@@ -271,10 +271,8 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   }
   if (!empty($templates)) {
     $options = array('' => t('-- Select --'));
-    $regions = array();
     foreach ($templates as $template) {
       $options[$template['name']] = $template['name'];
-      $regions[$template['name']] = _mandrill_parse_regions($template['publish_code'], 'mc:edit');
     }
     $form['map_settings']['template_id'] = array(
       '#type' => 'select',
