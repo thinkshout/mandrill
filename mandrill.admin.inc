@@ -298,29 +298,38 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
         '#required' => TRUE,
       );
     }
-    $mailsystem_config_keys = mailsystem_get();
+    $usable_keys = mandrill_template_map_usage_chart();
+    $module_names = _mandrill_get_module_key_names();
     $mandrill_in_use = FALSE;
+    $available_modules = FALSE;
     $mailsystem_options = array('' => t('-- Select --'));
-    foreach($mailsystem_config_keys as $key => $sys) {
-      if ($sys === 'MandrillMailSystem') {
-        $mandrill_in_use = TRUE;
-        $mailsystem_options[$key] = $key;
+    foreach($usable_keys as $key => $sys) {
+      $mandrill_in_use = TRUE;
+      if ($sys === NULL || $sys == $map->mandrill_template_map_entity_id) {
+        $mailsystem_options[$key] = $module_names[$key];
+        $available_modules = TRUE;
       }
     }
-    if($mandrill_in_use && isset($map) && isset($map->main_section)) {
+    if($mandrill_in_use) {
+      asort($mailsystem_options);
       $form['mailsystem_key'] = array(
         '#type' => 'select',
-        '#title' => t('Module Key'),
-        '#description' => t('Select a module key to use this template for outgoing email.'),
+        '#title' => t('Module'),
+        '#description' => t('Select a module to use this template for outgoing email through that module. Note that if a module has been selected in another Template Mapping, it will not appear in this list.'),
         '#options' => $mailsystem_options,
         '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',
       );
+      if (!$available_modules) {
+        drupal_set_message(t("All email-using modules that have been assigned to Mandrill are already assigned to other template maps"), 'warning');
+      }
+    }
+    if (!$mandrill_in_use) {
+      drupal_set_message(t("You have not assigned any Modules to use Mandrill: to use this template, make sure Mandrill is assigned in Mailsystem."), 'warning');
     }
   }
   else {
     $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
   }
-
   $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
