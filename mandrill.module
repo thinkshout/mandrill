@@ -179,6 +179,11 @@ function mandrill_get_api_object() {
 
 /**
  * Get a list of mandrill template objects.
+ *
+ * @return array of available templates with complete data or NULL if none
+ * are available
+ *
+ * @todo: implement cacheing to minimize API calls.
  */
 
 function mandrill_get_templates(){

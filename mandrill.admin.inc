@@ -410,6 +410,14 @@ function mandrill_template_map_overview_page() {
   return theme('table', $table);
 }
 
+/**
+ * javascript callback for the mandrill_template_map_form
+ *
+ * @param $form
+ * @param $form_state
+ * @return mixed
+ */
+
 function mandrill_template_map_form_callback($form, &$form_state) {
   return $form['map_settings'];
 }
