@@ -254,7 +254,10 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   $form['map_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Template Map Settings'),
-    '#collapsible' => TRUE,
+    '#collapsible' => FALSE,
+    '#attributes' => array(
+      'id' => array('mandrill-template-mapping'),
+    ),
   );
 
   $templates = mandrill_get_templates();
@@ -279,14 +282,26 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
       '#description' => t('Select a Mandrill template.'), //https://mandrillapp.com/templates/my-templates
       '#options' => $options,
       '#default_value' => isset($map->template_id) ? $map->template_id : '',
+      '#required' => TRUE,
+      '#ajax' => array(
+        'callback' => 'mandrill_template_map_form_callback',
+        'wrapper' => 'mandrill-template-mapping'
+      ),
     );
-    $form['map_settings']['main_section'] = array(
-      '#type' => 'select',
-      '#title' => t('Select the main content region'),
-      '#options' => $regions[$map->template_id],
-      '#default_value' => isset($map->main_section) ? $map->main_section : '',
-    );
-
+    $form_template_id = & $form_state['values']['template_id'];
+    if (!$form_template_id && isset($map->mandrill_template_map_entity_id)) {
+      $form_template_id = $map->template_id;
+    }
+    if($form_template_id) {
+      $regions = array('' => t('-- Select --')) + _mandrill_parse_regions($template_names[$form_template_id]['publish_code'], 'mc:edit');
+      $form['map_settings']['main_section'] = array(
+        '#type' => 'select',
+        '#title' => t('Select the main content region'),
+        '#options' => $regions,
+        '#default_value' => isset($map->main_section) ? $map->main_section : '',
+        '#required' => TRUE,
+      );
+    }
   }
   else {
     $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
@@ -379,6 +394,10 @@ function mandrill_template_map_overview_page() {
   }
   */
   return theme('table', $table);
+}
+
+function mandrill_template_map_form_callback($form, &$form_state) {
+  return $form['map_settings'];
 }
 
 function _mandrill_parse_regions($html, $tag){
