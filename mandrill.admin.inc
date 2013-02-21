@@ -392,21 +392,21 @@ function mandrill_template_map_overview_page() {
     ),
     'rows' => $rows,
   );
-  /*$mc_lists = mailchimp_get_lists();
-  if (empty($mc_lists)) {
-    drupal_set_message(t('You don\'t have any lists configured in your MailChimp account, (or you haven\'t configured your API key correctly on the Global Settings tab). Head over to !link and create some lists, then come back here and click "Refresh lists from MailChimp!"',
-      array('!link' => l('MailChimp', 'https://admin.mailchimp.com/lists/'))),'warning');
+  $templates = mandrill_get_templates();
+  if (empty($templates)) {
+    drupal_set_message(t('You don\'t have any templates configured in your Mandrill account, (or you haven\'t configured your API key correctly on the Settings tab). Head over to !link and create some templates, then come back!',
+      array('!link' => l('Mandrill', 'https://mandrillapp.com/templates'))),'warning');
   }
   else {
-    $options = 'Currently Available MailChimp lists:<i>';
-    foreach ($mc_lists as $mc_list) {
-      $options .= ' ' . $mc_list['name'] . ',';
+    $options = 'Currently Available Mandrill Templates:<i>';
+    foreach ($templates as $template) {
+      $options .= ' ' . $template['name'] . ',';
     }
     $options = rtrim($options,',');
     $options .= ".</i>";
     $table['caption'] = $options;
   }
-  */
+
   return theme('table', $table);
 }
 
