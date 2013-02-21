@@ -237,6 +237,33 @@ function mandrill_template_map_assigned_template($key) {
 }
 
 /**
+ * mandrill_template_map_usage_chart returns an array with indexes
+ * matching each module which is assigned to use Mandrill for email
+ * sends, and values equal to the template_map_ids that are assigned
+ * to those modules. If no template maps are assigned, the value is
+ * set to NULL.
+ *
+ * @return array
+ */
+function mandrill_template_map_usage_chart() {
+  $system_assignments = mailsystem_get();
+  //filter out the systems that aren't using Mandrill:
+  foreach ($system_assignments as $system => $assignment) {
+    if ($assignment != 'MandrillMailSystem')
+      unset($system_assignments[$system]);
+    else $system_assignments[$system] = NULL;
+  }
+  $maps = mandrill_template_map_load_entities();
+  foreach ($maps as $map) {
+    if (isset($map->mailsystem_key) && array_key_exists($map->mailsystem_key, $system_assignments)) {
+      $system_assignments[$map->mailsystem_key] = $map->mandrill_template_map_entity_id;
+    }
+  }
+  //@todo consider sorting these in some display-friendly way.
+  return $system_assignments;
+}
+
+/**
  * Get all available MailChimp STS tags
  *
  * @return array of tag objects
