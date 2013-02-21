@@ -133,8 +133,6 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('The value to set for the utm_campaign tracking parameter. If this isn\'t provided the messages from address will be used instead.'),
       '#default_value' => variable_get('mandrill_analytics_campaign', '')
     );
-
-    $form['#submit'][] = 'mandrill_admin_settings_submit';
   }
 
   return system_settings_form($form);
