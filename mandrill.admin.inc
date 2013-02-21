@@ -414,7 +414,17 @@ function mandrill_template_map_form_callback($form, &$form_state) {
   return $form['map_settings'];
 }
 
-function _mandrill_parse_regions($html, $tag){
+/**
+ * The Mandrill API does not provide an elegant data structure
+ * containing the mc:edit tags for a given template, but rather
+ * a big pile of ugly HTML containing the tags. We need to parse
+ * through it.
+ *
+ * @param $html
+ * @param $tag
+ * @return array
+ */
+function _mandrill_parse_regions($html, $tag = 'mc:edit'){
   $instances = array();
   $offset = 0;
   $inst = NULL;
