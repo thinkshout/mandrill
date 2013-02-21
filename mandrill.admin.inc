@@ -267,7 +267,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   }
   // check if the currently configured template still exists
   if (!empty($map->template_id) && !array_key_exists($map->template_id, $template_names)) {
-    drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'));
+    drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'), 'warning');
   }
   if (!empty($templates)) {
     $options = array('' => t('-- Select --'));
