@@ -365,20 +365,26 @@ function mandrill_template_map_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/config/services/mandrill/templates';
 }
 
+/**
+ * Build a page providing a table display of mandrill_template_maps
+ *
+ * @return string
+ */
 function mandrill_template_map_overview_page() {
   $maps = mandrill_template_map_load_entities();
-
+  $key_names = _mandrill_get_module_key_names();
   $rows = array();
   foreach ($maps as $map) {
     $actions = array(
       l(t('Edit'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/edit'),
+      l(t('Clone'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/clone'),
       l(t('Delete'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/delete')
     );
     $rows[] = array(
       l($map->label, 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id),
       l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
       $map->main_section,
-      $map->mailsystem_key,
+      $key_names[$map->mailsystem_key],
       implode(' | ', $actions)
     );
   }
@@ -386,8 +392,8 @@ function mandrill_template_map_overview_page() {
     'header' => array(
       t('Name'),
       t('Mandrill Template'),
-      t('Primary Zone'),
-      t('In Use'),
+      t('Primary Content Zone'),
+      t('In Use By'),
       t('Actions'),
     ),
     'rows' => $rows,
