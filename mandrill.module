@@ -220,6 +220,23 @@ function mandrill_template_map_load_entities($name = NULL) {
 }
 
 /**
+ * @param $key
+ *
+ * returns a mandrill_template_map entity which has been assigned to the mailsystem key designated,
+ * or NULL if none is assigned.
+ */
+
+function mandrill_template_map_assigned_template($key) {
+  $maps = mandrill_template_map_load_entities();
+  foreach ($maps as $map) {
+    if ($map->mailsystem_key == $key) {
+      return $map;
+    }
+  }
+  return NULL;
+}
+
+/**
  * Get all available MailChimp STS tags
  *
  * @return array of tag objects
