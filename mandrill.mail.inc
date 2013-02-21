@@ -105,9 +105,15 @@ class MandrillMailSystem implements MailSystemInterface {
     );
     // todo: document
     drupal_alter('mandrill_mail', $mandrill_message, $message);
-
+    $template_map = mandrill_template_map_assigned_template($message['module']);
     try {
-      $result = $mailer->messages_send($mandrill_message);
+      $result = NULL;
+      if (!is_null($template_map)) {
+        $result = $template_map->send($mandrill_message, $mailer);
+      }
+      else {
+        $result = $mailer->messages_send($mandrill_message);
+      }
       // @todo: look for rejected messages and log
       if ($message['key'] == 'mandrill_test') {
         watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: <pre>@message</pre>',
