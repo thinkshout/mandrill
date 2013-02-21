@@ -325,14 +325,6 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-/*
-  $form['delete'] = array(
-    '#type' => 'submit',
-    '#value' => t('Delete'),
-    '#access' => isset($map),
-    '#submit' => array('mandrill_template_map_delete_submit'),
-  );
-*/
   $form['cancel'] = array(
     '#type' => 'link',
     '#title' => t('Cancel'),
