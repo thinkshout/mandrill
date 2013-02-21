@@ -185,7 +185,6 @@ function mandrill_get_api_object() {
  *
  * @todo: implement cacheing to minimize API calls.
  */
-
 function mandrill_get_templates(){
   // templates function based on mandrill_template_support-1721562-14.patch by
   // basvredeling with help from persand & jtbayly

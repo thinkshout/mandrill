@@ -350,6 +350,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
  *
  * @return void
  */
+
 function mandrill_template_map_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $map = array();
