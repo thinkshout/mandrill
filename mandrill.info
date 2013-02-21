@@ -11,3 +11,6 @@ files[] = mandrill.module
 files[] = mandrill.admin.inc
 files[] = mandrill.mail.inc
 files[] = mandrill.class.php
+files[] = lib/mandrill_template_map.controller.inc
+files[] = lib/mandrill_template_map.entity.inc
+files[] = lib/mandrill_template_map.ui_controller.inc
