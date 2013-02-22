@@ -2,6 +2,12 @@
 
 
 /**
+ * @file
+ * Install, update and uninstall functions for the mandrill module.
+ *
+ */
+
+/**
  * Implements hook_schema().
  */
 function mandrill_schema() {

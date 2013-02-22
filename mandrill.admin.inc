@@ -17,7 +17,7 @@ function mandrill_admin_settings($form, &$form_state) {
     '#title' => t('Mandrill API Key'),
     '#type' => 'textfield',
     '#description' => t('Create or grab your API key from the !link.',
-      array('!link' => l('Mandrill settings', 'https://mandrillapp.com/settings/index'))),
+      array('!link' => l(t('Mandrill settings'), 'https://mandrillapp.com/settings/index'))),
     '#default_value' => $key
   );
 
@@ -25,7 +25,7 @@ function mandrill_admin_settings($form, &$form_state) {
     $mailsystem_config_keys = mailsystem_get();
     $in_use = FALSE;
     $usage_rows = array();
-    foreach($mailsystem_config_keys as $key => $sys) {
+    foreach ($mailsystem_config_keys as $key => $sys) {
       if ($sys === 'MandrillMailSystem' && $key != 'mandrill') {
         $in_use = TRUE;
         $usage_rows[] = array(
@@ -47,12 +47,12 @@ function mandrill_admin_settings($form, &$form_state) {
         '#type' => 'markup',
         '#markup' => t('Mandrill is currently configured to be used by the following Modules. To change these settings or configure additional systems to use Mandrill, use !link.<br /><br />'
             . drupal_render($usage_array),
-          array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),
+          array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))),
       );
     }
     else {
       drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
-        array('!link' => l('Mail System', 'admin/config/system/mailsystem'))),'warning');
+        array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
     }
 
     $form['email_options'] = array(
@@ -160,7 +160,7 @@ function mandrill_test_form($form, &$form_state) {
     '#type' => 'textarea',
     '#title' => t('Test body contents'),
     '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: !link',
-      array('!link' => l('link', 'http://www.drupal.org/project/mandrill'))),
+      array('!link' => l(t('link'), 'http://www.drupal.org/project/mandrill'))),
   );
   $form['include_attachment'] = array(
     '#title' => t('Include attachment'),
@@ -201,7 +201,7 @@ function mandrill_test_form_submit($form, &$form_state) {
   mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
   $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params, variable_get('mandrill_from', ''));
   mailsystem_set(array('mandrill' => $cached_setting));
-  if (isset($result['result']) && $result['result'] === true) {
+  if (isset($result['result']) && $result['result'] === TRUE) {
     drupal_set_message(t('A test email has been sent to @email.', array('@email' => $test_address)));
   }
 }
@@ -288,7 +288,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     if (!$form_template_id && isset($map->mandrill_template_map_entity_id)) {
       $form_template_id = $map->template_id;
     }
-    if($form_template_id) {
+    if ($form_template_id) {
       $regions = array('' => t('-- Select --')) + _mandrill_parse_regions($template_names[$form_template_id]['publish_code'], 'mc:edit');
       $form['map_settings']['main_section'] = array(
         '#type' => 'select',
@@ -303,14 +303,14 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $mandrill_in_use = FALSE;
     $available_modules = FALSE;
     $mailsystem_options = array('' => t('-- Select --'));
-    foreach($usable_keys as $key => $sys) {
+    foreach ($usable_keys as $key => $sys) {
       $mandrill_in_use = TRUE;
       if ($sys === NULL || $sys == $map->mandrill_template_map_entity_id) {
         $mailsystem_options[$key] = $module_names[$key];
         $available_modules = TRUE;
       }
     }
-    if($mandrill_in_use) {
+    if ($mandrill_in_use) {
       asort($mailsystem_options);
       $form['mailsystem_key'] = array(
         '#type' => 'select',
@@ -377,6 +377,9 @@ function mandrill_template_map_overview_page() {
   $key_names = _mandrill_get_module_key_names();
   $rows = array();
   foreach ($maps as $map) {
+    $in_use = '-- not in use --';
+    if (isset($key_names[$map->mailsystem_key]))
+      $in_use = $key_names[$map->mailsystem_key];
     $actions = array(
       l(t('Edit'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/edit'),
       l(t('Clone'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/clone'),
@@ -386,7 +389,7 @@ function mandrill_template_map_overview_page() {
       l($map->label, 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id),
       l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
       $map->main_section,
-      $key_names[$map->mailsystem_key],
+      $in_use,
       implode(' | ', $actions)
     );
   }
@@ -403,14 +406,14 @@ function mandrill_template_map_overview_page() {
   $templates = mandrill_get_templates();
   if (empty($templates)) {
     drupal_set_message(t('You don\'t have any templates configured in your Mandrill account, (or you haven\'t configured your API key correctly on the Settings tab). Head over to !link and create some templates, then come back!',
-      array('!link' => l('Mandrill', 'https://mandrillapp.com/templates'))),'warning');
+      array('!link' => l(t('Mandrill'), 'https://mandrillapp.com/templates'))), 'warning');
   }
   else {
     $options = 'Currently Available Mandrill Templates:<i>';
     foreach ($templates as $template) {
       $options .= ' ' . $template['name'] . ',';
     }
-    $options = rtrim($options,',');
+    $options = rtrim($options, ',');
     $options .= ".</i>";
     $table['caption'] = $options;
   }
@@ -440,7 +443,7 @@ function mandrill_template_map_form_callback($form, &$form_state) {
  * @param $tag
  * @return array
  */
-function _mandrill_parse_regions($html, $tag = 'mc:edit'){
+function _mandrill_parse_regions($html, $tag = 'mc:edit') {
   $instances = array();
   $offset = 0;
   $inst = NULL;
@@ -464,7 +467,7 @@ function _mandrill_parse_regions($html, $tag = 'mc:edit'){
  * and some special items for non-module values like null, default-system,
  * and some clarification talked onto the end of the Mandrill module's name.
  */
-function _mandrill_get_module_key_names(){
+function _mandrill_get_module_key_names() {
   $name_array = array(
     '' => '--none--',
     'default-system' => "Site-wide default",

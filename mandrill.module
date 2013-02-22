@@ -73,7 +73,7 @@ function mandrill_menu() {
 /**
  * Implements hook_entity_info().
  */
-function mandrill_entity_info(){
+function mandrill_entity_info() {
   $return = array(
     'mandrill_template_map' => array(
       'label' => t('Mandrill Template Map'),
@@ -185,7 +185,7 @@ function mandrill_get_api_object() {
  *
  * @todo: implement cacheing to minimize API calls.
  */
-function mandrill_get_templates(){
+function mandrill_get_templates() {
   // templates function based on mandrill_template_support-1721562-14.patch by
   // basvredeling with help from persand & jtbayly
   // only show the template settings if the mandrill api can be called.
@@ -195,7 +195,7 @@ function mandrill_get_templates(){
     $templates = $mailer->templates_list();
   }
   catch (Mandrill_Exception $e) {
-    drupal_set_message('Mandrill: ' . $e->getMessage(), 'error');
+    drupal_set_message(t('Mandrill: ' . check_plain($e->getMessage()), 'error'));
     watchdog('mandrill', $e->getMessage(), array(), WATCHDOG_ERROR);
     watchdog_exception('mandrill', $e);
   }

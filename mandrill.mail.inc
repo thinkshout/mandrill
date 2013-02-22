@@ -43,7 +43,7 @@ class MandrillMailSystem implements MailSystemInterface {
     if (!$from = variable_get('mandrill_from', '')) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
         array(
-          '!link' => l('add a verified from address',
+          '!link' => l(t('add a verified from address'),
             'admin/config/services/mandrill'
           )
         )
