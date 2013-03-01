@@ -146,25 +146,3 @@ class MandrillMailSystem implements MailSystemInterface {
 
 }
 
-/**
- * Helper to generate an array of recipients.
- *
- * @param mixed $to
- *
- * @return array
- */
-function mandrill_get_to($to) {
-  //@todo: extract name and add to associative array.
-
-  $recipients = array();
-  if ($to_array = explode(',', $to)) {
-    foreach ($to_array as $email) {
-      $recipients[] = array('email' => $email);
-    }
-  }
-  else {
-    $recipients[] = array('email' => $to);
-  }
-  return $recipients;
-}
-
