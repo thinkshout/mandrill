@@ -182,8 +182,6 @@ function mandrill_get_api_object() {
  *
  * @return array of available templates with complete data or NULL if none
  * are available
- *
- * @todo: implement cacheing to minimize API calls.
  */
 function mandrill_get_templates() {
   // templates function based on mandrill_template_support-1721562-14.patch by
