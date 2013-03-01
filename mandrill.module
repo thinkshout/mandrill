@@ -263,25 +263,6 @@ function mandrill_template_map_usage_chart() {
 }
 
 /**
- * Get all available MailChimp STS tags
- *
- * @return array of tag objects
- */
-function _mandrill_get_tags() {
-  $ret = array();
-
-  $mandrill = mandrill_get_api_object();
-  $tags = $mandrill->tags_list();
-  if ($tags) {
-    foreach ($tags as $tag) {
-      $ret[$tag['tag_id']] = $tag;
-    }
-  }
-
-  return $ret;
-}
-
-/**
  * Helper to generate an array of recipients.
  *
  * @param mixed $to
