@@ -184,9 +184,7 @@ function mandrill_get_api_object() {
  * are available
  */
 function mandrill_get_templates() {
-  // templates function based on mandrill_template_support-1721562-14.patch by
-  // basvredeling with help from persand & jtbayly
-  // only show the template settings if the mandrill api can be called.
+  // Only show the template settings if the mandrill api can be called.
   $templates = NULL;
   try {
     $mailer = mandrill_get_api_object();
