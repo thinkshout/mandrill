@@ -7,8 +7,6 @@ configure = admin/config/services/mandrill
 
 dependencies[] = mailsystem (2.x)
 
-files[] = mandrill.module
-files[] = mandrill.admin.inc
 files[] = lib/mandrill.mail.inc
 files[] = lib/mandrill.inc
 files[] = lib/mandrill_template_map.controller.inc
