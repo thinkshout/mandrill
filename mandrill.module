@@ -196,7 +196,6 @@ function mandrill_get_templates() {
   }
   catch (Mandrill_Exception $e) {
     drupal_set_message(t('Mandrill: ' . check_plain($e->getMessage()), 'error'));
-    watchdog('mandrill', $e->getMessage(), array(), WATCHDOG_ERROR);
     watchdog_exception('mandrill', $e);
   }
   return $templates;
