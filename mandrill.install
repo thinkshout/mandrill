@@ -142,3 +142,10 @@ function mandrill_disable() {
 function mandrill_update_7102() {
   variable_del('mandrill_status');
 }
+
+/**
+ * Install the mandrill_template_map schema and clear registry.
+ */
+function mandrill_update_7103() {
+  // TODO: Install the mandrill_template_map schema and ensure registry is rebuilt given the updated file structure.
+}
