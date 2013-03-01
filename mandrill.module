@@ -219,12 +219,13 @@ function mandrill_template_map_load_entities($name = NULL) {
 }
 
 /**
+ * @TODO: This function is not needed. Instead, pass a conditions array into mandrill_template_map_load_entities() OR use entity field query.
+ *
  * @param $key
  *
  * returns a mandrill_template_map entity which has been assigned to the mailsystem key designated,
  * or NULL if none is assigned.
  */
-
 function mandrill_template_map_assigned_template($key) {
   $maps = mandrill_template_map_load_entities();
   foreach ($maps as $map) {
@@ -236,6 +237,8 @@ function mandrill_template_map_assigned_template($key) {
 }
 
 /**
+ * TODO: Invalid function header.
+ *
  * mandrill_template_map_usage_chart returns an array with indexes
  * matching each module which is assigned to use Mandrill for email
  * sends, and values equal to the template_map_ids that are assigned
@@ -270,8 +273,6 @@ function mandrill_template_map_usage_chart() {
  * @return array
  */
 function mandrill_get_to($to) {
-  //@todo: extract name and add to associative array.
-
   $recipients = array();
   if ($to_array = explode(',', $to)) {
     foreach ($to_array as $email) {
