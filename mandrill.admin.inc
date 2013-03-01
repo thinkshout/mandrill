@@ -285,14 +285,17 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
       ),
     );
     $form_template_id = & $form_state['values']['template_id'];
+
     if (!$form_template_id && isset($map->mandrill_template_map_entity_id)) {
       $form_template_id = $map->template_id;
     }
+
     if ($form_template_id) {
-      $regions = array('' => t('-- Select --')) + _mandrill_parse_regions($template_names[$form_template_id]['publish_code'], 'mc:edit');
+      $regions = array('' => t('-- Select --')) + _mandrill_parse_regions($template_names[$form_template_id]['publish_code']);
       $form['map_settings']['main_section'] = array(
         '#type' => 'select',
-        '#title' => t('Select the main content region'),
+        '#title' => t('Template region'),
+        '#description' => t('Select the template region to use for email content.'),
         '#options' => $regions,
         '#default_value' => isset($map->main_section) ? $map->main_section : '',
         '#required' => TRUE,
@@ -310,19 +313,25 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
         $available_modules = TRUE;
       }
     }
+
     if ($mandrill_in_use) {
       asort($mailsystem_options);
       $form['mailsystem_key'] = array(
         '#type' => 'select',
-        '#title' => t('Module'),
-        '#description' => t('Select a module to use this template for outgoing email through that module. Note that if a module has been selected in another Template Mapping, it will not appear in this list.'),
+        '#title' => t('Email key'),
+        '#description' => t(
+          'Select a module and mail key to use this template for outgoing email. Note that if an email has been selected in another Template Mapping, it will not appear in this list. These keys are defined through the !MailSystem interface.',
+          array('!MailSystem' => l(t('MailSystem'), 'admin/config/system/mailsystem'))
+        ),
         '#options' => $mailsystem_options,
         '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',
+        '#required' => TRUE
       );
       if (!$available_modules) {
         drupal_set_message(t("All email-using modules that have been assigned to Mandrill are already assigned to other template maps"), 'warning');
       }
     }
+
     if (!$mandrill_in_use) {
       drupal_set_message(t("You have not assigned any Modules to use Mandrill: to use this template, make sure Mandrill is assigned in Mailsystem."), 'warning');
     }
@@ -330,11 +339,13 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   else {
     $form['email_options']['#description'] = t('The template selection is only available if the Mandrill API is correctly configured and available.');
   }
-  $form['save'] = array(
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-  $form['cancel'] = array(
+  $form['actions']['cancel'] = array(
     '#type' => 'link',
     '#title' => t('Cancel'),
     '#href' => 'admin/config/services/mandrill/templates'
@@ -342,7 +353,8 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
 
   return $form;
 }
-/*
+
+/**
  * Submit handler for mandrill_template_map(), creates the entity.
  *
  * @param string $form
@@ -350,7 +362,6 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
  *
  * @return void
  */
-
 function mandrill_template_map_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $map = array();
@@ -368,7 +379,7 @@ function mandrill_template_map_form_submit($form, &$form_state) {
 }
 
 /**
- * Build a page providing a table display of mandrill_template_maps
+ * Build a page providing a table display of mandrill_template_maps.
  *
  * @return string
  */
@@ -376,10 +387,12 @@ function mandrill_template_map_overview_page() {
   $maps = mandrill_template_map_load_entities();
   $key_names = _mandrill_get_module_key_names();
   $rows = array();
+
   foreach ($maps as $map) {
     $in_use = '-- not in use --';
-    if (isset($key_names[$map->mailsystem_key]))
+    if (isset($key_names[$map->mailsystem_key])) {
       $in_use = $key_names[$map->mailsystem_key];
+    }
     $actions = array(
       l(t('Edit'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/edit'),
       l(t('Clone'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/clone'),
@@ -393,6 +406,7 @@ function mandrill_template_map_overview_page() {
       implode(' | ', $actions)
     );
   }
+
   $table = array(
     'header' => array(
       t('Name'),
@@ -422,13 +436,12 @@ function mandrill_template_map_overview_page() {
 }
 
 /**
- * javascript callback for the mandrill_template_map_form
+ * Javascript callback for the mandrill_template_map_form.
  *
  * @param $form
  * @param $form_state
  * @return mixed
  */
-
 function mandrill_template_map_form_callback($form, &$form_state) {
   return $form['map_settings'];
 }
@@ -501,8 +514,9 @@ function _mandrill_get_module_key_names() {
     if ($key = substr($id, strlen($module) + 1)) {
       $title .= " ($key key)";
     }
-    if ($module == 'mandrill')
+    if ($module == 'mandrill') {
       $title .= " (send test email)";
+    }
     $name_array[$id] = $title;
   }
 
