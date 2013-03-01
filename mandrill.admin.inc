@@ -305,7 +305,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $mailsystem_options = array('' => t('-- Select --'));
     foreach ($usable_keys as $key => $sys) {
       $mandrill_in_use = TRUE;
-      if ($sys === NULL || $sys == $map->mandrill_template_map_entity_id) {
+      if ($sys === NULL || (isset($map) && $sys == $map->mandrill_template_map_entity_id)) {
         $mailsystem_options[$key] = $module_names[$key];
         $available_modules = TRUE;
       }
