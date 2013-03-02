@@ -105,7 +105,16 @@ class MandrillMailSystem implements MailSystemInterface {
     );
     // todo: document
     drupal_alter('mandrill_mail', $mandrill_message, $message);
-    $template_map = mandrill_template_map_assigned_template($message['module']);
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'mandrill_template_map')
+      ->propertyCondition('mailsystem_key', $message['module'])
+      ->addMetaData('account', user_load(1)); //todo: not sure if this is necessary
+    $query_result = $query->execute();
+    $template_map = NULL;
+    if (!empty($query_result['mandrill_template_map'])) {
+      $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
+      $template_map = array_pop($maps);
+    }
     try {
       $result = NULL;
       if (!is_null($template_map)) {
