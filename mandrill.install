@@ -148,4 +148,7 @@ function mandrill_update_7102() {
  */
 function mandrill_update_7103() {
   // TODO: Install the mandrill_template_map schema and ensure registry is rebuilt given the updated file structure.
+  $schema = mandrill_schema();
+  db_create_table('mandrill_template_map', $schema['mandrill_template_map']);
+  registry_rebuild();
 }
