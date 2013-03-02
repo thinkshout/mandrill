@@ -305,7 +305,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $module_names = _mandrill_get_module_key_names();
     $mandrill_in_use = FALSE;
     $available_modules = FALSE;
-    $mailsystem_options = array('' => t('-- Select --'));
+    $mailsystem_options = array('' => t('-- None --'));
     foreach ($usable_keys as $key => $sys) {
       $mandrill_in_use = TRUE;
       if ($sys === NULL || (isset($map) && $sys == $map->mandrill_template_map_entity_id)) {
@@ -325,7 +325,6 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
         ),
         '#options' => $mailsystem_options,
         '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',
-        '#required' => TRUE
       );
       if (!$available_modules) {
         drupal_set_message(t("All email-using modules that have been assigned to Mandrill are already assigned to other template maps"), 'warning');
