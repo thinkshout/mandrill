@@ -81,7 +81,9 @@ class MandrillMailSystem implements MailSystemInterface {
         break;
       }
     }
-
+    if (variable_get('mandrill_reply_to', FALSE) && empty($message['headers']['Reply-To'])) {
+      $message['headers']['Reply-To'] = $message['from'];
+    }
     $mandrill_message = array(
       'html' => $html,
       'text' => drupal_html_to_text($message['body']),

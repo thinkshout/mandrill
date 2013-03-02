@@ -85,7 +85,12 @@ function mandrill_admin_settings($form, &$form_state) {
       '#options' => $options,
       '#default_value' => array(variable_get('mandrill_filter_format', 'full_html')),
     );
-
+    $form['email_options']['mandrill_reply_to'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Set the Reply-To header'),
+      '#default_value' => variable_get('mandrill_reply_to', FALSE),
+      '#description' => t("Set the <code>Reply-To</code> header using the original email's <code>From</code> header."),
+    );
     $form['send_options'] = array(
       '#title' => t('Send options'),
       '#type' => 'fieldset',
