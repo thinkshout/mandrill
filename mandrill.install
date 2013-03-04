@@ -160,7 +160,7 @@ function mandrill_disable() {
 }
 
 /**
- * Implements hook_update_N().
+ * Deletes obsolete variables, creates database table for mandrill_template_map entity, and rebuilds the registry.
  */
 function mandrill_update_7001() {
   variable_del('mandrill_status');
