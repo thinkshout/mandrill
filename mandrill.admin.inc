@@ -45,7 +45,7 @@ function mandrill_admin_settings($form, &$form_state) {
       );
       $form['mandrill_status'] = array(
         '#type' => 'markup',
-        '#markup' => t('Mandrill is currently configured to be used by the following Modules. To change these settings or configure additional systems to use Mandrill, use !link.<br /><br />'
+        '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or configure additional systems to use Mandrill, use !link.<br /><br />'
             . drupal_render($usage_array),
           array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))),
       );
