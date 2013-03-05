@@ -81,13 +81,6 @@ function mandrill_schema() {
         'default' => 0,
       ),
       // following fields are for supporting exportable status.
-      'locked' => array(
-        'description' => 'A boolean indicating whether the administrator may delete this mapping.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'size' => 'tiny',
-      ),
       'status' => array(
         'type' => 'int',
         'not null' => TRUE,
@@ -124,9 +117,6 @@ function mandrill_schema() {
     ),
     'primary key' => array('mandrill_template_map_entity_id'),
   );
-  //hook_schema_item_cache
-
-  //hook_schema_item
 
   return $schema;
 }
@@ -168,5 +158,10 @@ function mandrill_update_7001() {
   variable_del('mandrill_from_name');
   $schema = mandrill_schema();
   db_create_table('mandrill_template_map', $schema['mandrill_template_map']);
+
+  // Clear the schema cache to avoid warnings on update.
+  drupal_get_schema('mandrill_template_map', TRUE);
+
+  // Rebuild the registry, we've moved some files around.
   registry_rebuild();
 }
