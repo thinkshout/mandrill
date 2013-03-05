@@ -376,63 +376,6 @@ function mandrill_template_map_form_submit($form, &$form_state) {
 }
 
 /**
- * Build a page providing a table display of mandrill_template_maps.
- *
- * @return string
- */
-function mandrill_template_map_overview_page() {
-  $maps = mandrill_template_map_load_entities();
-  $key_names = _mandrill_get_module_key_names();
-  $rows = array();
-
-  foreach ($maps as $map) {
-    $in_use = '-- not in use --';
-    if (isset($key_names[$map->mailsystem_key])) {
-      $in_use = $key_names[$map->mailsystem_key];
-    }
-    $actions = array(
-      l(t('Edit'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/edit'),
-      l(t('Clone'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/clone'),
-      l(t('Delete'), 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id . '/delete')
-    );
-    $rows[] = array(
-      l($map->label, 'admin/config/services/mandrill/templates/manage/' . $map->mandrill_template_map_entity_id),
-      l($map->template_id, 'https://mandrillapp.com/templates/preview?id=' . $map->template_id),
-      $map->main_section,
-      $in_use,
-      implode(' | ', $actions)
-    );
-  }
-
-  $table = array(
-    'header' => array(
-      t('Name'),
-      t('Mandrill Template'),
-      t('Primary Content Zone'),
-      t('In Use By'),
-      t('Actions'),
-    ),
-    'rows' => $rows,
-  );
-  $templates = mandrill_get_templates();
-  if (empty($templates)) {
-    drupal_set_message(t('You don\'t have any templates configured in your Mandrill account, (or you haven\'t configured your API key correctly on the Settings tab). Head over to !link and create some templates, then come back!',
-      array('!link' => l(t('Mandrill'), 'https://mandrillapp.com/templates'))), 'warning');
-  }
-  else {
-    $options = 'Currently Available Mandrill Templates:<i>';
-    foreach ($templates as $template) {
-      $options .= ' ' . $template['name'] . ',';
-    }
-    $options = rtrim($options, ',');
-    $options .= ".</i>";
-    $table['caption'] = $options;
-  }
-
-  return theme('table', $table);
-}
-
-/**
  * Javascript callback for the mandrill_template_map_form.
  *
  * @param $form
