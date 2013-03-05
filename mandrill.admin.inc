@@ -60,19 +60,6 @@ function mandrill_admin_settings($form, &$form_state) {
       '#collapsible' => TRUE,
       '#title' => t('Email options'),
     );
-    $form['email_options']['mandrill_from'] = array(
-      '#title' => t('From address'),
-      '#type' => 'textfield',
-      '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is.'),
-      '#default_value' => variable_get('mandrill_from', variable_get('site_mail'))
-    );
-    $form['email_options']['mandrill_from_name'] = array(
-      '#type' => 'textfield',
-      '#title' => t('From name'),
-      '#default_value' => variable_get('mandrill_from_name', ''),
-      '#description' => t('Optionally enter a from name to be used.'),
-    );
-
     $formats = filter_formats();
     $options = array('' => t('-- Select --'));
     foreach ($formats AS $v => $format) {
@@ -219,7 +206,7 @@ function mandrill_test_form_submit($form, &$form_state) {
     // hack because we are apparently formatting the body differently than default drupal messages
     $params['body'] = array('0' => $params['body']);
   }
-  $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params, variable_get('mandrill_from', ''));
+  $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params);
 }
 
 /**
