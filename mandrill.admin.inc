@@ -371,6 +371,7 @@ function mandrill_template_map_form_submit($form, &$form_state) {
     }
   }
   $map->save();
+  drupal_set_message(t('Mandrill template mapping saved.'));
   $form_state['redirect'] = 'admin/config/services/mandrill/templates';
 }
 
