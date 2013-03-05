@@ -67,7 +67,6 @@ function mandrill_entity_info() {
       'uri callback' => 'mandrill_template_map_uri',
       'fieldable' => FALSE,
       'exportable' => TRUE,
-      'label callback' => 'entity_class_label',
       'module' => 'mandrill',
       'access callback' => 'mandrill_template_map_access',
       'entity keys' => array(
