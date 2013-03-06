@@ -93,8 +93,11 @@ class MandrillMailSystem implements MailSystemInterface {
       'attachments' => $attachments,
       'view_content_link' => $view_content
     );
-    // todo: document
+
+    // Allow other modules to alter the message.
     drupal_alter('mandrill_mail', $mandrill_message, $message);
+
+    // TODO: Create API function based on entity_load.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'mandrill_template_map')
       ->propertyCondition('mailsystem_key', $message['module'])
@@ -105,9 +108,20 @@ class MandrillMailSystem implements MailSystemInterface {
       $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
       $template_map = array_pop($maps);
     }
+
+    if (mandrill_process_async()) {
+      $queue = DrupalQueue::get(MANDRILL_QUEUE);
+      $queue->createItem($mandrill_message);
+    }
+    else {
+      // send right now.
+    }
+
+    // TODO: Pull into a seperate function.
     try {
       $result = NULL;
       if (!is_null($template_map)) {
+        // TODO: send() shouldn't need the mailer object.
         $result = $template_map->send($mandrill_message, $mailer);
       }
       else {
@@ -141,6 +155,7 @@ class MandrillMailSystem implements MailSystemInterface {
 
       return FALSE;
     }
+
   }
 
 }

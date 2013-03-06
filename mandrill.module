@@ -10,6 +10,9 @@
  * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
  */
 
+
+define ('MANDRILL_QUEUE', 'mandrill_queue');
+
 /**
  * Implements hook_help().
  */
@@ -237,4 +240,33 @@ function mandrill_get_to($to) {
     $recipients[] = array('email' => $to);
   }
   return $recipients;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function mandrill_cron() {
+  if (mandrill_process_async()) {
+    $queue = DrupalQueue::get(MANDRILL_QUEUE);
+
+    $limit = variable_get('mandrill_batch_limit', 50);
+    for ($delta = 0; ($item = $queue->claimItem()) && $delta < $limit; $delta++) {
+      $message = $item->data;
+
+      // send message
+
+      // Remove item from queue
+      $queue->deleteItem($item);
+
+    }
+  }
+}
+
+/**
+ * Determine if mail should be processed asynchronously.
+ *
+ * @return bool
+ */
+function mandrill_process_async() {
+  return variable_get('mandrrill_process_async', FALSE);
 }
