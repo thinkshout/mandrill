@@ -72,22 +72,12 @@ function mandrill_entity_info() {
       'entity keys' => array(
         'id' => 'mandrill_template_map_entity_id',
         'label' => 'label',
-      ),
-      'bundles' => array(
-        'mandrill_template_map' => array(
-          'label' => t('Mandrill Template Map'),
-        ),
+        'name' => 'name',
       ),
       'admin ui' => array(
         'path' => 'admin/config/services/mandrill/templates',
         'file' => 'mandrill.admin.inc',
         'controller class' => 'MandrillTemplateMapUIController',
-      ),
-      'view modes' => array(
-        'full' => array(
-          'label' => t('Full'),
-          'custom settings' => FALSE,
-        ),
       ),
     ),
   );
