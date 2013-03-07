@@ -97,66 +97,48 @@ class MandrillMailSystem implements MailSystemInterface {
     // Allow other modules to alter the message.
     drupal_alter('mandrill_mail', $mandrill_message, $message);
 
-    // TODO: Create API function based on entity_load.
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'mandrill_template_map')
-      ->propertyCondition('mailsystem_key', $message['module'])
-      ->addMetaData('account', user_load(1)); //todo: not sure if this is necessary
-    $query_result = $query->execute();
-    $template_map = NULL;
-    if (!empty($query_result['mandrill_template_map'])) {
-      $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
-      $template_map = array_pop($maps);
+    $template_map = mandrill_template_map_load_entity_by_key($message['module']);
+    $template_args = NULL;
+    if ($template_map) {
+      $template_args = $template_map->message_send_arguments();
     }
-
+    $status = NULL;
     if (mandrill_process_async()) {
+      $sendable_item = array(
+        'message' => $mandrill_message,
+        'template_args' => $template_args,
+      );
       $queue = DrupalQueue::get(MANDRILL_QUEUE);
-      $queue->createItem($mandrill_message);
+      $queue->createItem($sendable_item);
+      $status = 'queued';
     }
     else {
-      // send right now.
+      $status = mandrill_mailsend($mandrill_message, $template_args, $mailer);
     }
-
-    // TODO: Pull into a seperate function.
-    try {
-      $result = NULL;
-      if (!is_null($template_map)) {
-        // TODO: send() shouldn't need the mailer object.
-        $result = $template_map->send($mandrill_message, $mailer);
-      }
-      else {
-        $result = $mailer->messages_send($mandrill_message);
-      }
-      // @todo: look for rejected messages and log
-      if ($message['key'] == 'mandrill_test') {
-        watchdog('mandrill', 'Mandrill test email sent from %from to %to. Message: <pre>@message</pre>',
-          array(
-            '%from' => $from, '%to' => $to[0]['email'],
-            '@message' => print_r($message, TRUE),
-          ),
-          WATCHDOG_NOTICE
-        );
+    switch ($status) {
+      case TRUE:
         drupal_set_message(t('Mandrill test email sent from %from to %to.',
-                              array('%from' => $from, '%to' => $to[0]['email'])
-                            ), 'notice');
-      }
-      return TRUE;
-    }
-    catch (Mandrill_Exception $e) {
-      watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
-        array(
-          '%from' => $from,
-          '%to' => $message['to'],
-          '@code' => $e->getCode(),
-          '@message' => $e->getMessage(),
-        ),
-        WATCHDOG_ERROR
-      );
+          array('%from' => $from, '%to' => $to[0]['email'])
+        ), 'status');
 
-      return FALSE;
+        return TRUE;
+
+      case FALSE:
+        drupal_set_message(t('Mandrill test email from %from to %to has been queued for delivery.',
+          array('%from' => $from, '%to' => $to[0]['email'])
+        ), 'status');
+
+        return TRUE;
+
+      case "error":
+        drupal_set_message(t('Mandrill test email from %from to %to has failed. Check the logs for details.',
+          array('%from' => $from, '%to' => $to[0]['email'])
+        ), 'error');
+        break;
     }
 
+    return FALSE;
   }
-
+   
 }
 
