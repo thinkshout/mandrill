@@ -50,7 +50,7 @@ function mandrill_admin_settings($form, &$form_state) {
           array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))),
       );
     }
-    else {
+    else if (!$form_state['rebuild']) {
       drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
         array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
     }
@@ -119,9 +119,53 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('The value to set for the utm_campaign tracking parameter. If this isn\'t provided the messages from address will be used instead.'),
       '#default_value' => variable_get('mandrill_analytics_campaign', '')
     );
+    $form['asynchronous_options'] = array(
+      '#title' => t('Asynchronous options'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#attributes' => array(
+        'id' => array('mandrill-async-options'),
+      ),
+    );
+    $form['asynchronous_options']['mandrill_process_async'] = array(
+      '#title' => t('Queue outgoing messages'),
+      '#type' => 'checkbox',
+      '#description' => t('When set, emails will not be immediately sent. Instead, they will be placed in a queue and sent when cron is triggered.'),
+      '#default_value' => mandrill_process_async(),
+      '#ajax' => array(
+        'callback' => 'mandrill_admin_settings_form_callback',
+        'wrapper' => 'mandrill-async-options',
+      )
+    );
+    if (isset($form_state['values'])) {
+      $show_batch_limit = $form_state['values']['mandrill_process_async'];
+    }
+    else {
+      $show_batch_limit = mandrill_process_async();
+    }
+    if($show_batch_limit) {
+      $form['asynchronous_options']['mandrill_batch_limit'] = array(
+        '#title' => t('Batch size'),
+        '#type' => 'textfield',
+        '#description' => t('Number of messages to send in each cron batch. Zero will cause all queued messages to send.'),
+        '#element_validate' => array('element_validate_integer'),
+        '#default_value' => variable_get('mandrill_batch_limit', 0)
+      );
+    }
   }
 
   return system_settings_form($form);
+}
+
+/**
+ * Javascript callback for the mandrill_admin_settings form.
+ *
+ * @param $form
+ * @param $form_state
+ * @return mixed
+ */
+function mandrill_admin_settings_form_callback($form, &$form_state) {
+  return $form['asynchronous_options'];
 }
 
 /**
