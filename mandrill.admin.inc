@@ -101,7 +101,6 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
       '#default_value' => mandrill_mail_key_blacklist()
     );
-
     $form['analytics'] = array(
       '#type' => 'fieldset',
       '#collapsible' => TRUE,
@@ -147,13 +146,14 @@ function mandrill_admin_settings($form, &$form_state) {
       $form['asynchronous_options']['mandrill_batch_limit'] = array(
         '#title' => t('Batch size'),
         '#type' => 'textfield',
-        '#description' => t('Number of messages to send in each cron batch. Zero will cause all queued messages to send.'),
+        '#size' => '12',
+        '#description' => t('Number of messages to send in each cron batch. Zero (or negative) value will cause all queued messages to send.'),
+        '#required' => TRUE,
         '#element_validate' => array('element_validate_integer'),
-        '#default_value' => variable_get('mandrill_batch_limit', 0)
+        '#default_value' => variable_get('mandrill_batch_limit', 50)
       );
     }
   }
-
   return system_settings_form($form);
 }
 
