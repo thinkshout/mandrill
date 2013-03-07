@@ -113,17 +113,22 @@ class MandrillMailSystem implements MailSystemInterface {
       $status = 'queued';
     }
     else {
-      $status = mandrill_mailsend($mandrill_message, $template_args, $mailer);
+      if (mandrill_mailsend($mandrill_message, $template_args, $mailer)) {
+        $status = 'sent';
+      }
+      else {
+        $status = 'error';
+      }
     }
     switch ($status) {
-      case TRUE:
+      case "sent":
         drupal_set_message(t('Mandrill test email sent from %from to %to.',
           array('%from' => $from, '%to' => $to[0]['email'])
         ), 'status');
 
         return TRUE;
 
-      case FALSE:
+      case "queued":
         drupal_set_message(t('Mandrill test email from %from to %to has been queued for delivery.',
           array('%from' => $from, '%to' => $to[0]['email'])
         ), 'status');
