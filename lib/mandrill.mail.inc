@@ -108,7 +108,7 @@ class MandrillMailSystem implements MailSystemInterface {
         'message' => $mandrill_message,
         'template_args' => $template_args,
       );
-      $queue = DrupalQueue::get(MANDRILL_QUEUE);
+      $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
       $queue->createItem($sendable_item);
       $status = 'queued';
     }
