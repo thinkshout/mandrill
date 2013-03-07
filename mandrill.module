@@ -151,16 +151,39 @@ function mandrill_mailsend($message, $template_args, $mailer = NULL) {
     $mailer = mandrill_get_api_object();
   }
   try {
-    $result = NULL;
-    if (!is_null($template_args)) {
-      $result = $mailer->messages_send_template($template_args['id'], $template_args['template_content'], $message);
+    $results = NULL;
+    if (is_null($template_args)) {
+      $results = $mailer->messages_send($message);
     }
     else {
-      $result = $mailer->messages_send($message);
+      $results = $mailer->messages_send_template($template_args['id'], $template_args['template_content'], $message);
+    }
+    foreach ($results as $result) {
+      switch ($result['status']) {
+        case "error":
+        case "invalid":
+        case "rejected":
+          watchdog('mandrill', 'Failed sending email to %to. @status: @message',
+            array(
+              '%to' => $result['email'],
+              '@status' => $result['status'],
+              '@message' => $result['message'],
+            ),
+            WATCHDOG_ERROR
+          );
+          break;
+        case "queued":
+          watchdog('mandrill', 'Email to %to queued by Mandrill App.',
+            array(
+              '%to' => $result['email'],
+            ),
+            WATCHDOG_NOTICE
+          );
+          break;
+      }
     }
 
     return TRUE;
-    // @todo: look for rejected messages and log
   }
   catch (Mandrill_Exception $e) {
     watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
@@ -241,7 +264,6 @@ function mandrill_template_map_load_entity_by_key($mailsystemkey) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'mandrill_template_map')
     ->propertyCondition('mailsystem_key', $mailsystemkey)
-    ->addMetaData('account', user_load(1)); //todo: not sure if this is necessary
   $query_result = $query->execute();
   $template_map = NULL;
   if (!empty($query_result['mandrill_template_map'])) {
