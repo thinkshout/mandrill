@@ -182,7 +182,6 @@ function mandrill_mailsend($message, $template_args, $mailer = NULL) {
           break;
       }
     }
-
     return TRUE;
   }
   catch (Mandrill_Exception $e) {
@@ -264,14 +263,17 @@ function mandrill_template_map_load_entity_by_key($mailsystemkey) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'mandrill_template_map')
     ->propertyCondition('mailsystem_key', $mailsystemkey)
+    ->addMetaData('account', user_load(1));
   $query_result = $query->execute();
   $template_map = NULL;
   if (!empty($query_result['mandrill_template_map'])) {
     $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
     $template_map = array_pop($maps);
   }
+  
   return $template_map;
 }
+
 /**
  * TODO: Invalid function header.
  *
@@ -297,7 +299,7 @@ function mandrill_template_map_usage_chart() {
       $system_assignments[$map->mailsystem_key] = $map->mandrill_template_map_entity_id;
     }
   }
-  //@todo consider sorting these in some display-friendly way.
+  uksort($system_assignments, '_mandrill_template_map_mailsystem_sort');
   return $system_assignments;
 }
 
@@ -357,4 +359,25 @@ function mandrill_cron() {
 function mandrill_process_async() {
   return variable_get('mandrill_process_async', FALSE);
 }
+
+/**
+ * simple sorting algorithm to organize mailsystems
+ * arrays in a logical way.
+ * 
+ * @param $a
+ * @param $b
+ * @return int
+ */
+
+function _mandrill_template_map_mailsystem_sort($a, $b) {
+  $first = "default-system";
+  $last = "mandrill";
+  if ($a == $first || $b == $last) {
+    return -1;
+  }
+  if ($b == $first || $a == $last) {
+    return 1;
+  }
+  //otherwise sort alphabetically, case-agnostic
+  return strcasecmp($a, $b);
 }

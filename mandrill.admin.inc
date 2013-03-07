@@ -356,7 +356,6 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     }
 
     if ($mandrill_in_use) {
-      asort($mailsystem_options);
       $form['mailsystem_key'] = array(
         '#type' => 'select',
         '#title' => t('Email key'),
