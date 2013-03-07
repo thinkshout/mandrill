@@ -233,6 +233,24 @@ function mandrill_template_map_load_entities($name = NULL) {
 }
 
 /**
+ * @param $mailsystemkey
+ *
+ * @return mandrill_template_map or null
+ */
+function mandrill_template_map_load_entity_by_key($mailsystemkey) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'mandrill_template_map')
+    ->propertyCondition('mailsystem_key', $mailsystemkey)
+    ->addMetaData('account', user_load(1)); //todo: not sure if this is necessary
+  $query_result = $query->execute();
+  $template_map = NULL;
+  if (!empty($query_result['mandrill_template_map'])) {
+    $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
+    $template_map = array_pop($maps);
+  }
+  return $template_map;
+}
+/**
  * TODO: Invalid function header.
  *
  * mandrill_template_map_usage_chart returns an array with indexes
