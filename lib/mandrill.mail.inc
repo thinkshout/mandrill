@@ -100,7 +100,7 @@ class MandrillMailSystem implements MailSystemInterface {
     $template_map = mandrill_template_map_load_entity_by_key($message['module']);
     $template_args = NULL;
     if ($template_map) {
-      $template_args = $template_map->message_send_arguments();
+      $template_args = $template_map->message_send_arguments($mandrill_message);
     }
     $status = NULL;
     if (mandrill_process_async()) {

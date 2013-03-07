@@ -30,7 +30,7 @@ class MandrillTemplateMap extends Entity {
    * 
    * @return array
    */
-  public function message_send_arguments() {
+  public function message_send_arguments($mandrill_message) {
     return array(
       'id' => $this->template_id,
       'template_content' => array(
