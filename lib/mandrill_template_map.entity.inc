@@ -19,7 +19,7 @@ class MandrillTemplateMap extends Entity {
   }
 
   /**
-   * Specify URI
+   * Specify URI.
    */
   protected function defaultUri() {
     return array('path' => 'admin/config/services/mandrill/templates/' . $this->identifier());
@@ -37,8 +37,8 @@ class MandrillTemplateMap extends Entity {
         '0' => array(
           'name' => $this->main_section,
           'content' => $mandrill_message['text'],
-        )
-      )
+        ),
+      ),
     );
   }
 }

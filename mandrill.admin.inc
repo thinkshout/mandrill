@@ -8,7 +8,7 @@
 /**
  * Administrative settings.
  *
- * @return
+ * @return array
  *   An array containing form items to place on the module settings page.
  */
 function mandrill_admin_settings($form, &$form_state) {
@@ -18,7 +18,7 @@ function mandrill_admin_settings($form, &$form_state) {
     '#type' => 'textfield',
     '#description' => t('Create or grab your API key from the !link.',
       array('!link' => l(t('Mandrill settings'), 'https://mandrillapp.com/settings/index'))),
-    '#default_value' => $key
+    '#default_value' => $key,
   );
 
   if ($key) {
@@ -40,7 +40,7 @@ function mandrill_admin_settings($form, &$form_state) {
         '#header' => array(
           t('Module Key'),
           t('Mail System'),
-          ),
+        ),
         '#rows' => $usage_rows,
       );
       $form['mandrill_status'] = array(
@@ -50,7 +50,7 @@ function mandrill_admin_settings($form, &$form_state) {
           array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))),
       );
     }
-    else if (!$form_state['rebuild']) {
+    elseif (!$form_state['rebuild']) {
       drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
         array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
     }
@@ -62,7 +62,7 @@ function mandrill_admin_settings($form, &$form_state) {
     );
     $formats = filter_formats();
     $options = array('' => t('-- Select --'));
-    foreach ($formats AS $v => $format) {
+    foreach ($formats as $v => $format) {
       $options[$v] = $format->name;
     }
     $form['email_options']['mandrill_filter_format'] = array(
@@ -81,25 +81,25 @@ function mandrill_admin_settings($form, &$form_state) {
       '#title' => t('Track opens'),
       '#type' => 'checkbox',
       '#description' => t('Whether or not to turn on open tracking for messages.'),
-      '#default_value' => variable_get('mandrill_track_opens', TRUE)
+      '#default_value' => variable_get('mandrill_track_opens', TRUE),
     );
     $form['send_options']['mandrill_track_clicks'] = array(
       '#title' => t('Track clicks'),
       '#type' => 'checkbox',
       '#description' => t('Whether or not to turn on click tracking for messages.'),
-      '#default_value' => variable_get('mandrill_track_clicks', TRUE)
+      '#default_value' => variable_get('mandrill_track_clicks', TRUE),
     );
     $form['send_options']['mandrill_url_strip_qs'] = array(
       '#title' => t('Strip query string'),
       '#type' => 'checkbox',
       '#description' => t('Whether or not to strip the query string from URLs when aggregating tracked URL data.'),
-      '#default_value' => variable_get('mandrill_url_strip_qs', FALSE)
+      '#default_value' => variable_get('mandrill_url_strip_qs', FALSE),
     );
     $form['send_options']['mandrill_mail_key_blacklist'] = array(
       '#title' => t('Content logging blacklist'),
       '#type' => 'textarea',
       '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
-      '#default_value' => mandrill_mail_key_blacklist()
+      '#default_value' => mandrill_mail_key_blacklist(),
     );
     $form['analytics'] = array(
       '#type' => 'fieldset',
@@ -110,13 +110,13 @@ function mandrill_admin_settings($form, &$form_state) {
       '#title' => t('Google analytics domains'),
       '#type' => 'textfield',
       '#description' => t('One or more domains for which any matching URLs will automatically have Google Analytics parameters appended to their query string. Separate each domain with a comma.'),
-      '#default_value' => variable_get('mandrill_analytics_domains', '')
+      '#default_value' => variable_get('mandrill_analytics_domains', ''),
     );
     $form['analytics']['mandrill_analytics_campaign'] = array(
       '#title' => t('Google analytics campaign'),
       '#type' => 'textfield',
-      '#description' => t('The value to set for the utm_campaign tracking parameter. If this isn\'t provided the messages from address will be used instead.'),
-      '#default_value' => variable_get('mandrill_analytics_campaign', '')
+      '#description' => t("The value to set for the utm_campaign tracking parameter. If this isn't provided the messages from address will be used instead."),
+      '#default_value' => variable_get('mandrill_analytics_campaign', ''),
     );
     $form['asynchronous_options'] = array(
       '#title' => t('Asynchronous options'),
@@ -134,7 +134,7 @@ function mandrill_admin_settings($form, &$form_state) {
       '#ajax' => array(
         'callback' => 'mandrill_admin_settings_form_callback',
         'wrapper' => 'mandrill-async-options',
-      )
+      ),
     );
     if (isset($form_state['values'])) {
       $show_batch_limit = $form_state['values']['mandrill_process_async'];
@@ -142,7 +142,7 @@ function mandrill_admin_settings($form, &$form_state) {
     else {
       $show_batch_limit = mandrill_process_async();
     }
-    if($show_batch_limit) {
+    if ($show_batch_limit) {
       $form['asynchronous_options']['mandrill_batch_limit'] = array(
         '#title' => t('Batch size'),
         '#type' => 'textfield',
@@ -150,7 +150,7 @@ function mandrill_admin_settings($form, &$form_state) {
         '#description' => t('Number of messages to send in each cron batch. Zero (or negative) value will cause all queued messages to send.'),
         '#required' => TRUE,
         '#element_validate' => array('element_validate_integer'),
-        '#default_value' => variable_get('mandrill_batch_limit', 50)
+        '#default_value' => variable_get('mandrill_batch_limit', 50),
       );
     }
   }
@@ -160,9 +160,13 @@ function mandrill_admin_settings($form, &$form_state) {
 /**
  * Javascript callback for the mandrill_admin_settings form.
  *
- * @param $form
- * @param $form_state
- * @return mixed
+ * @param array $form
+ *   a drupal form
+ * @param array $form_state
+ *   drupal form_state
+ * 
+ * @return array
+ *   a form section
  */
 function mandrill_admin_settings_form_callback($form, &$form_state) {
   return $form['asynchronous_options'];
@@ -171,8 +175,8 @@ function mandrill_admin_settings_form_callback($form, &$form_state) {
 /**
  * Return a form for sending a test email.
  *
- * @param string $form
- * @param string $form_state
+ * @param array $form
+ * @param array $form_state
  *
  * @return array $form
  */
@@ -184,7 +188,7 @@ function mandrill_test_form($form, &$form_state) {
     '#title' => t('Email address to send a test email to'),
     '#default_value' => variable_get('site_mail', ''),
     '#description' => t('Type in an address to have a test email sent there.'),
-    '#required' => TRUE
+    '#required' => TRUE,
   );
   $form['mandrill_test_body'] = array(
     '#type' => 'textarea',
@@ -196,7 +200,7 @@ function mandrill_test_form($form, &$form_state) {
     '#title' => t('Include attachment'),
     '#type' => 'checkbox',
     '#description' => t('If checked, the Drupal icon will be included as an attachment with the test email.'),
-    '#default_value' => TRUE
+    '#default_value' => TRUE,
   );
 
   $form['test_submit'] = array(
@@ -228,20 +232,20 @@ function mandrill_test_form_submit($form, &$form_state) {
   $params['body'] = $form_state['values']['mandrill_test_body'];
   $params['include_attachment'] = $form_state['values']['include_attachment'];
   $mailsystem = mailsystem_get();
-  //check for empty mailsystem config for Mandrill:
+  // Check for empty mailsystem config for Mandrill:
   if (empty($mailsystem['mandrill'])) {
     drupal_set_message(t('Automatically setting Mandrill tests to go through Mandrill: MandrillMailSystem was not configure in Mail System.'));
     mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
   }
-  //check for wrong mailsystem config for Mandrill, if not empty, and issue a warning:
-  else if ($mailsystem['mandrill'] != 'MandrillMailSystem') {
+  // Check for wrong mailsystem config for Mandrill, if not empty, and issue a warning:
+  elseif ($mailsystem['mandrill'] != 'MandrillMailSystem') {
     drupal_set_message(
       t('Mail System is configured to send Mandrill Test messages through %system, not Mandrill. To send tests through Mandrill, go to !link and change the setting.',
         array(
           '%system' => $mailsystem['mandrill'],
           '!link' => l(t('Mandrill'), 'https://mandrillapp.com/templates'))),
       'warning');
-    // hack because we are apparently formatting the body differently than default drupal messages
+    // Hack because we are apparently formatting the body differently than default drupal messages
     $params['body'] = array('0' => $params['body']);
   }
   $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params);
@@ -260,7 +264,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $map->label .= ' (cloned)';
     $map->name = '';
   }
-  // store the existing map for updating on submit
+  // Store the existing map for updating on submit.
   if (isset($map)) {
     $form_state['map'] = $map;
   }
@@ -316,13 +320,13 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $form['map_settings']['template_id'] = array(
       '#type' => 'select',
       '#title' => t('Email Template'),
-      '#description' => t('Select a Mandrill template.'), //https://mandrillapp.com/templates/my-templates
+      '#description' => t('Select a Mandrill template.'), // https://mandrillapp.com/templates/my-templates
       '#options' => $options,
       '#default_value' => isset($map->template_id) ? $map->template_id : '',
       '#required' => TRUE,
       '#ajax' => array(
         'callback' => 'mandrill_template_map_form_callback',
-        'wrapper' => 'mandrill-template-mapping'
+        'wrapper' => 'mandrill-template-mapping',
       ),
     );
     $form_template_id = & $form_state['values']['template_id'];
@@ -387,7 +391,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   $form['actions']['cancel'] = array(
     '#type' => 'link',
     '#title' => t('Cancel'),
-    '#href' => 'admin/config/services/mandrill/templates'
+    '#href' => 'admin/config/services/mandrill/templates',
   );
 
   return $form;
@@ -423,6 +427,7 @@ function mandrill_template_map_form_submit($form, &$form_state) {
  *
  * @param $form
  * @param $form_state
+ * 
  * @return mixed
  */
 function mandrill_template_map_form_callback($form, &$form_state) {
@@ -459,7 +464,8 @@ function _mandrill_parse_regions($html, $tag = 'mc:edit') {
  * and consistent with Mailsystem's display. In the future, if Mailsystem
  * were to provide an API for their labeling, that should be used here.
  *
- * @return array of all module names indexing to their "display" names,
+ * @return array 
+ * array of all module names indexing to their "display" names,
  * and some special items for non-module values like null, default-system,
  * and some clarification talked onto the end of the Mandrill module's name.
  */
@@ -484,13 +490,13 @@ function _mandrill_get_module_key_names() {
     // Separate $id into $module and $key.
     $module = $id;
     while ($module && empty($descriptions[$module])) {
-      // Remove a key from the end
+      // Remove a key from the end.
       $module = implode('_', explode('_', $module, -1));
     }
     // If an array key of the $mail_system variable is neither "default-system"
     // nor begins with a module name, then it should be unset.
     if (empty($module)) {
-      //this shouldn't happen
+      // This shouldn't happen.
     }
     // Set $title to the human-readable module name.
     $title = preg_replace('/^.* » /', '', $descriptions[$module]);

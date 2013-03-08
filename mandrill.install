@@ -4,7 +4,6 @@
 /**
  * @file
  * Install, update and uninstall functions for the mandrill module.
- *
  */
 
 /**
@@ -80,7 +79,7 @@ function mandrill_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      // following fields are for supporting exportable status.
+      // Following fields are for supporting exportable status.
       'status' => array(
         'type' => 'int',
         'not null' => TRUE,
@@ -125,7 +124,7 @@ function mandrill_schema() {
  * Implements hook_uninstall().
  */
 function mandrill_uninstall() {
-  // delete other variables
+  // Delete other variables:
   variable_del('mandrill_filter_format');
   variable_del('mandrill_from');
   variable_del('mandrill_test_address');
@@ -135,7 +134,6 @@ function mandrill_uninstall() {
 /**
  * Implements hook_enable().
  */
-
 function mandrill_enable() {
   mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
 }
@@ -144,7 +142,7 @@ function mandrill_enable() {
  * Implements hook_disable().
  */
 function mandrill_disable() {
-  // tell mailsystem to remove mandrill and restore to defaults
+  // Tell mailsystem to remove mandrill and restore to defaults:
   mailsystem_clear(array('mandrill' => 'MandrillMailSystem'));
   watchdog('mandrill', 'Mandrill has been disabled.');
 }

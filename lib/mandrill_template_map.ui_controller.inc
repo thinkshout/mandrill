@@ -9,6 +9,9 @@
  */
 class MandrillTemplateMapUIController extends EntityDefaultUIController {
 
+  /**
+   * Overrides EntityDefaultUIController::hook_menu().
+   */
   public function hook_menu() {
     $items = parent::hook_menu();
     $items[$this->path]['description'] = 'Manage Mandrill Template Mapping entity settings.';
@@ -16,6 +19,9 @@ class MandrillTemplateMapUIController extends EntityDefaultUIController {
     return $items;
   }
 
+  /**
+   * Overrides EntityDefaultUIController::overviewTableHeaders().
+   */
   protected function overviewTableHeaders($conditions, $rows, $additional_header = array()) {
     $additional_header[] = t('Mandrill Template');
     $additional_header[] = t('Primary Content Zone');
