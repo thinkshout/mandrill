@@ -122,23 +122,16 @@ class MandrillMailSystem implements MailSystemInterface {
     }
     switch ($status) {
       case "sent":
-        drupal_set_message(t('Mandrill test email sent from %from to %to.',
-          array('%from' => $from, '%to' => $to[0]['email'])
-        ), 'status');
 
         return TRUE;
 
       case "queued":
-        drupal_set_message(t('Mandrill test email from %from to %to has been queued for delivery.',
-          array('%from' => $from, '%to' => $to[0]['email'])
-        ), 'status');
-
+        watchdog('mandrill', 'Message from %from to %to queued for delivery.', array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_NOTICE));
+          
         return TRUE;
 
       case "error":
-        drupal_set_message(t('Mandrill test email from %from to %to has failed. Check the logs for details.',
-          array('%from' => $from, '%to' => $to[0]['email'])
-        ), 'error');
+        watchdog('mandrill', 'Message from %from to %to has failed.', array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_ERROR));
         break;
     }
 

@@ -249,6 +249,9 @@ function mandrill_test_form_submit($form, &$form_state) {
     $params['body'] = array('0' => $params['body']);
   }
   $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params);
+  if (isset($result['result']) && $result['result'] == 'true') {
+    drupal_set_message(t('Mandrill test email sent from %from to %to.', array('%from' => $result['from'], '%to' => $result['to'])), 'status');
+  }
 }
 
 /**
