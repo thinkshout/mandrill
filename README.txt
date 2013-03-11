@@ -3,21 +3,9 @@ MailChimp. Learn more about Mandrill and how to sign up on [their website](http:
 
 ## Settings
 
-### Mandrill Mail interface status
-#### On
-Routes all site emails through the STS API.
-
-#### Test
-Enables an alternate mail interface, TestingMailChimpMandrillMailSystem, that
-displays a message and logs the event without sending any emails.
-
-Logs can be viewed through Mandrill Reports at <http://example.com/admin/reports/mandrill>.
-#### Off
-Disables Mandrill and routes all email through the site's server.
+### Mandrill Mail interface is 'enabled' by using the [Mail System module](http://drupal.org/project/mailsystem)
 
 ### Email Options
-* **Email from address:** The email address that emails should be sent from
-* **From name:** The name to use for sending
 * **_Input format_:** An optional input format to apply to the message body before sending emails
 
 ### Send Options
@@ -35,9 +23,14 @@ empty, the from address of the message will be used instead.
 ## Reports
 The mandrill_reports sub-module provides reports on various metrics.
 
+###Asynchronous Options
+* **Queue Outgoing Messages**
+Drops all messages sent through Mandrill into a queue without sending them. When Cron is triggered, a number of queued messages are sent equal to the configured:
+* **Batch Size**
+The number of messages to send when Cron triggers. Any number less than 1 allows all queued messages to send each time Cron triggers.
+
 ### Dashboard
-Displays charts that show volume and engagement, along with a tabular list of
-URL interactions for the past 30 days.
+Displays charts that show volume and engagement, along with a tabular list of URL interactions for the past 30 days.
 
 ### Account Summary
 Shows account information, quotas, and all-time usage stats.
