@@ -99,27 +99,30 @@ function mandrill_mail($key, &$message, $params) {
  * Abstracts sending of messages to allow immediate or queued for cron.
  * 
  * @param array $message
- *   a message array formatted for Mandrill's sending API
- * @param array $template_args
- *   An array containing 2 items: 'id' and 'template_content'
- * @param null $mailer
- *   the Mandrill API object, if the caller has it handy.
- * 
+ *   a message array formatted for Mandrill's sending API, plus 2 additional indexes
+ *   for the send_function and an array of $args, if needed by the send function
+ *
  * @return bool
  *   TRUE if no exception thrown
  */
-function mandrill_mailsend($message, $template_args, $mailer = NULL) {
-  if (is_null($mailer)) {
-    $mailer = mandrill_get_api_object();
+function mandrill_mailsend($message) {
+  if (!isset($message['send_function'])) {
+    // This shouldn't happen unless someone breaks the message structure in a hook.
+    $message['send_function'] = 'mandrill_sender_plain';
   }
   try {
-    $results = NULL;
-    if (is_null($template_args)) {
-      $results = $mailer->messages_send($message);
+    if (!function_exists($message['send_function'])) {
+      watchdog('mandrill', 'Error sending email from %from to %to. Function %function not found.',
+        array(
+          '%from' => $message['from'],
+          '%to' => $message['to'],
+          '$function' => $message['send_function'],
+        ),
+        WATCHDOG_ERROR
+      );
+      return FALSE;
     }
-    else {
-      $results = $mailer->messages_send_template($template_args['id'], $template_args['template_content'], $message);
-    }
+    $results = $message['send_function']($message);
     foreach ($results as $result) {
       switch ($result['status']) {
         case "error":
@@ -161,6 +164,14 @@ function mandrill_mailsend($message, $template_args, $mailer = NULL) {
 
     return FALSE;
   }
+}
+
+function mandrill_sender_plain($message) {
+  $mailer = mandrill_get_api_object();
+  // Strip message data used by this module before handing off to Mandrill:
+  unset($message['args']);
+  unset($message['send_function']);
+  return $mailer->messages_send($message);
 }
 
 /**
@@ -288,7 +299,6 @@ function mandrill_get_to($to) {
  */
 function mandrill_cron() {
   $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
-  $mailer = mandrill_get_api_object();
   $limit = variable_get('mandrill_batch_limit', 50);
   if ($limit == 0 || !mandrill_process_async()) {
     $limit = -1;
@@ -304,8 +314,8 @@ function mandrill_cron() {
     if (!$item) {
       break;
     }
-    $email = $item->data;
-    mandrill_mailsend($email['message'], $email['template_args'], $mailer);
+    $message = $item->data;
+    mandrill_mailsend($message);
     // Remove item from queue.
     $queue->deleteItem($item);
   }

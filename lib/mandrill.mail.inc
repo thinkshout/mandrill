@@ -92,28 +92,24 @@ class MandrillMailSystem implements MailSystemInterface {
       'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
+      // Now we set some default values that are used by the mandrill module
+      // and which can be altered using the hook system. These indexes should
+      // be stripped out of the message before it is handed off to the Mandrill API.
+      'send_function' => 'mandrill_sender_plain',
+      'args' => NULL,
     );
-
-    // Allow other modules to alter the message.
+    
+    // Allow other modules to alter the message content or send_function
     drupal_alter('mandrill_mail', $mandrill_message, $message);
 
-    $template_map = mandrill_template_map_load_entity_by_key($message['module']);
-    $template_args = NULL;
-    if ($template_map) {
-      $template_args = $template_map->message_send_arguments($mandrill_message);
-    }
     $status = NULL;
     if (mandrill_process_async()) {
-      $sendable_item = array(
-        'message' => $mandrill_message,
-        'template_args' => $template_args,
-      );
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
-      $queue->createItem($sendable_item);
+      $queue->createItem($mandrill_message);
       $status = 'queued';
     }
     else {
-      if (mandrill_mailsend($mandrill_message, $template_args, $mailer)) {
+      if (mandrill_mailsend($mandrill_message)) {
         $status = 'sent';
       }
       else {
