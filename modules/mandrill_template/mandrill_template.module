@@ -136,6 +136,40 @@ function mandrill_template_map_usage_chart() {
 }
 
 /**
+ * Implements hook_mandrill_mail_alter
+ */
+function mandrill_template_mandrill_mail_alter(&$mandrill_message, &$message){
+  $template_map = mandrill_template_map_load_entity_by_key($message['module']);
+  if ($template_map) {
+    $mandrill_message['send_function'] = 'mandrill_template_sender';
+    $mandrill_message['args'] = $template_map->message_send_arguments($mandrill_message);
+  }
+}
+
+/**
+ * @param $message
+ * @param $args
+ * @param $mailer
+ * @return array|Mandrill_Exception
+ */
+function mandrill_template_sender($message) {
+  $mailer = mandrill_get_api_object();
+  if (is_null($message['args']['id']) || is_null($message['args']['template_content'])) {
+
+    return mandrill_sender_plain($message);
+  }
+  else {
+    // Strip message data used by this module before handing off to Mandrill:
+    $id = $message['args']['id'];
+    $template_content = $message['args']['template_content'];
+    unset($message['args']);
+    unset($message['send_function']);
+    
+    return $mailer->messages_send_template($id, $template_content, $message);
+  }
+}
+
+/**
  * Simple sorting algorithm to organize mailsystems arrays in a logical way.
  * 
  * @param string $a
