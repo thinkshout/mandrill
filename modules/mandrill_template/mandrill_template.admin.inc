@@ -100,7 +100,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
       );
     }
     $usable_keys = mandrill_template_map_usage_chart();
-    $module_names = _mandrill_get_module_key_names();
+    $module_names = mandrill_get_module_key_names();
     $mandrill_in_use = FALSE;
     $available_modules = FALSE;
     $mailsystem_options = array('' => t('-- None --'));
