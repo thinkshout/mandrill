@@ -147,9 +147,13 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_message, &$message){
 }
 
 /**
+ * A sender function as specified in mandrill module
+ * 
+ * This function checks for appropriate settings in the message,
+ * then uses the template API call to send the message if the settings are valid.
+ * 
  * @param $message
- * @param $args
- * @param $mailer
+ *
  * @return array|Mandrill_Exception
  */
 function mandrill_template_sender($message) {
@@ -159,7 +163,7 @@ function mandrill_template_sender($message) {
     return mandrill_sender_plain($message);
   }
   else {
-    // Strip message data used by this module before handing off to Mandrill:
+    // Strip message data used by the Mandrill module before handing off to Mandrill API:
     $id = $message['args']['id'];
     $template_content = $message['args']['template_content'];
     unset($message['args']);

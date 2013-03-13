@@ -54,13 +54,13 @@ function mandrill_reports_data() {
     // all time
     $data['all_time_series'] = $api->tags_all_time_series();
 
-    // senders: data is not being used, and the API behaves badly if you have a bad email address
-    // anywhere in your sender history, so commenting out for now:
-    /*$senders = $api->senders_list();
-    foreach ($senders as $sender) {
-      $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
-      $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
-    }*/
+    // senders: data is not being used, and the API currently (3/12/13) behaves badly
+    // if you have a bad email address anywhere in your sender history, so commenting out for now:
+    // $senders = $api->senders_list();
+    // foreach ($senders as $sender) {
+    //   $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
+    //   $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
+    // }
 
     // urls
     $urls = $api->urls_list();

@@ -96,7 +96,7 @@ function mandrill_mail($key, &$message, $params) {
 }
 
 /**
- * Abstracts sending of messages to allow immediate or queued for cron.
+ * Abstracts sending of messages, allowing queueing option
  * 
  * @param array $message
  *   a message array formatted for Mandrill's sending API, plus 2 additional indexes
@@ -166,6 +166,16 @@ function mandrill_mailsend($message) {
   }
 }
 
+
+/**
+ * The actual function that calls the API send message
+ * 
+ * This is the default function used by mandrill_mailsend
+ * 
+ * @param $message
+ * 
+ * @return mixed
+ */
 function mandrill_sender_plain($message) {
   $mailer = mandrill_get_api_object();
   // Strip message data used by this module before handing off to Mandrill:
