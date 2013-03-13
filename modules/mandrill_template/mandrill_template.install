@@ -9,6 +9,11 @@
  * Implements hook_schema().
  */
 function mandrill_template_schema() {
+  $extant_schema = drupal_get_schema();
+  if (isset($extant_schema['mandrill_template_map'])) {
+    db_change_field('mandrill_template_map', 'description', 'description', 'The base table for the mandrill template module.');
+    return NULL;
+  }
   $schema['mandrill_template_map'] = array(
     'description' => 'The base table for the mandrill template module.',
     'fields' => array(
