@@ -13,15 +13,17 @@ function mandrill_uninstall() {
   // Delete other variables:
   variable_del('mandrill_filter_format');
   variable_del('mandrill_from');
+  variable_del('mandrill_from_name');
   variable_del('mandrill_test_address');
   variable_del('mandrill_test_body');
+  variable_del('mandrill_process_async');
 }
 
 /**
  * Implements hook_enable().
  */
 function mandrill_enable() {
-  mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
+  mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
 }
 
 /**
@@ -29,20 +31,21 @@ function mandrill_enable() {
  */
 function mandrill_disable() {
   // Tell mailsystem to remove mandrill and restore to defaults:
-  mailsystem_clear(array('mandrill' => 'MandrillMailSystem'));
+  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
   watchdog('mandrill', 'Mandrill has been disabled.');
 }
 
 /**
- * Deletes obsolete variables, creates database table for mandrill_template_map entity, and rebuilds the registry.
+ * Deletes obsolete variables.
  */
 function mandrill_update_7001() {
   variable_del('mandrill_status');
-  $schema = mandrill_schema();
-  db_create_table('mandrill_template_map', $schema['mandrill_template_map']);
+}
 
-  // Clear the schema cache to avoid warnings on update.
-  drupal_get_schema('mandrill_template_map', TRUE);
+/**
+ * Rebuilds the registry, as we've moved some files around.
+ */
+function mandrill_update_7002() {
 
   // Rebuild the registry, we've moved some files around.
   registry_rebuild();
