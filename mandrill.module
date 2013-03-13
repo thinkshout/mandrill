@@ -246,9 +246,6 @@ function mandrill_get_module_key_names() {
     if ($key = substr($id, strlen($module) + 1)) {
       $title .= " ($key key)";
     }
-    if ($module == 'mandrill') {
-      $title .= " (send test email)";
-    }
     $name_array[$id] = $title;
   }
 

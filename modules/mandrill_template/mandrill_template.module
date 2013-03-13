@@ -190,7 +190,7 @@ function mandrill_template_sender($message) {
  */
 function _mandrill_template_map_mailsystem_sort($a, $b) {
   $first = "default-system";
-  $last = "mandrill";
+  $last = "mandrill_test";
   if ($a == $first || $b == $last) {
     return -1;
   }
