@@ -48,11 +48,10 @@ class MandrillMailSystem implements MailSystemInterface {
     if (!empty($format)) {
       $html = check_markup($message['body'], $format);
     }
-
     $to = mandrill_get_to($message['to']);
-    $from = variable_get('site_mail', ini_get('sendmail_from'));
-    if (!empty($message['from'])) {
-      $from = $message['from'];
+    $headers = isset($message['headers']) ? $message['headers'] : NULL;
+    if (!empty($message['from']) && empty($headers['Reply-To'])) {
+      $headers['Reply-To'] = $message['from'];
     }
     $attachments = array();
     if (isset($message['attachments']) && !empty($message['attachments'])) {
@@ -76,11 +75,11 @@ class MandrillMailSystem implements MailSystemInterface {
       'html' => $html,
       'text' => drupal_html_to_text($message['body']),
       'subject' => $message['subject'],
-      'from_email' => $from,
+      'from_email' => variable_get('site_mail', ini_get('sendmail_from')),
       'to' => $to,
       // Optional extra headers to add to the message
       // (Currently only Reply-To and X-* headers are allowed).
-      'headers' => $message['headers'],
+      'headers' => $headers,
       'track_opens' => variable_get('mandrill_track_opens', TRUE),
       'track_clicks' => variable_get('mandrill_track_clicks', TRUE),
       // We're handling this with drupal_html_to_text().
