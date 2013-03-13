@@ -113,6 +113,15 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
       '#default_value' => mandrill_mail_key_blacklist(),
     );
+    $form['send_options']['mandrill_log_defaulted_sends'] = array(
+      '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
+      '#type' => 'checkbox',
+      '#description' => t('If you select Mandrill as the site-wide default email sender in !mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the !systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
+        array('!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
+          '!systemlog' => l(t('system log'), 'admin/reports/dblog'),)),
+      '#default_value' => variable_get('mandrill_log_defaulted_sends', FALSE),
+    ); 
+    
     $form['analytics'] = array(
       '#type' => 'fieldset',
       '#collapsible' => TRUE,

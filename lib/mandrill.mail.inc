@@ -39,6 +39,26 @@ class MandrillMailSystem implements MailSystemInterface {
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
   public function mail(array $message) {
+    if (variable_get('mandrill_log_defaulted_sends')) {
+      $systems = mailsystem_get();
+      $registered = FALSE;
+      foreach ($systems as $key => $system) {
+        if ($message['id'] == $key) {
+          $registered = TRUE;
+        }
+        if (!$registered) {
+          watchdog(
+            'mandrill',
+            "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in mailsystem if this is not desirable.",
+            array(
+              '%module' => $message['module'],
+              '%key' => $message['key'],
+            ),
+            WATCHDOG_INFO
+          );
+        }
+      }
+    }
     // Send the email passing the message id as the tag for use in reporting.
     if (!$from = variable_get('mandrill_from', variable_get('site_mail'))) {
       drupal_set_message(t('Mandrill can\'t send email. Please !link.',
