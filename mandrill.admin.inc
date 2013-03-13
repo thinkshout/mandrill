@@ -26,7 +26,7 @@ function mandrill_admin_settings($form, &$form_state) {
     $in_use = FALSE;
     $usage_rows = array();
     foreach ($mailsystem_config_keys as $key => $sys) {
-      if ($sys === 'MandrillMailSystem' && $key != 'mandrill') {
+      if ($sys === 'MandrillMailSystem' && $key != 'mandrill_test') {
         $in_use = TRUE;
         $usage_rows[] = array(
           $key,
