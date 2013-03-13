@@ -38,8 +38,6 @@ function mandrill_disable() {
  */
 function mandrill_update_7001() {
   variable_del('mandrill_status');
-  variable_del('mandrill_from');
-  variable_del('mandrill_from_name');
   $schema = mandrill_schema();
   db_create_table('mandrill_template_map', $schema['mandrill_template_map']);
 
