@@ -49,10 +49,11 @@ class MandrillMailSystem implements MailSystemInterface {
         if (!$registered) {
           watchdog(
             'mandrill',
-            "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in mailsystem if this is not desirable.",
+            "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
             array(
               '%module' => $message['module'],
               '%key' => $message['key'],
+              '!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
             ),
             WATCHDOG_INFO
           );
