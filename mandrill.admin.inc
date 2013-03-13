@@ -245,22 +245,22 @@ function mandrill_test_form_submit($form, &$form_state) {
   $params['include_attachment'] = $form_state['values']['include_attachment'];
   $mailsystem = mailsystem_get();
   // Check for empty mailsystem config for Mandrill:
-  if (empty($mailsystem['mandrill'])) {
-    drupal_set_message(t('Automatically setting Mandrill tests to go through Mandrill: MandrillMailSystem was not configure in Mail System.'));
-    mailsystem_set(array('mandrill' => 'MandrillMailSystem'));
+  if (empty($mailsystem['mandrill_test'])) {
+    drupal_set_message(t('Automatically setting Mandrill tests to go through Mandrill API: MandrillMailSystem was not previously configured in Mail System.'));
+    mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
   }
   // Check for wrong mailsystem config for Mandrill, if not empty, and issue a warning:
-  elseif ($mailsystem['mandrill'] != 'MandrillMailSystem') {
+  elseif ($mailsystem['mandrill_test'] != 'MandrillMailSystem') {
     drupal_set_message(
       t('Mail System is configured to send Mandrill Test messages through %system, not Mandrill. To send tests through Mandrill, go to !link and change the setting.',
         array(
-          '%system' => $mailsystem['mandrill'],
+          '%system' => $mailsystem['mandrill_test'],
           '!link' => l(t('Mandrill'), 'https://mandrillapp.com/templates'))),
       'warning');
     // Hack because we are apparently formatting the body differently than default drupal messages
     $params['body'] = array('0' => $params['body']);
   }
-  $result = drupal_mail('mandrill', 'mandrill_test', $test_address, $language, $params);
+  $result = drupal_mail('mandrill', 'test', $test_address, $language, $params);
   if (isset($result['result']) && $result['result'] == 'true') {
     drupal_set_message(t('Mandrill test email sent from %from to %to.', array('%from' => $result['from'], '%to' => $result['to'])), 'status');
   }
