@@ -128,11 +128,14 @@ function mandrill_mailsend($message) {
         case "error":
         case "invalid":
         case "rejected":
+          $to = isset($result['email']) ? $result['email'] : 'recipient';
+          $status = isset($result['status']) ? $result['status'] : 'message';
+          $error_message = isset($result['message']) ? $result['message'] : 'no message';
           watchdog('mandrill', 'Failed sending email to %to. @status: @message',
             array(
-              '%to' => $result['email'],
-              '@status' => $result['status'],
-              '@message' => $result['message'],
+              '%to' => $to,
+              '@status' => $status,
+              '@message' => $error_message,
             ),
             WATCHDOG_ERROR
           );
@@ -143,7 +146,7 @@ function mandrill_mailsend($message) {
             array(
               '%to' => $result['email'],
             ),
-            WATCHDOG_NOTICE
+            WATCHDOG_INFO
           );
           break;
 
