@@ -30,13 +30,19 @@ class MandrillTemplateMap extends Entity {
    * 
    * @return array
    */
-  public function message_send_arguments($mandrill_message) {
+  public function message_send_arguments($message) {
+    // Apply input format to body.
+    $html = $message['body'];
+    $format = variable_get('mandrill_filter_format', '');
+    if (!empty($format)) {
+      $html = check_markup($message['body'], $format);
+    }
     return array(
       'id' => $this->template_id,
       'template_content' => array(
         '0' => array(
           'name' => $this->main_section,
-          'content' => $mandrill_message['html'],
+          'content' => $html,
         ),
       ),
     );

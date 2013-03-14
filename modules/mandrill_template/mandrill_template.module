@@ -136,17 +136,20 @@ function mandrill_template_map_usage_chart() {
 }
 
 /**
- * Implements hook_mandrill_mail_alter
+ * Implements hook_mail_alter
  */
-function mandrill_template_mandrill_mail_alter(&$mandrill_message, &$message){
-  $template_map = mandrill_template_map_load_entity_by_key($message['id']);
-  // If no template map is registered to this key, is one registered as the default?
-  if (!$template_map) {
-    $template_map = mandrill_template_map_load_entity_by_key('default-system');
-  }
-  if ($template_map) {
-    $mandrill_message['send_function'] = 'mandrill_template_sender';
-    $mandrill_message['args'] = $template_map->message_send_arguments($mandrill_message);
+function mandrill_template_mail_alter(&$message) {
+  $haystack = mandrill_get_module_key_names();
+  if (array_key_exists($message['id'], $haystack)) {
+    $template_map = mandrill_template_map_load_entity_by_key($message['id']);
+    // Is there a default template map?
+    if (!$template_map) {
+      $template_map = mandrill_template_map_load_entity_by_key('default-system');
+    }
+    if ($template_map) {
+      $message['params']['mandrill_send_function'] = 'mandrill_template_sender';
+      $message['params']['mandrill_send_args'] = $template_map->message_send_arguments($message);
+    }
   }
 }
 
