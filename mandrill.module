@@ -12,6 +12,7 @@
 
 
 define('MANDRILL_QUEUE', 'mandrill_queue');
+define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
 
 /**
  * Implements hook_help().
@@ -286,20 +287,26 @@ function mandrill_mail_key_blacklist() {
  * Helper to generate an array of recipients.
  *
  * @param mixed $to
- *   a comma delimited list of email addresses
+ *   a comma delimited list of email addresses in 1 of 2 forms:
+ *   user@domain.com
+ *   any number of names <user@domain.com>
  * 
  * @return array
  *   array of email addresses
  */
 function mandrill_get_to($to) {
   $recipients = array();
-  if ($to_array = explode(',', $to)) {
-    foreach ($to_array as $email) {
+  $to_array = explode(',', $to);
+  foreach ($to_array as $email) {
+    if(preg_match(MANDRILL_EMAIL_REGEX, $email, $matches)) {
+      $recipients[] = array(
+        'email' => $matches[2],
+        'name' => $matches[1],
+      );
+    }
+    else {
       $recipients[] = array('email' => $email);
     }
-  }
-  else {
-    $recipients[] = array('email' => $to);
   }
   return $recipients;
 }
