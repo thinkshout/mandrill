@@ -60,16 +60,18 @@ function mandrill_admin_settings($form, &$form_state) {
       '#collapsible' => TRUE,
       '#title' => t('Email options'),
     );
+
+    $from = mandrill_from();
     $form['email_options']['mandrill_from'] = array(
       '#title' => t('From address'),
       '#type' => 'textfield',
       '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is. This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that address moved to the Reply-To field.'),
-      '#default_value' => variable_get('mandrill_from', variable_get('site_mail')),
+      '#default_value' => $from['email'],
     );
     $form['email_options']['mandrill_from_name'] = array(
       '#type' => 'textfield',
       '#title' => t('From name'),
-      '#default_value' => variable_get('mandrill_from_name', variable_get('site_name')),
+      '#default_value' => $from['name'],
       '#description' => t('Optionally enter a from name to be used.'),
     );
     $formats = filter_formats();

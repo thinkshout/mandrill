@@ -348,3 +348,22 @@ function mandrill_cron() {
 function mandrill_process_async() {
   return variable_get('mandrill_process_async', FALSE);
 }
+
+/**
+ * Returns an array containing the from information for a Mandrill message.
+ *
+ * @return array
+ *   array(
+ *     'email' => 'admin@example.com',
+ *     'name' => 'My Site',
+ *   )
+ */
+function mandrill_from() {
+  $default_from = variable_get('site_mail', ini_get('sendmail_from'));
+  $email = variable_get('mandrill_from', $default_from);
+  $name = variable_get('mandrill_from_name', variable_get('site_name'));
+  return array(
+    'email' => $email,
+    'name' => $name,
+  );
+}

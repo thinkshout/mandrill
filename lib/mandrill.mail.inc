@@ -60,17 +60,8 @@ class MandrillMailSystem implements MailSystemInterface {
         }
       }
     }
+
     // Send the email passing the message id as the tag for use in reporting.
-    if (!$from = variable_get('mandrill_from', variable_get('site_mail'))) {
-      drupal_set_message(t('Mandrill can\'t send email. Please !link.',
-        array(
-          '!link' => l('add a verified from address',
-            'admin/config/services/mandrill'
-          )
-        )
-      ), 'error');
-      return FALSE;
-    }
     $mailer = mandrill_get_api_object();
     // Apply input format to body.
     $html = $message['body'];
@@ -100,13 +91,15 @@ class MandrillMailSystem implements MailSystemInterface {
         $view_content = FALSE;
         break;
       }
-    }    
+    }
+
+    $from = mandrill_from();
     $mandrill_message = array(
       'html' => $html,
       'text' => drupal_html_to_text($message['body']),
       'subject' => $message['subject'],
-      'from_email' =>$from,
-      'from_name' => variable_get('mandrill_from_name', ''),
+      'from_email' => $from['email'],
+      'from_name' => $from['name'],
       'to' => $to,
       // Optional extra headers to add to the message
       // (Currently only Reply-To and X-* headers are allowed).
