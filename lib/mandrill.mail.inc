@@ -122,11 +122,11 @@ class MandrillMailSystem implements MailSystemInterface {
       'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
-      // Now we set some default values that are used by the mandrill module
-      // and which can be altered using the hook system. These indexes should
-      // be stripped out of the message before it is handed off to the Mandrill API.
-      'send_function' => 'mandrill_sender_plain',
-      'args' => NULL,
+      // These values may have been set using hook_mail_alter, so we check for that
+      // before setting default values. These indexes should be stripped out of the
+      // message before it is handed off to the Mandrill API.
+      'send_function' => isset($message['params']['mandrill_send_function']) ? $message['params']['mandrill_send_function'] : 'mandrill_sender_plain',
+      'args' => isset($message['params']['mandrill_send_args']) ? $message['params']['mandrill_send_args'] : NULL,
     );
     
     // Allow other modules to alter the message content or send_function
