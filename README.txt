@@ -1,6 +1,12 @@
 Integration with Mandrill transactional emails, a service by the folks behind
 MailChimp. Learn more about Mandrill and how to sign up on [their website](http://mandrill.com).
 
+NOTE: If you installed version 1.3, you will get the following error message when enabling the mandrill_template module:
+DatabaseSchemaObjectExistsException: Table <em class="placeholder">mandrill_template_map</em> already exists.
+This is ugly but irrelevant, everything should function normally.
+
+You may also find an extra Mail System class in the Mail System configuration called "Mandrill module class". It's harmless, but feel free to delete it.
+
 ## Settings
 
 ### Mandrill Mail interface is 'enabled' by using the [Mail System module](http://drupal.org/project/mailsystem)
