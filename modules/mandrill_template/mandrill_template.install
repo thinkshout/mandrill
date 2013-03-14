@@ -9,14 +9,6 @@
  * Implements hook_schema().
  */
 function mandrill_template_schema() {
-  // In Version 1.3 of Mandrill, this schema was created by the primary Mandrill module.
-  // If we are upgrading from someone who installed that version, we need to check for
-  // the existence of this schema before we try to create it, or we'll get an ugly error.
-  $extant_schema = drupal_get_schema();
-  if (isset($extant_schema['mandrill_template_map'])) {
-    db_change_field('mandrill_template_map', 'description', 'description', 'The base table for the mandrill template module.');
-    return NULL;
-  }
   $schema['mandrill_template_map'] = array(
     'description' => 'The base table for the mandrill template module.',
     'fields' => array(
@@ -126,4 +118,3 @@ function mandrill_template_schema() {
 
   return $schema;
 }
-
