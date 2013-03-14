@@ -7,14 +7,22 @@ class Mandrill {
   const API_VERSION = '1.0';
   const END_POINT = 'https://mandrillapp.com/api/';
 
-  var $api;
+  private $api;
 
   /**
    * Default to a 300 second timeout on server calls
    */
-  var $timeout = 300;
+  private $timeout = 300;
 
-  function __construct($api_key, $timeout = 300) {
+  /**
+   * Constructor to set internal values.
+   *
+   * @param string $api_key
+   *   Mandrill API key.
+   * @param int $timeout
+   *   Server timeout.
+   */
+  public function __construct($api_key, $timeout = 300) {
     if (empty($api_key)) {
       throw new Mandrill_Exception('Invalid API key');
     }
@@ -27,24 +35,30 @@ class Mandrill {
       $this->api = $api_key;
       $this->timeout = $timeout;
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       throw new Mandrill_Exception($e->getMessage());
     }
   }
 
   /**
-   * Work horse. Every API call use this function to actually make the request to Mandrill's servers.
+   * Every API call uses this function to actually make the request to Mandrill's servers.
    *
    * @link https://mandrillapp.com/api/docs/
    *
-   * @param string $method API method name
-   * @param array $args query arguments
-   * @param string $http GET or POST request type
-   * @param string $output API response format (json,php,xml,yaml). json and xml are decoded into arrays automatically.
+   * @param string $method
+   *   API method name
+   * @param array $args
+   *   query arguments
+   * @param string $http
+   *   GET or POST request type
+   * @param string $output
+   *   API response format (json,php,xml,yaml). json and xml are decoded into arrays automatically.
    *
-   * @return array|string|Mandrill_Exception
+   * @return array
+   *   Array on success.
    */
-  function request($method, $args = array(), $http = 'POST', $output = 'json') {
+  private function request($method, $args = array(), $http = 'POST', $output = 'json') {
     if (!isset($args['key'])) {
       $args['key'] = $this->api;
     }
@@ -106,7 +120,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function users_ping() {
+  public function users_ping() {
     return $this->request('users/ping');
   }
 
@@ -115,7 +129,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function users_info() {
+  public function users_info() {
     return $this->request('users/info');
   }
 
@@ -124,7 +138,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function users_senders() {
+  public function users_senders() {
     return $this->request('users/senders');
   }
 
@@ -133,7 +147,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function senders_domains() {
+  public function senders_domains() {
     return $this->request('senders/domains');
   }
 
@@ -142,7 +156,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function senders_list() {
+  public function senders_list() {
     return $this->request('senders/list');
   }
 
@@ -151,7 +165,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function senders_info($email) {
+  public function senders_info($email) {
     return $this->request('senders/info', array('address' => $email));
   }
 
@@ -160,7 +174,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function senders_time_series($email) {
+  public function senders_time_series($email) {
     return $this->request('senders/time-series', array('address' => $email));
   }
 
@@ -169,7 +183,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function tags_list() {
+  public function tags_list() {
     return $this->request('tags/list');
   }
 
@@ -178,7 +192,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function tags_info($tag) {
+  public function tags_info($tag) {
     return $this->request('tags/info', array('tag' => $tag));
   }
 
@@ -187,7 +201,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function tags_time_series($tag) {
+  public function tags_time_series($tag) {
     return $this->request('tags/time-series', array('tag' => $tag));
   }
 
@@ -196,7 +210,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function tags_all_time_series() {
+  public function tags_all_time_series() {
     return $this->request('tags/all-time-series');
   }
 
@@ -205,7 +219,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_add($name, $code) {
+  public function templates_add($name, $code) {
     return $this->request('templates/add', array(
       'name' => $name,
       'code' => $code
@@ -217,7 +231,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_update($name, $code) {
+  public function templates_update($name, $code) {
     return $this->request('templates/update', array(
       'name' => $name,
       'code' => $code
@@ -229,7 +243,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_delete($name) {
+  public function templates_delete($name) {
     return $this->request('templates/delete', array('name' => $name));
   }
 
@@ -238,7 +252,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_info($name) {
+  public function templates_info($name) {
     return $this->request('templates/info', array('name' => $name));
   }
 
@@ -247,7 +261,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_list() {
+  public function templates_list() {
     return $this->request('templates/list');
   }
 
@@ -256,7 +270,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function templates_time_series($name) {
+  public function templates_time_series($name) {
     return $this->request('templates/time-series', array('name' => $name));
   }
 
@@ -265,7 +279,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function urls_list() {
+  public function urls_list() {
     return $this->request('urls/list');
   }
 
@@ -274,7 +288,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function urls_time_series($url) {
+  public function urls_time_series($url) {
     return $this->request('urls/time-series', array('url' => $url));
   }
 
@@ -283,7 +297,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function urls_search($q) {
+  public function urls_search($q) {
     return $this->request('urls/search', array('q' => $q));
   }
 
@@ -292,7 +306,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function webhooks_add($url, $events) {
+  public function webhooks_add($url, $events) {
     return $this->request('webhooks/add', array(
       'url' => $url,
       'events' => $events
@@ -304,7 +318,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function webhooks_update($url, $events) {
+  public function webhooks_update($url, $events) {
     return $this->request('webhooks/update', array(
       'url' => $url,
       'events' => $events
@@ -316,7 +330,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function webhooks_delete($id) {
+  public function webhooks_delete($id) {
     return $this->request('webhooks/delete', array('id' => $id));
   }
 
@@ -325,7 +339,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function webhooks_info($id) {
+  public function webhooks_info($id) {
     return $this->request('webhooks/info', array('id' => $id));
   }
 
@@ -334,7 +348,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function webhooks_list() {
+  public function webhooks_list() {
     return $this->request('webhooks/list');
   }
 
@@ -343,7 +357,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function messages_search($query, $date_from = '', $date_to = '', $tags = array(), $senders = array(), $limit = 100) {
+  public function messages_search($query, $date_from = '', $date_to = '', $tags = array(), $senders = array(), $limit = 100) {
     return $this->request('messages/search', compact('query', 'date_from', 'date_to', 'tags', 'senders', 'limit'));
   }
 
@@ -352,7 +366,7 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function messages_send($message) {
+  public function messages_send($message) {
     return $this->request('messages/send', array('message' => $message));
   }
 
@@ -361,11 +375,23 @@ class Mandrill {
    *
    * @return array|Mandrill_Exception
    */
-  function messages_send_template($template_name, $template_content, $message) {
+  public function messages_send_template($template_name, $template_content, $message) {
     return $this->request('messages/send-template', compact('template_name', 'template_content', 'message'));
   }
 
-  static function getAttachmentStruct($path) {
+  /**
+   * Return an array structure for a message attachment.
+   *
+   * @param string $path
+   *   Attachment path.
+   *
+   * @return array
+   *   Attachment structure.
+   *
+   * @throws Mandrill_Exception
+   * @throws Exception
+   */
+  public static function getAttachmentStruct($path) {
     $struct = array();
 
     try {
@@ -424,7 +450,7 @@ class Mandrill {
    *
    * @return bool
    */
-  static function isValidContentType($ct) {
+  private static function isValidContentType($ct) {
     $valids = self::getValidContentTypes();
 
     foreach ($valids as $vct) {
@@ -443,7 +469,7 @@ class Mandrill {
    *
    * @return array
    */
-  static function getValidContentTypes() {
+  private static function getValidContentTypes() {
     return array(
       'image/',
       'text/',
