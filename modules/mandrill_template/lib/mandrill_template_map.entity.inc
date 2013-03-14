@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Redhen Contact entity classses
+ * Mandrill Template entity class
  */
 
 class MandrillTemplateMap extends Entity {

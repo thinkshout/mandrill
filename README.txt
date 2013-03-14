@@ -43,7 +43,7 @@ empty, the from address of the message will be used instead.
 ## Reports
 The mandrill_reports sub-module provides reports on various metrics.
 
-###Asynchronous Options
+### Asynchronous Options
 * **Queue Outgoing Messages**
 Drops all messages sent through Mandrill into a queue without sending them. 
 When Cron is triggered, a number of queued messages are sent equal to the 
@@ -59,3 +59,9 @@ URL interactions for the past 30 days.
 ### Account Summary
 Shows account information, quotas, and all-time usage stats.
 
+## Altering Messages
+If you would like to use additional template (or other) sending variables not
+implemented in this module, set them in hook_mail_alter under:
+$params['mandrill']
+Make sure that your key matches the API key and that your structers match the
+Mandrill API specifications exactly, as they will be passed exactly as-is.
