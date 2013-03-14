@@ -97,7 +97,7 @@ function mandrill_mail($key, &$message, $params) {
 }
 
 /**
- * Abstracts sending of messages, allowing queueing option
+ * Abstracts sending of messages, allowing queueing option.
  * 
  * @param array $message
  *   a message array formatted for Mandrill's sending API, plus 2 additional indexes
@@ -173,13 +173,13 @@ function mandrill_mailsend($message) {
 
 
 /**
- * The actual function that calls the API send message
+ * The actual function that calls the API send message.
  * 
  * This is the default function used by mandrill_mailsend
  * 
  * @param $message
  * 
- * @return mixed
+ * @return array
  */
 function mandrill_sender_plain($message) {
   $mailer = mandrill_get_api_object();
@@ -204,15 +204,15 @@ function mandrill_get_api_object() {
 }
 
 /**
- * This function is used when we want to display the names of the modules
- * that are using Mailsystem in a way that is informative in the UI
- * and consistent with Mailsystem's display. In the future, if Mailsystem
- * were to provide an API for their labeling, that should be used here.
+ * Display the names of the modules that are using Mailsystem.
+ *
+ * This is consistent with with Mailsystem's display. In the future, if
+ * Mailsystem were to provide an API for their labeling, that should be used.
  *
  * @return array
- * array of all module names indexing to their "display" names,
- * and some special items for non-module values like null, default-system,
- * and some clarification talked onto the end of the Mandrill module's name.
+ *   Array of all module names indexing to their "display" names,
+ *   and some special items for non-module values like null, default-system,
+ *   and some clarification talked onto the end of the Mandrill module's name.
  */
 function mandrill_get_module_key_names() {
   $name_array = array(
@@ -258,7 +258,7 @@ function mandrill_get_module_key_names() {
  * Get a list of mandrill template objects.
  *
  * @return array
- *   an of available templates with complete data or NULL if none are available
+ *   An of available templates with complete data or NULL if none are available.
  */
 function mandrill_get_templates() {
   // Only show the template settings if the mandrill api can be called.
@@ -348,4 +348,3 @@ function mandrill_cron() {
 function mandrill_process_async() {
   return variable_get('mandrill_process_async', FALSE);
 }
-
