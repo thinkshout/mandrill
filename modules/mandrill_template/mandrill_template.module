@@ -135,7 +135,7 @@ function mandrill_template_map_usage_chart() {
  */
 function mandrill_template_mail_alter(&$message) {
   $haystack = mandrill_get_module_key_names();
-  if (array_key_exists($message['id'], $haystack)) {
+  if (array_key_exists($message['id'], $haystack) || array_key_exists('default-system', $haystack)) {
     $template_map = mandrill_template_map_load_entity_by_key($message['id']);
     // Is there a default template map?
     if (!$template_map) {
