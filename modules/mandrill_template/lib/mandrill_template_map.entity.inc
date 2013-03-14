@@ -36,7 +36,7 @@ class MandrillTemplateMap extends Entity {
       'template_content' => array(
         '0' => array(
           'name' => $this->main_section,
-          'content' => $mandrill_message['text'],
+          'content' => $mandrill_message['html'],
         ),
       ),
     );
