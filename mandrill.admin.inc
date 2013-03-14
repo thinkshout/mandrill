@@ -69,7 +69,7 @@ function mandrill_admin_settings($form, &$form_state) {
     $form['email_options']['mandrill_from_name'] = array(
       '#type' => 'textfield',
       '#title' => t('From name'),
-      '#default_value' => variable_get('mandrill_from_name', ''),
+      '#default_value' => variable_get('mandrill_from_name', variable_get('site_name')),
       '#description' => t('Optionally enter a from name to be used.'),
     );
     $formats = filter_formats();
