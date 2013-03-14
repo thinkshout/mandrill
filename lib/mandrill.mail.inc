@@ -128,9 +128,12 @@ class MandrillMailSystem implements MailSystemInterface {
       'send_function' => isset($message['params']['mandrill_send_function']) ? $message['params']['mandrill_send_function'] : 'mandrill_sender_plain',
       'args' => isset($message['params']['mandrill_send_args']) ? $message['params']['mandrill_send_args'] : NULL,
     );
-    
-    // Allow other modules to alter the message content or send_function
-    drupal_alter('mandrill_mail', $mandrill_message, $message);
+    // Check for any mandrill parameters that another module may have set using hook_mail_alter:
+    if (isset($message['params']['mandrill']) && is_array($message['params']['mandrill'])) {
+      foreach ($message['params']['mandrill'] as $index => $value) {
+        $mandrill_message[$index] = $value;
+      }
+    }
 
     $status = NULL;
     if (mandrill_process_async()) {
