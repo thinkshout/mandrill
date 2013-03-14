@@ -123,7 +123,8 @@ function mandrill_mailsend($message) {
       );
       return FALSE;
     }
-    $results = $message['send_function']($message);
+
+    $results = call_user_func($message['send_function'], $message);
     foreach ($results as $result) {
       switch ($result['status']) {
         case "error":
