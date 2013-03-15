@@ -117,7 +117,7 @@ function mandrill_template_map_load_by_mailsystem($mailsystem) {
  * Get all mailsystem keys pointed at mandrill and their template mappings.
  * 
  * @return array
- *   returns an array with indexes matching each module which is assigned
+ *   Returns an array with indexes matching each module which is assigned
  *   to use Mandrill for email sends, and values equal to the template_map_ids
  *   that are assigned to those modules. If no template maps are assigned, the
  *   value is set to NULL.
@@ -158,14 +158,18 @@ function mandrill_template_mail_alter(&$message) {
 }
 
 /**
- * A sender function as specified in mandrill module
+ * Send a templated Mandrill message.
  * 
- * This function checks for appropriate settings in the message,
- * then uses the template API call to send the message if the settings are valid.
+ * This function checks for appropriate settings in the message, then uses the
+ * template API call to send the message if the settings are valid.
  * 
- * @param $message
+ * @param array $message
+ *   Complete Mandrill message.
  *
- * @return array|Mandrill_Exception
+ * @return array
+ *   Message response.
+ *
+ * @throws Mandrill_Exception
  */
 function mandrill_template_sender($message) {
   $mailer = mandrill_get_api_object();
@@ -179,7 +183,7 @@ function mandrill_template_sender($message) {
     $template_content = $message['args']['template_content'];
     unset($message['args']);
     unset($message['send_function']);
-    
+
     return $mailer->messages_send_template($id, $template_content, $message);
   }
 }

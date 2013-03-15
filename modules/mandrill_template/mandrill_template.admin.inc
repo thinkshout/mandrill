@@ -61,7 +61,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   foreach ($templates as $template) {
     $template_names[$template['name']] = $template;
   }
-  // check if the currently configured template still exists
+  // Check if the currently configured template still exists.
   if (!empty($map->template_id) && !array_key_exists($map->template_id, $template_names)) {
     drupal_set_message(t('The configured Mandrill template is no longer available, please select a valid one.'), 'warning');
   }
@@ -73,7 +73,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     $form['map_settings']['template_id'] = array(
       '#type' => 'select',
       '#title' => t('Email Template'),
-      '#description' => t('Select a Mandrill template.'), // https://mandrillapp.com/templates/my-templates
+      '#description' => t('Select a Mandrill template.'),
       '#options' => $options,
       '#default_value' => isset($map->template_id) ? $map->template_id : '',
       '#required' => TRUE,
@@ -188,6 +188,8 @@ function mandrill_template_map_form_callback($form, &$form_state) {
 }
 
 /**
+ * Parse a Mandrill template to extract its regions.
+ *
  * The Mandrill API does not provide an elegant data structure
  * containing the mc:edit tags for a given template, but rather
  * a big pile of ugly HTML containing the tags. We need to parse
@@ -195,6 +197,7 @@ function mandrill_template_map_form_callback($form, &$form_state) {
  *
  * @param $html
  * @param $tag
+ *
  * @return array
  */
 function _mandrill_parse_regions($html, $tag = 'mc:edit') {

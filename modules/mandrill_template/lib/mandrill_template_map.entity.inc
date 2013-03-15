@@ -14,6 +14,11 @@ class MandrillTemplateMap extends Entity {
     $main_section,
     $sections;
 
+  /**
+   * Return a new entity instance of type mandrill_template_map.
+   *
+   * @param array $values
+   */
   public function __construct(array $values = array()) {
     parent::__construct($values, 'mandrill_template_map');
   }
@@ -26,9 +31,10 @@ class MandrillTemplateMap extends Entity {
   }
 
   /**
-   * Generate the arguments that are required for sending templates
+   * Generate the arguments that are required for sending templates.
    * 
    * @return array
+   *   An associative array containing message template arguments.
    */
   public function message_send_arguments($message) {
     // Apply input format to body.
