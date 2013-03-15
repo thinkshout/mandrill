@@ -39,6 +39,8 @@ class MandrillMailSystem implements MailSystemInterface {
    *   TRUE if the mail was successfully accepted, otherwise FALSE.
    */
   public function mail(array $message) {
+    // Optionally log mail keys not using Mandrill already. Helpful in
+    // configuring Mandrill.
     if (variable_get('mandrill_log_defaulted_sends')) {
       $systems = mailsystem_get();
       $registered = FALSE;
@@ -61,19 +63,27 @@ class MandrillMailSystem implements MailSystemInterface {
       }
     }
 
-    // Send the email passing the message id as the tag for use in reporting.
     $mailer = mandrill_get_api_object();
+
     // Apply input format to body.
     $html = $message['body'];
     $format = variable_get('mandrill_filter_format', '');
     if (!empty($format)) {
       $html = check_markup($message['body'], $format);
     }
+
+    // Extract an arry of recipients.
     $to = mandrill_get_to($message['to']);
-    $headers = isset($message['headers']) ? $message['headers'] : NULL;
+
+    // Prepare headers, defaulting the reply-to to the from address since
+    // Mandrill needs the from address to be configured separately.
+    // Note that only Reply-To and X-* headers are allowed.
+    $headers = isset($message['headers']) ? $message['headers'] : array();
     if (!empty($message['from']) && empty($headers['Reply-To'])) {
       $headers['Reply-To'] = $message['from'];
     }
+
+    // Prepare attachments.
     $attachments = array();
     if (isset($message['attachments']) && !empty($message['attachments'])) {
       foreach ($message['attachments'] as $attachment) {
@@ -101,8 +111,6 @@ class MandrillMailSystem implements MailSystemInterface {
       'from_email' => $from['email'],
       'from_name' => $from['name'],
       'to' => $to,
-      // Optional extra headers to add to the message
-      // (Currently only Reply-To and X-* headers are allowed).
       'headers' => $headers,
       'track_opens' => variable_get('mandrill_track_opens', TRUE),
       'track_clicks' => variable_get('mandrill_track_clicks', TRUE),
@@ -121,6 +129,7 @@ class MandrillMailSystem implements MailSystemInterface {
       'send_function' => isset($message['params']['mandrill_send_function']) ? $message['params']['mandrill_send_function'] : 'mandrill_sender_plain',
       'args' => isset($message['params']['mandrill_send_args']) ? $message['params']['mandrill_send_args'] : NULL,
     );
+
     // Check for any mandrill parameters that another module may have set using hook_mail_alter:
     if (isset($message['params']['mandrill']) && is_array($message['params']['mandrill'])) {
       foreach ($message['params']['mandrill'] as $index => $value) {
@@ -129,34 +138,16 @@ class MandrillMailSystem implements MailSystemInterface {
     }
 
     $status = NULL;
+    // Queue for processing during cron or send immediately.
     if (mandrill_process_async()) {
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
       $queue->createItem($mandrill_message);
-      $status = 'queued';
+      watchdog('mandrill', 'Message from %from to %to queued for delivery.',
+        array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_NOTICE));
+      return TRUE;
     }
     else {
-      if (mandrill_mailsend($mandrill_message)) {
-        $status = 'sent';
-      }
-      else {
-        $status = 'error';
-      }
+      return mandrill_mailsend($mandrill_message);
     }
-    switch ($status) {
-      case "sent":
-
-        return TRUE;
-
-      case "queued":
-        watchdog('mandrill', 'Message from %from to %to queued for delivery.', array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_NOTICE));
-          
-        return TRUE;
-
-      case "error":
-        watchdog('mandrill', 'Message from %from to %to has failed.', array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_ERROR));
-        break;
-    }
-
-    return FALSE;
   }
 }
