@@ -8,6 +8,5 @@ configure = admin/config/services/mandrill/templates
 dependencies[] = entity (>=1.0)
 dependencies[] = mandrill
 
-files[] = lib/mandrill_template_map.controller.inc
 files[] = lib/mandrill_template_map.entity.inc
 files[] = lib/mandrill_template_map.ui_controller.inc
