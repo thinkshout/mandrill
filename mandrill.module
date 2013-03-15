@@ -317,13 +317,17 @@ function mandrill_get_to($to) {
  */
 function mandrill_cron() {
   $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
-  $limit = variable_get('mandrill_batch_limit', 50);
-  if ($limit == 0 || !mandrill_process_async()) {
-    $limit = -1;
-    // Otherwise our loop never begins when $limit is set to 0
-    // Also, if async has been disabled, we fire off the rest
-    // of the existing Queue on the next cron call.
+  $num_items = $queue->numberOfItems();
+
+  // Allow for items left in the queue even after async processing disabled.
+  if (!mandrill_process_async() && $num_items == 0) {
+    return;
   }
+
+  // Set our count to the lesser of batch limit or queue count.
+  $limit = variable_get('mandrill_batch_limit', 50);
+  $limit = ($num_items < $limit) ? $num_items : $limit;
+
   for ($delta = 0; $delta != $limit; $delta++) {
     // We can't test using claimItem() as part of the loop conditional,
     // or we will accidentally pop an extra item off the queue
@@ -332,8 +336,10 @@ function mandrill_cron() {
     if (!$item) {
       break;
     }
-    $message = $item->data;
-    mandrill_mailsend($message);
+
+    // Send the message stored in the queue item.
+    mandrill_mailsend($item->data);
+
     // Remove item from queue.
     $queue->deleteItem($item);
   }
