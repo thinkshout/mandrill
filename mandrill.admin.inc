@@ -170,9 +170,9 @@ function mandrill_admin_settings($form, &$form_state) {
         '#title' => t('Batch size'),
         '#type' => 'textfield',
         '#size' => '12',
-        '#description' => t('Number of messages to send in each cron batch. Zero (or negative) value will cause all queued messages to send.'),
+        '#description' => t('Number of messages to send in each cron batch. Zero or negative values are not allowed.'),
         '#required' => TRUE,
-        '#element_validate' => array('element_validate_integer'),
+        '#element_validate' => array('element_validate_integer_positive'),
         '#default_value' => variable_get('mandrill_batch_limit', 50),
       );
     }
