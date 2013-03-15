@@ -108,10 +108,6 @@ function mandrill_template_schema() {
         'table' => 'users',
         'columns' => array('author_uid' => 'uid'),
       ),
-      'mandrill_template_map_user' => array(
-        'table' => 'users',
-        'columns' => array('uid' => 'uid'),
-      ),
     ),
     'primary key' => array('mandrill_template_map_entity_id'),
   );
