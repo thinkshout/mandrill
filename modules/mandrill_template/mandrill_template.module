@@ -78,26 +78,39 @@ function mandrill_template_map_load_entities($name = NULL) {
 
 /**
  * Tells you which template_map is configured for a mailsystem key, if any.
+ *
+ * Will search for a default-system mapping if none is availble for a given key.
  * 
- * @param string $mailsystemkey
- *   as seen in mailsystem
+ * @param string $mailsystem
+ *   Mail key to search for a template mapping.
  *
  * @return mandrill_template_map
- *   or null
+ *   Mandrill template map.
  */
-function mandrill_template_map_load_entity_by_key($mailsystemkey) {
+function mandrill_template_map_load_by_mailsystem($mailsystem) {
+  // Append the default-system condition as a fallback.
+  $params = array($mailsystem, 'default-system');
   $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'mandrill_template_map')
-    ->propertyCondition('mailsystem_key', $mailsystemkey)
-    ->addMetaData('account', user_load(1));
-  $query_result = $query->execute();
-  $template_map = NULL;
+  $query_result = $query
+    ->entityCondition('entity_type', 'mandrill_template_map')
+    ->propertyCondition('mailsystem_key', $params, 'IN')
+    ->execute();
+
   if (!empty($query_result['mandrill_template_map'])) {
-    $maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
-    $template_map = array_pop($maps);
+    $template_maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
+    if (count($template_maps > 1)) {
+      foreach ($template_maps as $template_map) {
+        if ($template_map->mailsystem_key == $mailsystem) {
+          return $template_map;
+        }
+      }
+    }
+    else {
+      return reset($template_maps);
+    }
   }
 
-  return $template_map;
+  return NULL;
 }
 
 /**
@@ -131,20 +144,16 @@ function mandrill_template_map_usage_chart() {
 }
 
 /**
- * Implements hook_mail_alter
+ * Implements hook_mail_alter().
+ *
+ * Determine if an email is configured to use a Mandrill template and change the
+ * mandrill_send_function parameter as needed.
  */
 function mandrill_template_mail_alter(&$message) {
-  $haystack = mandrill_get_module_key_names();
-  if (array_key_exists($message['id'], $haystack) || array_key_exists('default-system', $haystack)) {
-    $template_map = mandrill_template_map_load_entity_by_key($message['id']);
-    // Is there a default template map?
-    if (!$template_map) {
-      $template_map = mandrill_template_map_load_entity_by_key('default-system');
-    }
-    if ($template_map) {
-      $message['params']['mandrill_send_function'] = 'mandrill_template_sender';
-      $message['params']['mandrill_send_args'] = $template_map->message_send_arguments($message);
-    }
+  $template_map = mandrill_template_map_load_by_mailsystem($message['id']);
+  if ($template_map) {
+    $message['params']['mandrill_send_function'] = 'mandrill_template_sender';
+    $message['params']['mandrill_send_args'] = $template_map->message_send_arguments($message);
   }
 }
 
