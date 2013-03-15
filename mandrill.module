@@ -115,7 +115,7 @@ function mandrill_mailsend($message) {
     if (!function_exists($message['send_function'])) {
       watchdog('mandrill', 'Error sending email from %from to %to. Function %function not found.',
         array(
-          '%from' => $message['from'],
+          '%from' => $message['from_email'],
           '%to' => $message['to'],
           '$function' => $message['send_function'],
         ),
@@ -133,8 +133,9 @@ function mandrill_mailsend($message) {
           $to = isset($result['email']) ? $result['email'] : 'recipient';
           $status = isset($result['status']) ? $result['status'] : 'message';
           $error_message = isset($result['message']) ? $result['message'] : 'no message';
-          watchdog('mandrill', 'Failed sending email to %to. @status: @message',
+          watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
             array(
+              '%from' => $message['from_email'],
               '%to' => $to,
               '@status' => $status,
               '@message' => $error_message,
@@ -144,8 +145,9 @@ function mandrill_mailsend($message) {
           break;
 
         case "queued":
-          watchdog('mandrill', 'Email to %to queued by Mandrill App.',
+          watchdog('mandrill', 'Email from %from to %to queued by Mandrill App.',
             array(
+              '%from' => $message['from_email'],
               '%to' => $result['email'],
             ),
             WATCHDOG_INFO
