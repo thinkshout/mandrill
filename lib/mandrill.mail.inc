@@ -123,31 +123,31 @@ class MandrillMailSystem implements MailSystemInterface {
       'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
-      // These values may have been set using hook_mail_alter, so we check for that
-      // before setting default values. These indexes should be stripped out of the
-      // message before it is handed off to the Mandrill API.
-      'send_function' => isset($message['params']['mandrill_send_function']) ? $message['params']['mandrill_send_function'] : 'mandrill_sender_plain',
-      'args' => isset($message['params']['mandrill_send_args']) ? $message['params']['mandrill_send_args'] : NULL,
     );
 
-    // Check for any mandrill parameters that another module may have set using hook_mail_alter:
-    if (isset($message['params']['mandrill']) && is_array($message['params']['mandrill'])) {
-      foreach ($message['params']['mandrill'] as $index => $value) {
-        $mandrill_message[$index] = $value;
-      }
-    }
+    // Allow other modules to alter the Mandrill message, and sender/args.
+    $mandrill_params = array(
+      'message' => $mandrill_message,
+      'function' => 'mandrill_sender_plain',
+      'args' => array(),
+    );
+    drupal_alter('mandrill_mail', $mandrill_params, $message);
 
-    $status = NULL;
     // Queue for processing during cron or send immediately.
+    $status = NULL;
     if (mandrill_process_async()) {
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
-      $queue->createItem($mandrill_message);
+      $queue->createItem($mandrill_params);
       watchdog('mandrill', 'Message from %from to %to queued for delivery.',
-        array('%from' => $from, '%to' => $to[0]['email'], WATCHDOG_NOTICE));
+        array(
+          '%from' => $from['email'],
+          '%to' => $to[0]['email'],
+          WATCHDOG_NOTICE
+        ));
       return TRUE;
     }
     else {
-      return mandrill_mailsend($mandrill_message);
+      return mandrill_mailsend($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
     }
   }
 }

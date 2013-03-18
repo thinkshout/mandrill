@@ -106,21 +106,22 @@ function mandrill_mail($key, &$message, $params) {
  * @return bool
  *   TRUE if no exception thrown
  */
-function mandrill_mailsend($message) {
+function mandrill_mailsend($message, $function, $args = array()) {
   try {
-    if (!function_exists($message['send_function'])) {
+    if (!function_exists($function)) {
       watchdog('mandrill', 'Error sending email from %from to %to. Function %function not found.',
         array(
           '%from' => $message['from_email'],
           '%to' => $message['to'],
-          '$function' => $message['send_function'],
+          '$function' => $function,
         ),
         WATCHDOG_ERROR
       );
       return FALSE;
     }
 
-    $results = call_user_func($message['send_function'], $message);
+    $params = array($message) + $args;
+    $results = call_user_func_array($function, $params);
     foreach ($results as $result) {
       switch ($result['status']) {
         case "error":
@@ -181,9 +182,6 @@ function mandrill_mailsend($message) {
  */
 function mandrill_sender_plain($message) {
   $mailer = mandrill_get_api_object();
-  // Strip message data used by this module before handing off to Mandrill:
-  unset($message['args']);
-  unset($message['send_function']);
   return $mailer->messages_send($message);
 }
 
@@ -336,7 +334,11 @@ function mandrill_cron() {
     }
 
     // Send the message stored in the queue item.
-    mandrill_mailsend($item->data);
+    mandrill_mailsend(
+      $item->data['message'],
+      $item->data['function'],
+      $item->data['args']
+    );
 
     // Remove item from queue.
     $queue->deleteItem($item);

@@ -144,57 +144,54 @@ function mandrill_template_map_usage() {
 }
 
 /**
- * Implements hook_mail_alter().
+ * Implements hook_mandrill_mail_alter().
  *
  * Determine if an email is configured to use a Mandrill template and change the
  * mandrill_send_function parameter as needed.
+ *
+ * @param array $mandrill_params
+ *   Associative array of mandrill parameters including the mandrill message.
+ *
+ * @param array $message
+ *   The original Drupal message.
  */
-function mandrill_template_mail_alter(&$message) {
+function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
   $template_map = mandrill_template_map_load_by_mailsystem($message['id']);
   if ($template_map) {
-    $message['params']['mandrill_send_function'] = 'mandrill_template_sender';
-    $message['params']['mandrill_send_args'] = $template_map->message_send_arguments($message);
+    $mandrill_params['function'] = 'mandrill_template_sender';
+    $mandrill_params['args'] = array(
+      'template_id' => $template_map->template_id,
+      'template_content' => array(
+        array(
+          'name' => $template_map->main_section,
+          'content' => $message['body'],
+        )
+      )
+    );
   }
 }
 
 /**
  * Send a templated Mandrill message.
- * 
+ *
  * This function checks for appropriate settings in the message, then uses the
  * template API call to send the message if the settings are valid.
- * 
+ *
  * @param array $message
- *   Complete Mandrill message.
+ *   Mandrill message to send.
+ * @param string $template_id
+ *   Name of the template to use.
+ * @param array $template_content
+ *   Associative array mapping template regions and content.
  *
  * @return array
  *   Message response.
  *
  * @throws Mandrill_Exception
  */
-function mandrill_template_sender($message) {
+function mandrill_template_sender($message, $template_id, $template_content) {
   $mailer = mandrill_get_api_object();
-  if (is_null($message['args']['id']) || is_null($message['args']['template_content'])) {
-
-    return mandrill_sender_plain($message);
-  }
-  else {
-    // Strip message data used by the Mandrill module before handing off to Mandrill API:
-    $id = $message['args']['id'];
-    $template_content = $message['args']['template_content'];
-    unset($message['args']);
-    unset($message['send_function']);
-    // Index through the template content for postprocess items and set them to the indicated
-    // $message index.
-    foreach ($template_content as &$item) {
-      if (isset($item['content_postprocess']) && isset($message[$item['content_postprocess']])) {
-        $item['content'] = $message[$item['content_postprocess']];
-        unset($item['content_postprocess']);
-      }
-    }
-    unset($item);
-
-    return $mailer->messages_send_template($id, $template_content, $message);
-  }
+  return $mailer->messages_send_template($template_id, $template_content, $message);
 }
 
 /**
