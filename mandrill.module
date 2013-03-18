@@ -107,10 +107,6 @@ function mandrill_mail($key, &$message, $params) {
  *   TRUE if no exception thrown
  */
 function mandrill_mailsend($message) {
-  if (!isset($message['send_function'])) {
-    // This shouldn't happen unless someone breaks the message structure in a hook.
-    $message['send_function'] = 'mandrill_sender_plain';
-  }
   try {
     if (!function_exists($message['send_function'])) {
       watchdog('mandrill', 'Error sending email from %from to %to. Function %function not found.',
