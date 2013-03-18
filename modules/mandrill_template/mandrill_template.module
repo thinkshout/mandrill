@@ -183,6 +183,15 @@ function mandrill_template_sender($message) {
     $template_content = $message['args']['template_content'];
     unset($message['args']);
     unset($message['send_function']);
+    // Index through the template content for postprocess items and set them to the indicated
+    // $message index.
+    foreach ($template_content as &$item) {
+      if (isset($item['content_postprocess']) && isset($message[$item['content_postprocess']])) {
+        $item['content'] = $message[$item['content_postprocess']];
+        unset($item['content_postprocess']);
+      }
+    }
+    unset($item);
 
     return $mailer->messages_send_template($id, $template_content, $message);
   }
