@@ -99,7 +99,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
         '#required' => TRUE,
       );
     }
-    $usable_keys = mandrill_template_map_usage_chart();
+    $usable_keys = mandrill_template_map_usage();
     $module_names = mandrill_get_module_key_names();
     $mandrill_in_use = FALSE;
     $available_modules = FALSE;

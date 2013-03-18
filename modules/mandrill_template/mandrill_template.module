@@ -122,7 +122,7 @@ function mandrill_template_map_load_by_mailsystem($mailsystem) {
  *   that are assigned to those modules. If no template maps are assigned, the
  *   value is set to NULL.
  */
-function mandrill_template_map_usage_chart() {
+function mandrill_template_map_usage() {
   $system_assignments = mailsystem_get();
   // Filter out the systems that aren't using Mandrill:
   foreach ($system_assignments as $system => $assignment) {
