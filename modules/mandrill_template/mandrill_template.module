@@ -98,7 +98,7 @@ function mandrill_template_map_load_by_mailsystem($mailsystem) {
 
   if (!empty($query_result['mandrill_template_map'])) {
     $template_maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
-    if (count($template_maps > 1)) {
+    if (count($template_maps) > 1) {
       foreach ($template_maps as $template_map) {
         if ($template_map->mailsystem_key == $mailsystem) {
           return $template_map;
