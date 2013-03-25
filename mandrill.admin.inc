@@ -154,28 +154,21 @@ function mandrill_admin_settings($form, &$form_state) {
       '#type' => 'checkbox',
       '#description' => t('When set, emails will not be immediately sent. Instead, they will be placed in a queue and sent when cron is triggered.'),
       '#default_value' => mandrill_process_async(),
-      '#ajax' => array(
-        'callback' => 'mandrill_admin_settings_form_callback',
-        'wrapper' => 'mandrill-async-options',
+    );
+    $form['asynchronous_options']['mandrill_batch_limit'] = array(
+      '#title' => t('Batch size'),
+      '#type' => 'textfield',
+      '#size' => '12',
+      '#description' => t('Number of messages to send in each cron batch. Zero or negative values are not allowed.'),
+      '#required' => TRUE,
+      '#element_validate' => array('element_validate_integer_positive'),
+      '#default_value' => variable_get('mandrill_batch_limit', 50),
+      '#states' => array(
+        'invisible' => array(
+          ':input[name="mandrill_process_async"]' => array('checked' => FALSE),
+        ),
       ),
     );
-    if (isset($form_state['values'])) {
-      $show_batch_limit = $form_state['values']['mandrill_process_async'];
-    }
-    else {
-      $show_batch_limit = mandrill_process_async();
-    }
-    if ($show_batch_limit) {
-      $form['asynchronous_options']['mandrill_batch_limit'] = array(
-        '#title' => t('Batch size'),
-        '#type' => 'textfield',
-        '#size' => '12',
-        '#description' => t('Number of messages to send in each cron batch. Zero or negative values are not allowed.'),
-        '#required' => TRUE,
-        '#element_validate' => array('element_validate_integer_positive'),
-        '#default_value' => variable_get('mandrill_batch_limit', 50),
-      );
-    }
   }
   return system_settings_form($form);
 }
