@@ -106,7 +106,7 @@ class MandrillMailSystem implements MailSystemInterface {
     $from = mandrill_from();
     $mandrill_message = array(
       'html' => $html,
-      'text' => drupal_html_to_text($message['body']),
+      'text' => empty($message['params']['plaintext']) ? drupal_html_to_text($message['body']) : $message['params']['plaintext'],
       'subject' => $message['subject'],
       'from_email' => $from['email'],
       'from_name' => $from['name'],
