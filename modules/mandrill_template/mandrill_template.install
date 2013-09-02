@@ -35,7 +35,7 @@ function mandrill_template_schema() {
       'mailsystem_key' => array(
         'description' => 'The mailsystem_key that is using this mandrill_template_map.',
         'type' => 'varchar',
-        'length' => 32,
+        'length' => 255,
         'not null' => FALSE,
         'default' => '',
       ),
@@ -114,3 +114,15 @@ function mandrill_template_schema() {
 
   return $schema;
 }
+
+/**
+ * Extends the mailsystem_key field to support longer template key names.
+ */
+function mandrill_template_update_7001() {
+  db_change_field('mandrill_template_map', 'mailsystem_key', 'mailsystem_key', array(
+    'description' => 'The mailsystem_key that is using this mandrill_template_map.',
+    'type' => 'varchar',
+    'length' => 255,
+    'default' => '',
+  ));
+ }
