@@ -470,11 +470,14 @@ class Mandrill {
    * @return array
    */
   private static function getValidContentTypes() {
-    return array(
+    $valid_types = array(
       'image/',
       'text/',
       'application/pdf',
+      'application/x-zip',
     );
+    drupal_alter('mandrill_valid_attachment_types', $valid_types);
+    return $valid_types;
   }
 }
 
