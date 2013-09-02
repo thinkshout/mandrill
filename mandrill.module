@@ -181,7 +181,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
     }
     return TRUE;
   }
-  catch (Mandrill_Exception $e) {
+  catch (MandrillException $e) {
     watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
       array(
         '%from' => $message['from'],
@@ -219,7 +219,7 @@ function mandrill_sender_plain($message) {
  * @param bool $reset
  *   Pass in TRUE to reset the statically cached object.
  *
- * @throws Mandrill_Exception
+ * @throws MandrillException
  *
  * @return mixed
  *   Mandrill Object upon success
@@ -305,7 +305,7 @@ function mandrill_get_templates() {
     $mailer = mandrill_get_api_object();
     $templates = $mailer->templates_list();
   }
-  catch (Mandrill_Exception $e) {
+  catch (MandrillException $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
     watchdog_exception('mandrill', $e);
   }

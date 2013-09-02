@@ -6,9 +6,9 @@
  */
 
 /**
- * Class Mandrill_Exception.
+ * Class MandrillException.
  */
-class Mandrill_Exception extends Exception {
+class MandrillException extends Exception {
 }
 
 /**
@@ -35,12 +35,12 @@ class Mandrill {
    */
   public function __construct($api_key, $timeout = 300) {
     if (empty($api_key)) {
-      throw new Mandrill_Exception('Invalid API key');
+      throw new MandrillException('Invalid API key');
     }
     try {
       $response = $this->request('users/ping', array('key' => $api_key));
       if ($response != 'PONG!') {
-        throw new Mandrill_Exception('Invalid API key: ' . $response);
+        throw new MandrillException('Invalid API key: ' . $response);
       }
 
       $this->api = $api_key;
@@ -48,7 +48,7 @@ class Mandrill {
 
     }
     catch (Exception $e) {
-      throw new Mandrill_Exception($e->getMessage());
+      throw new MandrillException($e->getMessage());
     }
   }
 
@@ -102,7 +102,7 @@ class Mandrill {
         break;
 
       default:
-        throw new Mandrill_Exception('Unknown request type');
+        throw new MandrillException('Unknown request type');
     }
 
     $response_code = $response->code;
@@ -126,14 +126,14 @@ class Mandrill {
     }
     else {
       $message = isset($body['message']) ? $body['message'] : '';
-      throw new Mandrill_Exception($message . ' - ' . $body, $response_code);
+      throw new MandrillException($message . ' - ' . $body, $response_code);
     }
   }
 
   /**
    * @link https://mandrillapp.com/api/docs/users.html#method=ping
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function users_ping() {
     return $this->request('users/ping');
@@ -142,7 +142,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/users.html#method=info
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function users_info() {
     return $this->request('users/info');
@@ -151,7 +151,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/users.html#method=senders
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function users_senders() {
     return $this->request('users/senders');
@@ -160,7 +160,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/senders.html#method=domains
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function senders_domains() {
     return $this->request('senders/domains');
@@ -169,7 +169,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/senders.html#method=list
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function senders_list() {
     return $this->request('senders/list');
@@ -178,7 +178,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/senders.html#method=info
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function senders_info($email) {
     return $this->request('senders/info', array('address' => $email));
@@ -187,7 +187,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/senders.html#method=time-series
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function senders_time_series($email) {
     return $this->request('senders/time-series', array('address' => $email));
@@ -196,7 +196,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/tags.html#method=list
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function tags_list() {
     return $this->request('tags/list');
@@ -205,7 +205,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/tags.html#method=info
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function tags_info($tag) {
     return $this->request('tags/info', array('tag' => $tag));
@@ -214,7 +214,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/tags.html#method=time-series
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function tags_time_series($tag) {
     return $this->request('tags/time-series', array('tag' => $tag));
@@ -223,7 +223,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/tags.html#method=all-time-series
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function tags_all_time_series() {
     return $this->request('tags/all-time-series');
@@ -232,7 +232,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=add
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_add($name, $code) {
     return $this->request('templates/add', array(
@@ -244,7 +244,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=update
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_update($name, $code) {
     return $this->request('templates/update', array(
@@ -256,7 +256,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=delete
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_delete($name) {
     return $this->request('templates/delete', array('name' => $name));
@@ -265,7 +265,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=info
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_info($name) {
     return $this->request('templates/info', array('name' => $name));
@@ -274,7 +274,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=list
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_list() {
     return $this->request('templates/list');
@@ -283,7 +283,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/templates.html#method=time-series
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function templates_time_series($name) {
     return $this->request('templates/time-series', array('name' => $name));
@@ -292,7 +292,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/urls.html#method=list
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function urls_list() {
     return $this->request('urls/list');
@@ -301,7 +301,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/urls.html#method=time-series
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function urls_time_series($url) {
     return $this->request('urls/time-series', array('url' => $url));
@@ -310,7 +310,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/urls.html#method=search
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function urls_search($q) {
     return $this->request('urls/search', array('q' => $q));
@@ -319,7 +319,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/webhooks.html#method=add
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function webhooks_add($url, $events) {
     return $this->request('webhooks/add', array(
@@ -331,7 +331,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/webhooks.html#method=update
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function webhooks_update($url, $events) {
     return $this->request('webhooks/update', array(
@@ -343,7 +343,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/webhooks.html#method=delete
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function webhooks_delete($id) {
     return $this->request('webhooks/delete', array('id' => $id));
@@ -352,7 +352,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/webhooks.html#method=info
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function webhooks_info($id) {
     return $this->request('webhooks/info', array('id' => $id));
@@ -361,7 +361,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/webhooks.html#method=list
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function webhooks_list() {
     return $this->request('webhooks/list');
@@ -370,7 +370,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/messages.html#method=search
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function messages_search($query, $date_from = '', $date_to = '', $tags = array(), $senders = array(), $limit = 100) {
     return $this->request('messages/search', compact('query', 'date_from', 'date_to', 'tags', 'senders', 'limit'));
@@ -379,7 +379,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/messages.html#method=send
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function messages_send($message) {
     return $this->request('messages/send', array('message' => $message));
@@ -388,7 +388,7 @@ class Mandrill {
   /**
    * @link https://mandrillapp.com/api/docs/messages.html#method=send-template
    *
-   * @return array|Mandrill_Exception
+   * @return array|MandrillException
    */
   public function messages_send_template($template_name, $template_content, $message) {
     return $this->request('messages/send-template', compact('template_name', 'template_content', 'message'));
@@ -403,7 +403,7 @@ class Mandrill {
    * @return array
    *   Attachment structure.
    *
-   * @throws Mandrill_Exception
+   * @throws MandrillException
    * @throws Exception
    */
   public static function getAttachmentStruct($path) {
@@ -451,7 +451,7 @@ class Mandrill {
 
     }
     catch (Exception $e) {
-      throw new Mandrill_Exception('Error creating the attachment structure: ' . $e->getMessage());
+      throw new MandrillException('Error creating the attachment structure: ' . $e->getMessage());
     }
 
     return $struct;
@@ -484,6 +484,7 @@ class Mandrill {
    * @static
    *
    * @return array
+   *   Valid content types to attach to an email.
    */
   protected static function getValidContentTypes() {
     $valid_types = array(

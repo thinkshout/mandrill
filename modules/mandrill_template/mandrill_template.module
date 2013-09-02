@@ -187,7 +187,7 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
  * @return array
  *   Message response.
  *
- * @throws Mandrill_Exception
+ * @throws MandrillException
  */
 function mandrill_template_sender($message, $template_id, $template_content) {
   $mailer = mandrill_get_api_object();
