@@ -145,13 +145,12 @@ class MandrillMailSystem implements MailSystemInterface {
     if (mandrill_process_async()) {
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
       $queue->createItem($mandrill_params);
-      if(variable_get('mandrill_batch_log_queued', TRUE)) {
+      if (variable_get('mandrill_batch_log_queued', TRUE)) {
         watchdog('mandrill', 'Message from %from to %to queued for delivery.',
           array(
             '%from' => $from['email'],
             '%to' => $to[0]['email'],
-            WATCHDOG_NOTICE
-          ));
+          ), WATCHDOG_NOTICE);
       }
       return TRUE;
     }
