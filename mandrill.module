@@ -83,6 +83,31 @@ function mandrill_permission() {
 }
 
 /**
+ * Implements hook_cron_queue_info().
+ */
+function mandrill_cron_queue_info() {
+  $queues = array();
+  $queues[MANDRILL_QUEUE] = array(
+    'worker callback' => 'mandrill_queue_worker_mailsend',
+    'time' => '45',
+  );
+  return $queues;
+}
+
+/**
+ * Sends a queued email.
+ * @see mandrill_cron_queue_info()
+ */
+function mandrill_queue_worker_mailsend($data) {
+  // Send the message stored in the queue item.
+  mandrill_mailsend(
+    $data['message'],
+    $data['function'],
+    $data['args']
+  );
+}
+
+/**
  * Implements hook_mail().
  */
 function mandrill_mail($key, &$message, $params) {
@@ -326,6 +351,7 @@ function mandrill_get_to($to) {
  * Implements hook_cron().
  */
 function mandrill_cron() {
+  /*
   $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
   $num_items = $queue->numberOfItems();
 
@@ -357,6 +383,7 @@ function mandrill_cron() {
     // Remove item from queue.
     $queue->deleteItem($item);
   }
+  */
 }
 
 /**
