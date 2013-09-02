@@ -166,14 +166,14 @@ function mandrill_admin_settings($form, &$form_state) {
         ),
       ),
     );
-    $form['asynchronous_options']['mandrill_batch_limit'] = array(
-      '#title' => t('Batch size'),
+    $form['asynchronous_options']['mandrill_queue_worker_timeout'] = array(
+      '#title' => t('Queue worker timeout'),
       '#type' => 'textfield',
       '#size' => '12',
-      '#description' => t('Number of messages to send in each cron batch. Zero or negative values are not allowed.'),
+      '#description' => t('Number of seconds to spend processing messages during cron. Zero or negative values are not allowed.'),
       '#required' => TRUE,
       '#element_validate' => array('element_validate_integer_positive'),
-      '#default_value' => variable_get('mandrill_batch_limit', 50),
+      '#default_value' => variable_get('mandrill_queue_worker_timeout', 15),
       '#states' => array(
         'invisible' => array(
           ':input[name="mandrill_process_async"]' => array('checked' => FALSE),

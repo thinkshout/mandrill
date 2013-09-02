@@ -89,7 +89,7 @@ function mandrill_cron_queue_info() {
   $queues = array();
   $queues[MANDRILL_QUEUE] = array(
     'worker callback' => 'mandrill_queue_worker_mailsend',
-    'time' => '45',
+    'time' => variable_get('mandrill_queue_worker_timeout', 15),
   );
   return $queues;
 }
