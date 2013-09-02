@@ -113,7 +113,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
         array(
           '%from' => $message['from_email'],
           '%to' => $message['to'],
-          '$function' => $function,
+          '%function' => $function,
         ),
         WATCHDOG_ERROR
       );
