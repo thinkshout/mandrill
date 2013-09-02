@@ -348,45 +348,6 @@ function mandrill_get_to($to) {
 }
 
 /**
- * Implements hook_cron().
- */
-function mandrill_cron() {
-  /*
-  $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
-  $num_items = $queue->numberOfItems();
-
-  // Allow for items left in the queue even after async processing disabled.
-  if (!mandrill_process_async() && $num_items == 0) {
-    return;
-  }
-
-  // Set our count to the lesser of batch limit or queue count.
-  $limit = variable_get('mandrill_batch_limit', 50);
-  $limit = ($num_items < $limit) ? $num_items : $limit;
-
-  for ($delta = 0; $delta != $limit; $delta++) {
-    // We can't test using claimItem() as part of the loop conditional,
-    // or we will accidentally pop an extra item off the queue
-    // and have the lease on that item for the next hour, locking it.
-    $item = $queue->claimItem();
-    if (!$item) {
-      break;
-    }
-
-    // Send the message stored in the queue item.
-    mandrill_mailsend(
-      $item->data['message'],
-      $item->data['function'],
-      $item->data['args']
-    );
-
-    // Remove item from queue.
-    $queue->deleteItem($item);
-  }
-  */
-}
-
-/**
  * Determine if mail should be processed asynchronously.
  *
  * @return bool
