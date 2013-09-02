@@ -152,15 +152,13 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
 
 /**
  * Validate handler for mandrill_template_map().
- *
- * @param string $form
- * @param string $form_state
  */
 function mandrill_template_map_form_validate($form, &$form_state) {
   $values = $form_state['values'];
-  // Test to see if mandrill_template_map value will exceed row length of 255 characters
+  // Test to see if mandrill_template_map value will exceed row length of 255
+  // characters
   if (strlen($values['mailsystem_key']) > 255) {
-    form_set_error('mailsystem_key', t('The length of the mail sytem key name is too long.'));
+    form_set_error('mailsystem_key', t('The length of the mailsytem_key name is too long.'));
   }
 }
 
