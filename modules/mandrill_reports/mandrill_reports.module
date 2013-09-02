@@ -47,8 +47,10 @@ function mandrill_reports_data() {
     // tags
     $tags = $api->tags_list();
     foreach ($tags as $tag) {
-      $data['tags'][$tag['tag']] = $api->tags_info($tag['tag']);
-      $data['tags'][$tag['tag']]['time_series'] = $api->tags_time_series($tag['tag']);
+      if (isset($tag['tag'])) {
+        $data['tags'][$tag['tag']] = $api->tags_info($tag['tag']);
+        $data['tags'][$tag['tag']]['time_series'] = $api->tags_time_series($tag['tag']);
+      }
     }
 
     // all time
