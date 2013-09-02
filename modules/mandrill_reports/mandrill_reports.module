@@ -8,7 +8,7 @@ function mandrill_reports_menu() {
   $items['admin/reports/mandrill'] = array(
     'title' => 'Mandrill',
     'page callback' => 'mandrill_reports_dashboard_page',
-    'access arguments' => array('administer mandrill'),
+    'access arguments' => array('view mandrill reports'),
     'description' => 'View Mandrill dashboard.',
   );
   $items['admin/reports/mandrill/dashboard'] = array(
@@ -19,12 +19,24 @@ function mandrill_reports_menu() {
   $items['admin/reports/mandrill/summary'] = array(
     'title' => 'Account summary',
     'page callback' => 'mandrill_reports_summary_page',
-    'access arguments' => array('administer mandrill'),
+    'access arguments' => array('view mandrill reports'),
     'description' => 'View account summary.',
-    'type' => MENU_LOCAL_TASK
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function mandrill_reports_permission() {
+  return array(
+    'view mandrill reports' => array(
+      'title' => t('View Mandrill reports'),
+      'description' => t('View all Mandrill reports.'),
+    ),
+  );
 }
 
 /**
