@@ -106,6 +106,9 @@ class MandrillMailSystem implements MailSystemInterface {
     // Account for the plaintext parameter provided by the mimemail module.
     $plain_text = empty($message['params']['plaintext']) ? drupal_html_to_text($message['body']) : $message['params']['plaintext'];
 
+    // Get metadata.
+    $metadata = isset($message['metadata']) ? $message['metadata'] : array();
+
     $from = mandrill_from();
     $mandrill_message = array(
       'html' => $html,
@@ -126,6 +129,7 @@ class MandrillMailSystem implements MailSystemInterface {
       'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
+      'metadata' => $metadata,
     );
 
     // Allow other modules to alter the Mandrill message, and sender/args.
