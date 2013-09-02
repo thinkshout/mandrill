@@ -103,10 +103,13 @@ class MandrillMailSystem implements MailSystemInterface {
       }
     }
 
+    // Account for the plaintext parameter provided by the mimemail module.
+    $plain_text = empty($message['params']['plaintext']) ? drupal_html_to_text($message['body']) : $message['params']['plaintext'];
+
     $from = mandrill_from();
     $mandrill_message = array(
       'html' => $html,
-      'text' => empty($message['params']['plaintext']) ? drupal_html_to_text($message['body']) : $message['params']['plaintext'],
+      'text' => $plain_text,
       'subject' => $message['subject'],
       'from_email' => $from['email'],
       'from_name' => $from['name'],
