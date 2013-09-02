@@ -56,7 +56,7 @@ function mandrill_update_7002() {
    */
 function mandrill_requirements($phase) {
   $requirements = array();
-  // Ensure translations don't break at install time
+  // Ensure translations don't break at install time.
   $t = get_t();
 
   if ($phase == 'update') {
@@ -65,7 +65,7 @@ function mandrill_requirements($phase) {
         'title' => $t('Mandrill'),
         'value' => '7.x-1.4',
         'description' => $t('Mail System module is required for Mandrill 7.x-1.3 or higher.'),
-        'severity' => REQUIREMENT_ERROR
+        'severity' => REQUIREMENT_ERROR,
       );
     }
   }

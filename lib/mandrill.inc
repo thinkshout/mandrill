@@ -1,18 +1,29 @@
 <?php
 
+/**
+ * @file
+ * Wrapper class around the Mandrill API.
+ */
+
+/**
+ * Class Mandrill_Exception.
+ */
 class Mandrill_Exception extends Exception {
 }
 
+/**
+ * Class Mandrill.
+ */
 class Mandrill {
   const API_VERSION = '1.0';
   const END_POINT = 'https://mandrillapp.com/api/';
 
-  private $api;
+  protected $api;
 
   /**
    * Default to a 300 second timeout on server calls
    */
-  private $timeout = 300;
+  protected $timeout = 300;
 
   /**
    * Constructor to set internal values.
@@ -42,7 +53,10 @@ class Mandrill {
   }
 
   /**
-   * Every API call uses this function to actually make the request to Mandrill's servers.
+   * Make a request to Mandrill's API.
+   *
+   * Every API call uses this function to actually make the request to
+   * Mandrill's servers.
    *
    * @link https://mandrillapp.com/api/docs/
    *
@@ -53,12 +67,13 @@ class Mandrill {
    * @param string $http
    *   GET or POST request type
    * @param string $output
-   *   API response format (json,php,xml,yaml). json and xml are decoded into arrays automatically.
+   *   API response format (json,php,xml,yaml). json and xml are decoded into
+   *   arrays automatically.
    *
    * @return array
    *   Array on success.
    */
-  private function request($method, $args = array(), $http = 'POST', $output = 'json') {
+  protected function request($method, $args = array(), $http = 'POST', $output = 'json') {
     if (!isset($args['key'])) {
       $args['key'] = $this->api;
     }
@@ -222,7 +237,7 @@ class Mandrill {
   public function templates_add($name, $code) {
     return $this->request('templates/add', array(
       'name' => $name,
-      'code' => $code
+      'code' => $code,
     ));
   }
 
@@ -234,7 +249,7 @@ class Mandrill {
   public function templates_update($name, $code) {
     return $this->request('templates/update', array(
       'name' => $name,
-      'code' => $code
+      'code' => $code,
     ));
   }
 
@@ -309,7 +324,7 @@ class Mandrill {
   public function webhooks_add($url, $events) {
     return $this->request('webhooks/add', array(
       'url' => $url,
-      'events' => $events
+      'events' => $events,
     ));
   }
 
@@ -321,7 +336,7 @@ class Mandrill {
   public function webhooks_update($url, $events) {
     return $this->request('webhooks/update', array(
       'url' => $url,
-      'events' => $events
+      'events' => $events,
     ));
   }
 
@@ -434,7 +449,8 @@ class Mandrill {
       $struct['name'] = $filename;
       $struct['content'] = $file_buffer;
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       throw new Mandrill_Exception('Error creating the attachment structure: ' . $e->getMessage());
     }
 
@@ -450,7 +466,7 @@ class Mandrill {
    *
    * @return bool
    */
-  private static function isValidContentType($ct) {
+  protected static function isValidContentType($ct) {
     $valids = self::getValidContentTypes();
 
     foreach ($valids as $vct) {
@@ -469,7 +485,7 @@ class Mandrill {
    *
    * @return array
    */
-  private static function getValidContentTypes() {
+  protected static function getValidContentTypes() {
     $valid_types = array(
       'image/',
       'text/',

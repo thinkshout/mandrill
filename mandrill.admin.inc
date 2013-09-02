@@ -119,11 +119,13 @@ function mandrill_admin_settings($form, &$form_state) {
       '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
       '#type' => 'checkbox',
       '#description' => t('If you select Mandrill as the site-wide default email sender in !mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the !systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
-        array('!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
-          '!systemlog' => l(t('system log'), 'admin/reports/dblog'),)),
+        array(
+          '!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
+          '!systemlog' => l(t('system log'), 'admin/reports/dblog'),
+        )),
       '#default_value' => variable_get('mandrill_log_defaulted_sends', FALSE),
-    ); 
-    
+    );
+
     $form['analytics'] = array(
       '#type' => 'fieldset',
       '#collapsible' => TRUE,
@@ -201,11 +203,6 @@ function mandrill_admin_settings_form_callback($form, &$form_state) {
 
 /**
  * Return a form for sending a test email.
- *
- * @param array $form
- * @param array $form_state
- *
- * @return array $form
  */
 function mandrill_test_form($form, &$form_state) {
   drupal_set_title(t('Send test email'));
@@ -245,11 +242,6 @@ function mandrill_test_form($form, &$form_state) {
 
 /**
  * Submit handler for mandrill_test_form(), sends the test email.
- *
- * @param string $form
- * @param string $form_state
- *
- * @return void
  */
 function mandrill_test_form_submit($form, &$form_state) {
   // If an address was given, send a test email message.
@@ -264,7 +256,8 @@ function mandrill_test_form_submit($form, &$form_state) {
     drupal_set_message(t('Automatically setting Mandrill tests to go through Mandrill API: MandrillMailSystem was not previously configured in Mail System.'));
     mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
   }
-  // Check for wrong mailsystem config for Mandrill, if not empty, and issue a warning:
+  // Check for wrong mailsystem config for Mandrill, if not empty, and issue a
+  // warning:
   elseif ($mailsystem['mandrill_test'] != 'MandrillMailSystem') {
     drupal_set_message(
       t('Mail System is configured to send Mandrill Test messages through %system, not Mandrill. To send tests through Mandrill, go to !link and change the setting.',
@@ -272,7 +265,8 @@ function mandrill_test_form_submit($form, &$form_state) {
           '%system' => $mailsystem['mandrill_test'],
           '!link' => l(t('Mandrill'), 'https://mandrillapp.com/templates'))),
       'warning');
-    // Hack because we are apparently formatting the body differently than default drupal messages
+    // Hack because we are apparently formatting the body differently than
+    // default drupal messages.
     $params['body'] = array('0' => $params['body']);
   }
   $result = drupal_mail('mandrill', 'test', $test_address, $language, $params);

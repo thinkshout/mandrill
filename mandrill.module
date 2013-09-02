@@ -125,8 +125,9 @@ function mandrill_mail($key, &$message, $params) {
  * Abstracts sending of messages, allowing queueing option.
  * 
  * @param array $message
- *   a message array formatted for Mandrill's sending API, plus 2 additional indexes
- *   for the send_function and an array of $args, if needed by the send function
+ *   A message array formatted for Mandrill's sending API, plus 2 additional
+ *   indexes for the send_function and an array of $args, if needed by the send
+ *   function.
  *
  * @return bool
  *   TRUE if no exception thrown
@@ -201,9 +202,11 @@ function mandrill_mailsend($message, $function, $args = array()) {
  * 
  * This is the default function used by mandrill_mailsend
  * 
- * @param $message
+ * @array $message
+ *   Associative array containing message data.
  * 
  * @return array
+ *   Results of sending the message.
  */
 function mandrill_sender_plain($message) {
   $mailer = mandrill_get_api_object();
@@ -334,7 +337,7 @@ function mandrill_get_to($to) {
   $recipients = array();
   $to_array = explode(',', $to);
   foreach ($to_array as $email) {
-    if(preg_match(MANDRILL_EMAIL_REGEX, $email, $matches)) {
+    if (preg_match(MANDRILL_EMAIL_REGEX, $email, $matches)) {
       $recipients[] = array(
         'email' => $matches[2],
         'name' => $matches[1],
