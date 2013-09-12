@@ -66,13 +66,12 @@ class MandrillMailSystem implements MailSystemInterface {
     $mailer = mandrill_get_api_object();
 
     // Apply input format to body.
-    $html = $message['body'];
     $format = variable_get('mandrill_filter_format', '');
     if (!empty($format)) {
-      $html = check_markup($message['body'], $format);
+      $message['body'] = check_markup($message['body'], $format);
     }
 
-    // Extract an arry of recipients.
+    // Extract an array of recipients.
     $to = mandrill_get_to($message['to']);
 
     // Prepare headers, defaulting the reply-to to the from address since
@@ -111,7 +110,7 @@ class MandrillMailSystem implements MailSystemInterface {
 
     $from = mandrill_from();
     $mandrill_message = array(
-      'html' => $html,
+      'html' => $message['body'],
       'text' => $plain_text,
       'subject' => $message['subject'],
       'from_email' => $from['email'],
