@@ -1,0 +1,11 @@
+name = Mandrill Activity
+description = View activity for an email address associated with any entity.
+package = Mandrill
+core = 7.x
+
+dependencies[] = Mandrill
+dependencies[] = entity
+
+files[] = mandrill_activity.entity.inc
+files[] = mandrill_activity.ui_controller.inc
+
