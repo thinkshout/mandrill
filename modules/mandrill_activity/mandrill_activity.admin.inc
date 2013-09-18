@@ -32,7 +32,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
     '#disabled' => !empty($mandrill_activity_entity->name),
     '#required' => TRUE,
     '#machine_name' => array(
-      'exists' => 'mandrill_activity_load_entities',
+      'exists' => 'mandrill_activity_load',
       'source' => array('label'),
     ),
     '#weight' => -9,
@@ -46,10 +46,11 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
     ),
     '#weight' => -8,
   );
-  //prep the entity type list before creating the form item:
+
+  // Prep the entity type list before creating the form item:
   $entity_types = array('' => t('-- Select --'));
   foreach (entity_get_info() as $entity_type => $info) {
-    // ignore Mandrill entity types
+    // Ignore Mandrill entity types.
     if (strpos($entity_type, 'Mandrill') === FALSE) {
       $entity_types[$entity_type] = $info['label'];
     }
@@ -64,7 +65,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
     '#description' => t('Select an entity type to enable Mandrill history on.'),
     '#ajax' => array(
       'callback' => 'mandrill_activity_mapping_form_callback',
-      'wrapper' => 'Mandrill-activity-drupal-entity'
+      'wrapper' => 'Mandrill-activity-drupal-entity',
     ),
     '#weight' => -8,
   );
@@ -74,7 +75,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
     $form_entity_type = $mandrill_activity_entity->entity_type;
   }
   if ($form_entity_type) {
-    //prep the bundle list before creating the form item:
+    // Prep the bundle list before creating the form item:
     $bundles = array('' => t('-- Select --'));
     $info  = entity_get_info($form_entity_type);
     foreach ($info['bundles'] as $key => $bundle) {
@@ -91,7 +92,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
       '#weight' => -7,
       '#ajax' => array(
         'callback' => 'mandrill_activity_mapping_form_callback',
-        'wrapper' => 'Mandrill-activity-drupal-entity'
+        'wrapper' => 'Mandrill-activity-drupal-entity',
       ),
     );
 
@@ -100,7 +101,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
       $form_bundle = $mandrill_activity_entity->bundle;
     }
     if ($form_bundle) {
-      //prep the field & properties list before creating the form item:
+      // Prep the field & properties list before creating the form item:
       $fields = mandrill_activity_email_fieldmap_options($form_entity_type, $form_bundle);
       $form['drupal_entity']['email_property'] = array(
         '#title' => t('Email Property'),
