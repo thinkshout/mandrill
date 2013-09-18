@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Install hooks for mandrill_activity.
+ */
 
 /**
  * Implements hook_schema().
@@ -60,7 +64,7 @@ function mandrill_activity_schema() {
         'size' => 'tiny',
         'description' => 'Whether or not this Mandrill activity stream is enabled.',
       ),
-      // following fields are for supporting exportable status.
+      // Following fields are for supporting exportable status.
       'locked' => array(
         'description' => 'A boolean indicating whether the administrator may delete this mapping.',
         'type' => 'int',

@@ -1,5 +1,14 @@
 <?php
+/**
+ * @file
+ * Class defining a MandrillActivityEntity.
+ */
 
+/**
+ * Class MandrillActivityEntity
+ *
+ * Extend Entity to define a MandrillActivityEntity.
+ */
 class MandrillActivityEntity extends Entity {
   public
     $mandrill_activity_entity_id,
@@ -18,6 +27,12 @@ class MandrillActivityEntity extends Entity {
     parent::__construct($values, 'mandrill_activity_entity');
   }
 
+  /**
+   * Return a label for this entity.
+   *
+   * @return string
+   *   Label.
+   */
   public function label() {
     return $this->label;
   }

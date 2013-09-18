@@ -154,7 +154,7 @@ function mandrill_activity_entity_form_validate($form, &$form_state) {
         'bundle',
         t('A Mandrill Activity Entity already exists for this Bundle. Either select a different Bundle or edit the !link for this bundle.',
           array(
-            '!link' => l('existing Mandrill Activity Entity', "admin/config/services/Mandrill/activity/manage/{$extant_ent->name}")
+            '!link' => l(t('existing Mandrill Activity Entity'), "admin/config/services/mandrill/activity/manage/{$extant_ent->name}"),
           )
         ));
     }
@@ -166,7 +166,6 @@ function mandrill_activity_entity_form_validate($form, &$form_state) {
  */
 function mandrill_activity_entity_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $activity_entity = array();
   if ($form_state['op'] == 'add' || $form_state['op'] == 'clone') {
     $dummy = entity_create($form_state['values']['entity_type'], array('type' => $form_state['values']['bundle']));
     $uri = entity_uri($form_state['values']['entity_type'], $dummy);
@@ -180,18 +179,19 @@ function mandrill_activity_entity_form_submit($form, &$form_state) {
     }
   }
   $activity_entity->save();
-  menu_rebuild(); //Otherwise user has to clear cache themselves to see newly created activity pages
+
+  // Ensure the new local task appears on the entity.
+  menu_rebuild();
   $form_state['redirect'] = 'admin/config/services/Mandrill/activity';
 }
 
 /**
  * Return all possible Drupal properties for a given entity type.
  *
- * @param string $entity_type
+ * @string $entity_type
  *   Name of entity whose properties to list.
- * @param bool $include_entities
- *   Choose whether or not to include properties of the given entity type that
- *   are themselves also entities.
+ * @string $entity_bundle
+ *   Entity bundle to get properties for.
  *
  * @return array
  *   List of entities that can be used as an #options list.
