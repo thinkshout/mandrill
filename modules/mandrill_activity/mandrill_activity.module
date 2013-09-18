@@ -152,10 +152,16 @@ function mandrill_activity_page($entity, MandrillActivityEntity $mandrill_activi
   }
 
   $display['mandrill_activity'] = array(
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $rows,
+    'message' => array(
+      '#markup' => t('The 100 most recent Emails sent to %email via Mandrill.', array('%email' => $email)),
+    ),
+    'activity' => array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+    ),
   );
+
   return $display;
 }
 
