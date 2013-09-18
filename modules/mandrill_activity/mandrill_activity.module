@@ -75,9 +75,11 @@ function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_enti
 /**
  * Loads a single mandrill_activity_entity or all of them if no name provided.
  *
- * @param null $name
+ * @string $name
+ *   Machine name of Mandrill Activity Entity to load.
  *
- * @return array
+ * @return MandrillActivityEntity|array
+ *   Array of MandrillActivityEntity's or a single MandrillActivityEntity.
  */
 function mandrill_activity_load($name = NULL) {
   $types = entity_load_multiple_by_name('mandrill_activity_entity', isset($name) ? array($name) : FALSE);
@@ -89,6 +91,7 @@ function mandrill_activity_load($name = NULL) {
  *
  * @object $entity
  *   Entity to load activity for.
+ *
  * @param MandrillActivityEntity $mandrill_activity_entity
  *   Loaded MandrillActivityEntity object.
  *
@@ -122,41 +125,26 @@ function mandrill_activity_page($entity, MandrillActivityEntity $mandrill_activi
   }
 
   $header = array(
-    t('Campaign'),
-    t('Action'),
-    t('Date & Time'),
+    t('Subject'),
+    t('Timestamp'),
+    t('State'),
+    t('Opens'),
+    t('Clicks'),
+    t('Tags'),
   );
   $rows = array();
 
   // Loop through all activities, creating rows for each.
-  $user_activity = mandrill_activity_get_activity($email);
-  if (isset($user_activity['lists'])) {
-    foreach ($user_activity['lists'] as $list_activity) {
-      $rows[] = array(
-        'no_striping' => TRUE,
-        'data' => array(
-          array(
-            'data' => '<strong>List: ' . $list_activity['list']['name'] . '</strong>',
-            'colspan' => count($header),
-            'style' => 'text-align:center',
-          ),
-        ),
-      );
-
-      foreach ($list_activity['activity'] as $activity) {
-        $rows[] = array(
-          array(
-            'data' => array(
-              '#type' => 'link',
-              '#title' => $user_activity['campaigns'][$activity['campaign_id']]['title'],
-              '#href' => $user_activity['campaigns'][$activity['campaign_id']]['archive_url'],
-            ),
-          ),
-          $activity['action'],
-          $activity['timestamp'],
-        );
-      }
-    }
+  $activity = mandrill_activity_get_activity($email);
+  foreach ($activity as $sent_email) {
+    $rows[] = array(
+      $sent_email['subject'],
+      format_date($sent_email['ts'], 'short'),
+      $sent_email['state'],
+      $sent_email['opens'],
+      $sent_email['clicks'],
+      implode(', ', $sent_email['tags']),
+    );
   }
 
   $display['mandrill_activity'] = array(
@@ -178,25 +166,8 @@ function mandrill_activity_page($entity, MandrillActivityEntity $mandrill_activi
  *   Array of activity.
  */
 function mandrill_activity_get_activity($email) {
-  $activity = array();
-
   $mandrill = mandrill_get_api_object();
-  $result = $mandrill->messages_search("email:{$email}");
-
-  $listdata = Mandrill_get_lists_by_email($email);
-  if (isset($listdata['campaigns'])) {
-    $all_activity['campaigns'] = $listdata['campaigns'];
-  }
-  if (isset($listdata['lists'])) {
-    foreach ($listdata['lists'] as $list) {
-      $all_activity['lists'][$list['id']] = array(
-        'list' => $list,
-        'activity' => mandrill_activity_get_member_activity($list['id'], $email)
-      );
-    }
-  }
-
-  return $all_activity;
+  return $mandrill->messages_search("email:{$email}");
 }
 
 /**
