@@ -200,7 +200,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
 /**
  * The actual function that calls the API send message.
  * 
- * This is the default function used by mandrill_mailsend
+ * This is the default function used by mandrill_mailsend().
  * 
  * @array $message
  *   Associative array containing message data.
