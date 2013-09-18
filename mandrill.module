@@ -221,7 +221,7 @@ function mandrill_sender_plain($message) {
  *
  * @throws MandrillException
  *
- * @return mixed
+ * @return Mandrill|bool
  *   Mandrill Object upon success
  *   FALSE if variable_get('mandrill_api_key') is unset
  */
