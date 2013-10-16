@@ -333,8 +333,9 @@ class Mandrill {
    *
    * @return array|MandrillException
    */
-  public function webhooks_update($url, $events) {
+  public function webhooks_update($id, $url, $events) {
     return $this->request('webhooks/update', array(
+      'id' => $id,
       'url' => $url,
       'events' => $events,
     ));
