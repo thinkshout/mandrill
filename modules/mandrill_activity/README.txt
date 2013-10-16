@@ -1,5 +1,5 @@
 View Mandrill activity for any entity with a valid email address.
-Activity keys off of an email address and is cached after the initial load.
+Activity keys off of an email address.
 
 ## Installation
 

@@ -90,6 +90,11 @@ URL interactions for the past 30 days.
 ### Account Summary
 Shows account information, quotas, and all-time usage stats.
 
+## Activity
+The Mandrill Activity sub-modules allows users to view email activity for any
+Drupal entity with a valid email address. Configuration and usage details are in
+sub-module's README file.
+
 ## SEND TEST EMAIL
 
 The Send Test Email function is pretty self-explanatory. The To: field will
