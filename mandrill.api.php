@@ -21,3 +21,17 @@
 function hook_mandrill_mail_alter(&$mandrill_params, $message) {
   // No example.
 }
+
+/**
+ * Allows other modules to alter the allowed attachment file types.
+ *
+ * @param $types
+ *   An array of file types indexed numerically.
+ */
+
+function hook_mandrill_valid_attachment_types_alter(&$types) {
+  // Example, allow word docs:
+  $types[] = 'application/msword';
+  // allow openoffice docs:
+  $types[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+}
