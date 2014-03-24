@@ -32,6 +32,8 @@ class Mandrill {
    *   Mandrill API key.
    * @param int $timeout
    *   Server timeout.
+   *
+   * @throws MandrillException.
    */
   public function __construct($api_key, $timeout = 300) {
     if (empty($api_key)) {
@@ -72,6 +74,8 @@ class Mandrill {
    *
    * @return array
    *   Array on success.
+   *
+   * @throws MandrillException.
    */
   protected function request($method, $args = array(), $http = 'POST', $output = 'json') {
     if (!isset($args['key'])) {
@@ -125,8 +129,11 @@ class Mandrill {
       return $body;
     }
     else {
-      $message = isset($body['message']) ? $body['message'] : '';
-      throw new MandrillException($message . ' - ' . $body, $response_code);
+      $message = isset($body['message']) ? $body['message'] : $body;
+      if (is_array($message)) {
+        $message = "Unspecified Error";
+      }
+      throw new MandrillException($message, $response_code);
     }
   }
 
