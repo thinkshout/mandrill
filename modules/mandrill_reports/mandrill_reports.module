@@ -72,11 +72,19 @@ function mandrill_reports_data() {
     // Senders: data is not being used, and the API currently (3/12/13) behaves
     // badly if you have a bad email address anywhere in your sender history, so
     // commenting out for now:
-    // $senders = $api->senders_list();
-    // foreach ($senders as $sender) {
-    //   $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
-    //   $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
-    // }
+    $senders = $api->senders_list();
+    foreach ($senders as $sender) {
+      try {
+        $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
+        $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
+      }
+      catch (MandrillException $e) {
+        watchdog('mandrill', 'An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
+          '%address' => $sender['address'],
+          '%message' => $e->getMessage(),
+        ), WATCHDOG_ERROR);
+      }
+    }
 
     // Urls.
     $urls = $api->urls_list();
@@ -106,6 +114,7 @@ function mandrill_reports_data() {
  */
 function mandrill_reports_dashboard_page() {
   $data = mandrill_reports_data();
+  $settings = array();
   // All time series chart data.
   foreach ($data['all_time_series'] as $series) {
     $settings['mandrill_reports']['volume'][] = array(
