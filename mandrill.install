@@ -11,11 +11,18 @@
  */
 function mandrill_uninstall() {
   // Delete other variables:
+  variable_del('mandrill_analytics_campaign');
+  variable_del('mandrill_analytics_domains');
+  variable_del('mandrill_api_key');
   variable_del('mandrill_filter_format');
   variable_del('mandrill_from');
   variable_del('mandrill_from_name');
+  variable_del('mandrill_mail_key_blacklist');
   variable_del('mandrill_test_address');
   variable_del('mandrill_test_body');
+  variable_del('mandrill_track_clicks');
+  variable_del('mandrill_track_opens');
+  variable_del('mandrill_url_strip_qs');
   variable_del('mandrill_process_async');
 }
 
