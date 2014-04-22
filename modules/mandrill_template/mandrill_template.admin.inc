@@ -55,7 +55,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   $templates = mandrill_get_templates();
   $template_names = array();
   foreach ($templates as $template) {
-    $template_names[$template['name']] = $template;
+    $template_names[$template['slug']] = $template;
   }
   // Check if the currently configured template still exists.
   if (!empty($map->template_id) && !array_key_exists($map->template_id, $template_names)) {
@@ -64,7 +64,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
   if (!empty($templates)) {
     $options = array('' => t('-- Select --'));
     foreach ($templates as $template) {
-      $options[$template['name']] = $template['name'];
+      $options[$template['slug']] = $template['name'];
     }
     $form['map_settings']['template_id'] = array(
       '#type' => 'select',
