@@ -6,10 +6,6 @@
 
 /**
  * Return a form for adding/editing a Mandrill template map.
- *
- * @param array $form
- * @param array $form_state
- * @param object $map
  */
 function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $map = NULL, $op = 'edit') {
   $form_state['op'] = $op;
@@ -32,7 +28,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     '#size' => 35,
     '#maxlength' => 32,
     '#default_value' => $map ? $map->label : '',
-    '#required' => TRUE
+    '#required' => TRUE,
   );
 
   // Machine-readable list name.
@@ -164,15 +160,9 @@ function mandrill_template_map_form_validate($form, &$form_state) {
 
 /**
  * Submit handler for mandrill_template_map(), creates the entity.
- *
- * @param string $form
- * @param string $form_state
- *
- * @return void
  */
 function mandrill_template_map_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-  $map = array();
   if ($form_state['op'] == 'add' || $form_state['op'] == 'clone') {
     $map = entity_create('mandrill_template_map', $values);
   }
@@ -189,11 +179,6 @@ function mandrill_template_map_form_submit($form, &$form_state) {
 
 /**
  * Javascript callback for the mandrill_template_map_form.
- *
- * @param $form
- * @param $form_state
- * 
- * @return mixed
  */
 function mandrill_template_map_form_callback($form, &$form_state) {
   return $form['map_settings'];
@@ -206,11 +191,6 @@ function mandrill_template_map_form_callback($form, &$form_state) {
  * containing the mc:edit tags for a given template, but rather
  * a big pile of ugly HTML containing the tags. We need to parse
  * through it.
- *
- * @param $html
- * @param $tag
- *
- * @return array
  */
 function _mandrill_parse_regions($html, $tag = 'mc:edit') {
   $instances = array();

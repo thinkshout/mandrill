@@ -84,7 +84,7 @@ function mandrill_template_map_load_entities($name = NULL) {
  * @param string $mailsystem
  *   Mail key to search for a template mapping.
  *
- * @return mandrill_template_map
+ * @return entity
  *   Mandrill template map.
  */
 function mandrill_template_map_load_by_mailsystem($mailsystem) {
@@ -148,12 +148,6 @@ function mandrill_template_map_usage() {
  *
  * Determine if an email is configured to use a Mandrill template and change the
  * mandrill_send_function parameter as needed.
- *
- * @param array $mandrill_params
- *   Associative array of mandrill parameters including the mandrill message.
- *
- * @param array $message
- *   The original Drupal message.
  */
 function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
   $template_map = mandrill_template_map_load_by_mailsystem($message['id']);
@@ -165,8 +159,8 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
         array(
           'name' => $template_map->main_section,
           'content' => $message['body'],
-        )
-      )
+        ),
+      ),
     );
     if (isset($message['mandrill_template_content'])) {
       $mandrill_params['args']['template_content'] = array_merge($message['mandrill_template_content'], $mandrill_params['args']['template_content']);
