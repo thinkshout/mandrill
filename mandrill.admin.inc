@@ -74,6 +74,28 @@ function mandrill_admin_settings($form, &$form_state) {
       '#default_value' => $from['name'],
       '#description' => t('Optionally enter a from name to be used.'),
     );
+    $subaccounts = mandrill_get_subaccounts();
+    $sub_acct_options = array('' => '-- Select --');
+    if (count($subaccounts)) {
+      $sub_acct_options = array('' => '-- Select --');
+      foreach ($subaccounts as $acct) {
+        if ($acct['status'] == 'active') {
+          $sub_acct_options[$acct['id']] = $acct['name'] . ' (' . $acct['reputation'] . ')';
+        }
+      }
+    }
+    elseif (variable_get('mandrill_subaccount', FALSE)) {
+      variable_set('mandrill_subaccount', FALSE);
+    }
+    if (count($sub_acct_options) > 1) {
+      $form['email_options']['mandrill_subaccount'] = array(
+        '#type' => 'select',
+        '#title' => t('Subaccount'),
+        '#options' => $sub_acct_options,
+        '#default_value' => variable_get('mandrill_subaccount', ''),
+        '#description' => t('Choose a subaccount to send through.'),
+      );
+    }
     $formats = filter_formats();
     $options = array('' => t('-- Select --'));
     foreach ($formats as $v => $format) {

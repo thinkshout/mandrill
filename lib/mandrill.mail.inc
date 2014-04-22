@@ -151,7 +151,10 @@ class MandrillMailSystem implements MailSystemInterface {
       'view_content_link' => $view_content,
       'metadata' => $metadata,
     );
-
+    $subaccount = variable_get('mandrill_subaccount', FALSE);
+    if ($subaccount) {
+      $mandrill_message['subaccount'] = $subaccount;
+    }
     // Allow other modules to alter the Mandrill message, and sender/args.
     $mandrill_params = array(
       'message' => $mandrill_message,
