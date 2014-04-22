@@ -168,6 +168,9 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
         )
       )
     );
+    if (isset($message['mandrill_template_content'])) {
+      $mandrill_params['args']['template_content'] = array_merge($message['mandrill_template_content'], $mandrill_params['args']['template_content']);
+    }
   }
 }
 

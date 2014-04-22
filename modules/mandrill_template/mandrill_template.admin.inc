@@ -93,7 +93,7 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
       $form['map_settings']['main_section'] = array(
         '#type' => 'select',
         '#title' => t('Template region'),
-        '#description' => t('Select the template region to use for email content.'),
+        '#description' => t('Select the template region to use for email content. <i>Note that you can populate more regions by attaching an array to your message with the index "mandrill_template_content", using region names as indexes to the content for that region.'),
         '#options' => $regions,
         '#default_value' => isset($map->main_section) ? $map->main_section : '',
         '#required' => TRUE,
