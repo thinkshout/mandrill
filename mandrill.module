@@ -313,6 +313,23 @@ function mandrill_get_templates() {
 }
 
 /**
+ * Get a list of subaccounts.
+ */
+function mandrill_get_subaccounts() {
+  $subaccounts = array();
+  try {
+    $mandrill = mandrill_get_api_object();
+    $subaccounts = $mandrill->subaccounts();
+  }
+  catch (MandrillException $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $subaccounts;
+}
+
+/**
  * Helper to return a comma delimited list of mail keys to not log content for.
  *
  * @return string

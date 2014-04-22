@@ -199,6 +199,15 @@ class Mandrill {
   public function senders_time_series($email) {
     return $this->request('senders/time-series', array('address' => $email));
   }
+  
+  /**
+   * @link https://mandrillapp.com/api/docs/subaccounts.html#method=method-list
+   *
+   * @return array|MandrillException
+   */
+  public function subaccounts() {
+    return $this->request('subaccounts/list');
+  }
 
   /**
    * @link https://mandrillapp.com/api/docs/tags.html#method=list
