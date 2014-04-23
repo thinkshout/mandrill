@@ -41,7 +41,7 @@ class MandrillMailSystem implements MailSystemInterface {
   public function mail(array $message) {
     // Optionally log mail keys not using Mandrill already. Helpful in
     // configuring Mandrill.
-    if (variable_get('mandrill_log_defaulted_sends')) {
+    if (variable_get('mandrill_log_defaulted_sends', FALSE)) {
       $systems = mailsystem_get();
       $registered = FALSE;
       foreach ($systems as $key => $system) {
