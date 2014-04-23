@@ -184,7 +184,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
   catch (MandrillException $e) {
     watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
       array(
-        '%from' => $message['from'],
+        '%from' => $message['from_email'],
         '%to' => $message['to'],
         '@code' => $e->getCode(),
         '@message' => $e->getMessage(),
