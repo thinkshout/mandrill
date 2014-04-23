@@ -207,10 +207,16 @@ function mandrill_mailsend($message, $function, $args = array()) {
  * 
  * @return array
  *   Results of sending the message.
+ *
+ * @throws MandrillException
  */
 function mandrill_sender_plain($message) {
-  $mailer = mandrill_get_api_object();
-  return $mailer->messages_send($message);
+  if ($mailer = mandrill_get_api_object()) {
+    return $mailer->messages_send($message);
+  }
+  else {
+    throw new MandrillException('Missing API key.');
+  }
 }
 
 /**
