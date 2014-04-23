@@ -7,6 +7,21 @@ terribly useful...)
 
 ## INSTALLATION NOTES
 
+ * The Mandrill library must be downloaded into your libraries folder. It's
+   available at:
+   https://bitbucket.org/mailchimp/mandrill-api-php/downloads ("Tags" tab) or by
+   using the included example drush make file.
+   Proper libraries structure:
+
+   - libraries/
+     - mandrill/
+       - docs/
+       - src/
+         - Mandrill.php
+         - Mandrill/
+       - LICENSE
+       - composer.json
+
 * If you previously installed version 1.3, you will get the following error
   message when enabling the mandrill_template module:
 
