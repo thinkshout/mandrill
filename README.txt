@@ -44,6 +44,9 @@ http://mandrillapp.com. Then you'll see more configuration options.
 ### Email Options
 * **From address:** The email address that emails should be sent from
 * **From name:** The name to use for sending (optional)
+* **Subaccount:** This selection box appears if you have configured subaccounts
+on your Mandrill account, and can be used to select the outgoing subaccount to
+use for Mandrill sending.
 * **_Input format_:** An optional input format to apply to the message body
 before sending emails
 
