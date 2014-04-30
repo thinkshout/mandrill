@@ -10,13 +10,13 @@
 /**
  * Allows other modules to alter the Mandrill message and sender arguments.
  *
- * @param $mandrill_params
+ * @array $mandrill_params
  *   The mandril message array
- *   @see MandrillMailSystem::mail().
+ * @see MandrillMailSystem::mail()
  *
- * @param $message
+ * @array $message
  *   The drupal_mail message array.
- *   @see drupal_mail().
+ * @see drupal_mail()
  */
 function hook_mandrill_mail_alter(&$mandrill_params, $message) {
   // No example.
@@ -25,13 +25,12 @@ function hook_mandrill_mail_alter(&$mandrill_params, $message) {
 /**
  * Allows other modules to alter the allowed attachment file types.
  *
- * @param $types
+ * @array $types
  *   An array of file types indexed numerically.
  */
-
 function hook_mandrill_valid_attachment_types_alter(&$types) {
   // Example, allow word docs:
   $types[] = 'application/msword';
-  // allow openoffice docs:
+  // Allow openoffice docs:
   $types[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 }

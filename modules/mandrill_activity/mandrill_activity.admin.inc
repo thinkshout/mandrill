@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Administration pages for Mandrill_campaign module.
+ * Administration pages for mandrill_activity module.
  */
 
 /**

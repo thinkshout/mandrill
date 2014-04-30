@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Mandrill variable hooks.
+ */
+
+/**
  * Implements hook_variable_group_info().
  */
 function mandrill_variable_group_info() {
@@ -44,7 +49,7 @@ function mandrill_variable_info($options) {
   );
   $formats = filter_formats();
   $mandrill_filter_format_options = array();
-  foreach ($formats AS $v => $format) {
+  foreach ($formats as $v => $format) {
     $mandrill_filter_format_options[$v] = $format->name;
   }
   $variables['mandrill_filter_format'] = array(
@@ -94,7 +99,7 @@ function mandrill_variable_info($options) {
   );
   $variables['mandrill_analytics_campaign'] = array(
     'title' => t('Google analytics campaign', array(), $options),
-    'description' => t('The value to set for the utm_campaign tracking parameter. If this isn\'t provided the messages from address will be used instead.', array(), $options),
+    'description' => t("The value to set for the utm_campaign tracking parameter. If this isn't provided the messages from address will be used instead.", array(), $options),
     'type' => 'string',
     'group' => 'mandrill',
     'default' => '',

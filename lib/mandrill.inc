@@ -12,9 +12,9 @@ class MandrillException extends Exception {
 }
 
 /**
- * Class Mandrill.
+ * Class DrupalMandrill.
  */
-class Mandrill {
+class DrupalMandrill {
   const API_VERSION = '1.0';
   const END_POINT = 'https://mandrillapp.com/api/';
 

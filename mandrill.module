@@ -2,9 +2,9 @@
 
 /**
  * @file
- * Enables Drupal to send email directly through MailChimp STS.
+ * Enables Drupal to send email directly through Mandrill.
  *
- * Overriding mail handling in Drupal to make MailChimp STS the default
+ * Overriding mail handling in Drupal to make Mandrill the default
  * transport layer, requires to change the mail_system variable's
  * default value array('default-system' => 'DefaultMailSystem').
  * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
@@ -241,7 +241,7 @@ function mandrill_get_api_object($reset = FALSE) {
       return FALSE;
     }
 
-    $api = new Mandrill($api_key, $api_timeout);
+    $api = new DrupalMandrill($api_key, $api_timeout);
   }
 
   return $api;
@@ -266,10 +266,7 @@ function mandrill_get_module_key_names() {
   $descriptions = array();
   foreach (system_rebuild_module_data() as $item) {
     if ($item->status) {
-      $descriptions[$item->name] = (
-      empty($item->info['package'])
-        ? '' : $item->info['package']
-      ) . ' » ' . t('!module module', array('!module' => $item->info['name']));
+      $descriptions[$item->name] = (empty($item->info['package']) ? '' : $item->info['package']) . ' » ' . t('!module module', array('!module' => $item->info['name']));
     }
   }
   asort($descriptions);
