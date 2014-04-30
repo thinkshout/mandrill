@@ -458,7 +458,7 @@ class DrupalMandrill {
       }
 
       $mime_type = file_get_mimetype($path);
-      if (!Mandrill::isValidContentType($mime_type)) {
+      if (!DrupalMandrill::isValidContentType($mime_type)) {
         throw new Exception($mime_type . ' is not a valid content type (it should be ' . implode('*,', self::getValidContentTypes()) . ').');
       }
 
