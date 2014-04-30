@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Main module functions for mandrill_reports.
+ */
 
 /**
  * Implements hook_menu().
@@ -96,14 +100,13 @@ function mandrill_reports_data() {
         $data['urls'][$url['url']]['time_series'] = $api->urls_time_series($url['url']);
       }
     }
-
     cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
-    return $data;
   }
   else {
     drupal_set_message(t('Please enter a Mandrill API key to use reports.'));
     drupal_goto('admin/config/services/mandrill');
   }
+  return $data;
 }
 
 /**
