@@ -34,3 +34,17 @@ function hook_mandrill_valid_attachment_types_alter(&$types) {
   // Allow openoffice docs:
   $types[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 }
+
+/**
+ * Allow other modules to respond to the result of sending an email.
+ *
+ * @param array $result
+ *   Associative array containing the send result, including the status.
+ */
+function hook_mandrill_mailsend_result($result) {
+  if ($result['status'] == 'rejected') {
+    // Delete user.
+    $user = user_load_by_mail($result['email']);
+    user_delete($user->uid);
+  }
+}

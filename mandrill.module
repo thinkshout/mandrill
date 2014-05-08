@@ -149,6 +149,9 @@ function mandrill_mailsend($message, $function, $args = array()) {
     $params = array($message) + $args;
     $results = call_user_func_array($function, $params);
     foreach ($results as $result) {
+      // Allow other modules to react based on a send result.
+      module_invoke_all('mandrill_mailsend_result', $result);
+
       switch ($result['status']) {
         case "error":
         case "invalid":
@@ -165,7 +168,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
             ),
             WATCHDOG_ERROR
           );
-          break;
+          return FALSE;
 
         case "queued":
           watchdog('mandrill', 'Email from %from to %to queued by Mandrill App.',
