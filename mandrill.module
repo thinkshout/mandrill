@@ -227,6 +227,9 @@ function mandrill_sender_plain($message) {
  *
  * @param bool $reset
  *   Pass in TRUE to reset the statically cached object.
+ * @param string $classname
+ *   The Mandrill class to use for sending emails. Passing a parameter allows
+ *   the class used to be overridden, E.g., for tests.
  *
  * @throws MandrillException
  *
@@ -234,7 +237,7 @@ function mandrill_sender_plain($message) {
  *   Mandrill Object upon success
  *   FALSE if variable_get('mandrill_api_key') is unset
  */
-function mandrill_get_api_object($reset = FALSE) {
+function mandrill_get_api_object($reset = FALSE, $classname = 'DrupalMandrill') {
   $api =& drupal_static(__FUNCTION__, NULL);
 
   if ($api === NULL || $reset === TRUE) {
@@ -244,7 +247,7 @@ function mandrill_get_api_object($reset = FALSE) {
       return FALSE;
     }
 
-    $api = new DrupalMandrill($api_key, $api_timeout);
+    $api = new $classname($api_key, $api_timeout);
   }
 
   return $api;
