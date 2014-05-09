@@ -177,7 +177,7 @@ function mandrill_activity_page($entity, MandrillActivityEntity $mandrill_activi
  */
 function mandrill_activity_get_activity($email) {
   $mandrill = mandrill_get_api_object();
-  return $mandrill->messages_search("email:{$email}");
+  return $mandrill->messages->search("email:{$email}");
 }
 
 /**

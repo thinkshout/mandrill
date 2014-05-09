@@ -237,10 +237,10 @@ function mandrill_mailsend($message, $function, $args = array()) {
  */
 function mandrill_sender_plain($message) {
   if ($mailer = mandrill_get_api_object()) {
-    return $mailer->messages_send($message);
+    return $mailer->messages->send($message);
   }
   else {
-    throw new MandrillException('Missing API key.');
+    throw new Mandrill_Error('Missing API key.');
   }
 }
 
@@ -334,9 +334,9 @@ function mandrill_get_templates() {
   $templates = NULL;
   try {
     $mailer = mandrill_get_api_object();
-    $templates = $mailer->templates_list();
+    $templates = $mailer->templates->getList();
   }
-  catch (MandrillException $e) {
+  catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
     watchdog_exception('mandrill', $e);
   }
@@ -350,9 +350,9 @@ function mandrill_get_subaccounts() {
   $subaccounts = array();
   try {
     $mandrill = mandrill_get_api_object();
-    $subaccounts = $mandrill->subaccounts();
+    $subaccounts = $mandrill->subaccounts->getList();
   }
-  catch (MandrillException $e) {
+  catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
     watchdog_exception('mandrill', $e);
   }
