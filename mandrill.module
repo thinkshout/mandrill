@@ -58,6 +58,28 @@ function mandrill_menu() {
 }
 
 /**
+ * Implements hook_libraries_info().
+ */
+function mandrill_libraries_info() {
+  $libraries['mandrill'] = array(
+    'name' => 'Mandrill API',
+    'vendor url' => 'https://mandrillapp.com/api/docs',
+    'download url' => 'https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.tar.gz',
+    'path' => 'src',
+    'version arguments' => array(
+      'file' => 'composer.json',
+      // Version 1.0.52
+      'pattern' => '/\"version": \"((\d+)\.(\d+)\.(\d+))\",/',
+    ),
+    'files' => array(
+      'php' => array('Mandrill.php'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Access callback for sending test email.
  *
  * @return bool
