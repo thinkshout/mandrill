@@ -54,7 +54,7 @@ class DrupalMandrill extends Mandrill {
    * Override call method to user Drupal's HTTP handling.
    */
   public function call($url, $params) {
-    $params['apikey'] = $this->apikey;
+    $params['key'] = $this->apikey;
     $params = drupal_json_encode($params);
 
     $response = drupal_http_request(
