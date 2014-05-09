@@ -63,8 +63,6 @@ class MandrillMailSystem implements MailSystemInterface {
       }
     }
 
-    $mailer = mandrill_get_api_object();
-
     // Apply input format to body.
     $format = variable_get('mandrill_filter_format', '');
     if (!empty($format)) {
