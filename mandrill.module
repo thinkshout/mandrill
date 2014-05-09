@@ -253,8 +253,6 @@ function mandrill_sender_plain($message) {
  *   The Mandrill class to use for sending emails. Passing a parameter allows
  *   the class used to be overridden, E.g., for tests.
  *
- * @throws MandrillException
- *
  * @return Mandrill|bool
  *   Mandrill Object upon success
  *   FALSE if variable_get('mandrill_api_key') is unset
@@ -263,6 +261,15 @@ function mandrill_get_api_object($reset = FALSE, $classname = 'DrupalMandrill') 
   $api =& drupal_static(__FUNCTION__, NULL);
 
   if ($api === NULL || $reset === TRUE) {
+
+    $library = libraries_load('mandrill');
+    if (!$library['installed']) {
+      $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
+      watchdog('mandrill', $msg, NULL, WATCHDOG_ERROR);
+      drupal_set_message($msg, 'error');
+      return NULL;
+    }
+
     $api_key = variable_get('mandrill_api_key', '');
     $api_timeout = variable_get('mandrill_api_timeout', 60);
     if (empty($api_key)) {
