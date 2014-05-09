@@ -63,7 +63,7 @@ class DrupalMandrill extends Mandrill {
         'method' => 'POST',
         'data' => $params,
         'headers' => array(
-          'Content-type' => 'application/json',
+          'Content-Type' => 'application/json',
           'Accept-Language' => language_default()->language,
           'User-Agent' => $this->userAgent,
         ),
