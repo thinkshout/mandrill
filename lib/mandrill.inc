@@ -78,7 +78,7 @@ class DrupalMandrill extends Mandrill {
     $result = drupal_json_decode($response->data);
 
     if ($result === NULL) {
-      throw new Mandrill_Error('We were unable to decode the JSON response from the Mandrill API: ' . $response_body);
+      throw new Mandrill_Error('We were unable to decode the JSON response from the Mandrill API: ' . $response->data);
     }
 
     if (floor($response->code / 100) >= 4) {
