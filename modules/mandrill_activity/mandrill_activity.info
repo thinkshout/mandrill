@@ -8,4 +8,4 @@ dependencies[] = entity
 
 files[] = lib/mandrill_activity.entity.inc
 files[] = lib/mandrill_activity.ui_controller.inc
-
+files[] = tests/mandrill_activity.test

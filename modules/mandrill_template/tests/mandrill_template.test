@@ -1,10 +1,10 @@
 <?php
 /**
  * @file
- * Test class and methods for the Mandrill module.
+ * Test class and methods for the Mandrill Template module.
  */
 
-class MandrillTestCase extends DrupalWebTestCase {
+class MandrillTemplateTestCase extends DrupalWebTestCase {
   /**
    * Returns info displayed in the test interface.
    *
@@ -14,8 +14,8 @@ class MandrillTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
     return array(
-      'name' => 'Mandrill Tests',
-      'description' => 'Test core Mandrill functionality.',
+      'name' => 'Mandrill Template Tests',
+      'description' => 'Tests Mandrill Template functionality.',
       'group' => 'Mandrill',
     );
   }
@@ -34,6 +34,7 @@ class MandrillTestCase extends DrupalWebTestCase {
     $enabled_modules = array(
       'libraries',
       'mandrill',
+      'mandrill_template',
       'entity',
       'entity_token',
     );
@@ -52,11 +53,9 @@ class MandrillTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Tests sending a message to multiple recipients.
+   * Test sending a templated message to multiple recipients.
    */
-  public function testSendMessage() {
-    $mail_system = new MandrillMailSystem();
-
+  public function testSendTemplatedMessage() {
     $to = 'recipient.one@example.com <Recipient One>,'
       . 'recipient.two@example.com <Recipient Two>,'
       . 'recipient.three@example.com <Recipient Three>';
@@ -70,38 +69,13 @@ class MandrillTestCase extends DrupalWebTestCase {
       'to' => $to,
     );
 
-    $response = $mail_system->mail($message);
+    $template_id = 'test-template';
+    $template_content = array(
+      'name' => 'Recipient',
+    );
 
-    $this->assertTrue($response, 'Tested sending message to multiple recipients.');
-  }
+    $response = mandrill_template_sender($message, $template_id, $template_content);
 
-  /**
-   * Gets getting a list of templates for a given label.
-   */
-  public function testGetTemplates() {
-    $templates = mandrill_get_templates();
-
-    $this->assertTrue(!empty($templates), 'Tested retrieving templates.');
-
-    if (!empty($templates) && is_array($templates)) {
-      foreach ($templates as $template) {
-        $this->assertTrue(!empty($template['name']), 'Tested valid template: ' . $template['name']);
-      }
-    }
-  }
-
-  /**
-   * Tests getting a list of subaccounts.
-   */
-  public function testGetSubaccounts() {
-    $subaccounts = mandrill_get_subaccounts();
-
-    $this->assertTrue(!empty($subaccounts), 'Tested retrieving subaccounts.');
-
-    if (!empty($subaccounts) && is_array($subaccounts)) {
-      foreach ($subaccounts as $subaccount) {
-        $this->assertTrue(!empty($subaccount['name']), 'Tested valid subaccount: ' . $subaccount['name']);
-      }
-    }
+    $this->assertNotNull($response, 'Tested sending templated message.');
   }
 }
