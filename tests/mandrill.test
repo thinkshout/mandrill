@@ -86,6 +86,20 @@ class MandrillTestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Tests sending a message to no recipients.
+   */
+  public function testSendMessageNoRecipients() {
+    $mail_system = new MandrillMailSystem();
+
+    $message = $this->getMessageTestData();
+    $message['to'] = '';
+
+    $response = $mail_system->mail($message);
+
+    $this->assertFalse($response, 'Tested sending message to no recipients.');
+  }
+
+  /**
    * Gets getting a list of templates for a given label.
    */
   public function testGetTemplates() {

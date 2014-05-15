@@ -60,14 +60,8 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
       . 'recipient.two@example.com <Recipient Two>,'
       . 'recipient.three@example.com <Recipient Three>';
 
-    $message = array(
-      'id' => 1,
-      'body' => '<p>Mail content</p>',
-      'subject' => 'Mail Subject',
-      'from_email' => 'sender@example.com',
-      'from_name' => 'Test Sender',
-      'to' => $to,
-    );
+    $message = $this->getMessageTestData();
+    $message['to'] = $to;
 
     $template_id = 'Test Template';
     $template_content = array(
@@ -81,5 +75,43 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
     if (isset($response['status'])) {
       $this->assertNotEqual($response['status'], 'error', 'Tested response status: ' . $response['status'] . ', ' . $response['message']);
     }
+  }
+
+  /**
+   * Test sending a templated message using an invalid template.
+   */
+  public function testSendTemplatedMessageInvalidTemplate() {
+    $to = 'recipient.one@example.com <Recipient One>';
+
+    $message = $this->getMessageTestData();
+    $message['to'] = $to;
+
+    $template_id = 'Invalid Template';
+    $template_content = array(
+      'name' => 'Recipient',
+    );
+
+    $response = mandrill_template_sender($message, $template_id, $template_content);
+
+    $this->assertNotNull($response, 'Tested response from sending invalid templated message.');
+
+    if (isset($response['status'])) {
+      $this->assertEqual($response['status'], 'error', 'Tested response status: ' . $response['status'] . ', ' . $response['message']);
+    }
+  }
+
+  /**
+   * Gets message data used in tests.
+   */
+  protected function getMessageTestData() {
+    $message = array(
+      'id' => 1,
+      'body' => '<p>Mail content</p>',
+      'subject' => 'Mail Subject',
+      'from_email' => 'sender@example.com',
+      'from_name' => 'Test Sender',
+    );
+
+    return $message;
   }
 }
