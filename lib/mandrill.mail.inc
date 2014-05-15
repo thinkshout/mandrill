@@ -63,8 +63,6 @@ class MandrillMailSystem implements MailSystemInterface {
       }
     }
 
-    $mailer = mandrill_get_api_object();
-
     // Apply input format to body.
     $format = variable_get('mandrill_filter_format', '');
     if (!empty($format)) {
@@ -87,7 +85,7 @@ class MandrillMailSystem implements MailSystemInterface {
     if (isset($message['attachments']) && !empty($message['attachments'])) {
       foreach ($message['attachments'] as $attachment) {
         if (is_file($attachment)) {
-          $attachments[] = $mailer->getAttachmentStruct($attachment);
+          $attachments[] = $this->getAttachmentStruct($attachment);
         }
       }
     }
@@ -110,7 +108,7 @@ class MandrillMailSystem implements MailSystemInterface {
       foreach ($message['params']['attachments'] as $attachment) {
         $attachment_path = drupal_realpath($attachment['uri']);
         if (is_file($attachment_path)) {
-          $struct = $mailer->getAttachmentStruct($attachment_path);
+          $struct = $this->getAttachmentStruct($attachment_path);
           // Allow for customised filenames.
           if (!empty($attachment['filename'])) {
             $struct['name'] = $attachment['filename'];
@@ -181,4 +179,67 @@ class MandrillMailSystem implements MailSystemInterface {
       return mandrill_mailsend($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
     }
   }
+
+  /**
+   * Return an array structure for a message attachment.
+   *
+   * @param string $path
+   *   Attachment path.
+   *
+   * @return array
+   *   Attachment structure.
+   *
+   * @throws Exception
+   */
+  public function getAttachmentStruct($path) {
+    $struct = array();
+
+    if (!@is_file($path)) {
+      throw new Exception($path . ' is not a valid file.');
+    }
+
+    $filename = basename($path);
+
+    $file_buffer = file_get_contents($path);
+    $file_buffer = chunk_split(base64_encode($file_buffer), 76, "\n");
+
+    $mime_type = file_get_mimetype($path);
+    if (!$this->isValidContentType($mime_type)) {
+      throw new Exception($mime_type . ' is not a valid content type.');
+    }
+
+    $struct['type'] = $mime_type;
+    $struct['name'] = $filename;
+    $struct['content'] = $file_buffer;
+
+    return $struct;
+  }
+
+  /**
+   * Helper to determine if an attachment is valid.
+   *
+   * @param string $file_type
+   *   The file mime type.
+   *
+   * @return bool
+   *   True or false.
+   */
+  protected function isValidContentType($file_type) {
+    $valid_types = array(
+      'image/',
+      'text/',
+      'application/pdf',
+      'application/x-zip',
+    );
+    drupal_alter('mandrill_valid_attachment_types', $valid_types);
+
+    foreach ($valid_types as $vct) {
+      if (strpos($file_type, $vct) !== FALSE) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
 }

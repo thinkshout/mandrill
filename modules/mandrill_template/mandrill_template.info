@@ -10,3 +10,4 @@ dependencies[] = mandrill
 
 files[] = lib/mandrill_template_map.entity.inc
 files[] = lib/mandrill_template_map.ui_controller.inc
+files[] = tests/mandrill_template.test

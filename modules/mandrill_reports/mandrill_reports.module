@@ -59,30 +59,30 @@ function mandrill_reports_data() {
 
   if ($api) {
     // Basic user info.
-    $data['user'] = $api->users_info();
+    $data['user'] = $api->users->info();
 
     // Tags.
-    $tags = $api->tags_list();
+    $tags = $api->tags->getList();
     foreach ($tags as $tag) {
       if (!empty($tag['tag'])) {
-        $data['tags'][$tag['tag']] = $api->tags_info($tag['tag']);
-        $data['tags'][$tag['tag']]['time_series'] = $api->tags_time_series($tag['tag']);
+        $data['tags'][$tag['tag']] = $api->tags->info($tag['tag']);
+        $data['tags'][$tag['tag']]['time_series'] = $api->tags->timeSeries($tag['tag']);
       }
     }
 
     // All time.
-    $data['all_time_series'] = $api->tags_all_time_series();
+    $data['all_time_series'] = $api->tags->allTimeSeries();
 
     // Senders: data is not being used, and the API currently (3/12/13) behaves
     // badly if you have a bad email address anywhere in your sender history, so
     // commenting out for now:
-    $senders = $api->senders_list();
+    $senders = $api->senders->getList();
     foreach ($senders as $sender) {
       try {
-        $data['senders'][$sender['address']] = $api->senders_info($sender['address']);
-        $data['senders'][$sender['address']]['time_series'] = $api->senders_time_series($sender['address']);
+        $data['senders'][$sender['address']] = $api->senders->info($sender['address']);
+        $data['senders'][$sender['address']]['time_series'] = $api->senders->timeSeries($sender['address']);
       }
-      catch (MandrillException $e) {
+      catch (Mandrill_Error $e) {
         watchdog('mandrill', 'An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
           '%address' => $sender['address'],
           '%message' => $e->getMessage(),
@@ -91,13 +91,13 @@ function mandrill_reports_data() {
     }
 
     // Urls.
-    $urls = $api->urls_list();
+    $urls = $api->urls->getList();
     foreach ($urls as $url) {
       // Api has been intermittently tacking on incomplete $url arrays,
       // so we have to check validity first:
       if (isset($url['url'])) {
         $data['urls'][$url['url']] = $url;
-        $data['urls'][$url['url']]['time_series'] = $api->urls_time_series($url['url']);
+        $data['urls'][$url['url']]['time_series'] = $api->urls->timeSeries($url['url']);
       }
     }
     cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
