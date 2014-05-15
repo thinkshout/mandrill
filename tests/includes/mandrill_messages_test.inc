@@ -11,7 +11,6 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
 
   /**
    * @see Mandrill_Messages::send()
-   * TODO: Allow testing of "queued", "scheduled", "rejected", and "invalid"
    */
   public function send($message, $async = FALSE, $ip_pool = NULL, $send_at = NULL) {
     if (!isset($message['to']) || empty($message['to'])) {
@@ -23,10 +22,17 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
     foreach ($message['to'] as $recipient) {
       $recipient_response = array(
         'email' => $recipient['email'],
-        'status' => 'sent',
+        'status' => '',
         'reject_reason' => '',
         '_id' => uniqid(),
       );
+
+      if (valid_email_address($recipient['email'])) {
+        $recipient_response['status'] = 'sent';
+      }
+      else {
+        $recipient_response['status'] = 'invalid';
+      }
 
       $response[] = $recipient_response;
     }
