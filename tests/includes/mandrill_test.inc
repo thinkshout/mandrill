@@ -45,7 +45,7 @@ class DrupalMandrillTest extends DrupalMandrill {
     $this->metadata = new Mandrill_MetadataTest($this);
   }
 
-  public function get_error_response($code, $name, $message) {
+  public function getErrorResponse($code, $name, $message) {
     $response = array(
       'status' => 'error',
       'code' => $code,

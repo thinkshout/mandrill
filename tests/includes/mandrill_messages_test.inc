@@ -15,7 +15,7 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
    */
   public function send($message, $async = FALSE, $ip_pool = NULL, $send_at = NULL) {
     if (!isset($message['to']) || empty($message['to'])) {
-      return $this->master->get_error_response(12, 'ValidationError', 'No recipients defined.');
+      return $this->master->getErrorResponse(12, 'ValidationError', 'No recipients defined.');
     }
 
     $response = array();
@@ -38,7 +38,40 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
    * @see Mandrill_Messages::sendTemplate()
    */
   public function sendTemplate($template_name, $template_content, $message, $async = FALSE, $ip_pool = NULL, $send_at = NULL) {
-    // TODO: Populate this method.
+    if (!isset($message['to']) || empty($message['to'])) {
+      return $this->master->getErrorResponse(12, 'ValidationError', 'No recipients defined.');
+    }
+
+    $response = array();
+
+    $templates = mandrill_get_templates();
+
+    $matched_template = NULL;
+    foreach ($templates as $template) {
+      if ($template['name'] == $template_name) {
+        $matched_template = $template;
+        continue;
+      }
+    }
+
+    if ($matched_template == NULL) {
+      return $this->master->getErrorResponse(12, 'Unknown_Template', 'No template with name: ' . $template_name);
+    }
+
+    $recipients = mandrill_get_to($message['to']);
+
+    foreach ($recipients as $recipient) {
+      $recipient_response = array(
+        'email' => $recipient['email'],
+        'status' => 'sent',
+        'reject_reason' => '',
+        '_id' => uniqid(),
+      );
+
+      $response[] = $recipient_response;
+    }
+
+    return $response;
   }
 
   /**

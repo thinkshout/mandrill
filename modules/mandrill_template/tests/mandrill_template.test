@@ -69,13 +69,17 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
       'to' => $to,
     );
 
-    $template_id = 'test-template';
+    $template_id = 'Test Template';
     $template_content = array(
       'name' => 'Recipient',
     );
 
     $response = mandrill_template_sender($message, $template_id, $template_content);
 
-    $this->assertNotNull($response, 'Tested sending templated message.');
+    $this->assertNotNull($response, 'Tested response from sending templated message.');
+
+    if (isset($response['status'])) {
+      $this->assertNotEqual($response['status'], 'error', 'Tested response status: ' . $response['status'] . ', ' . $response['message']);
+    }
   }
 }
