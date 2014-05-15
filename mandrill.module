@@ -18,10 +18,12 @@ define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
  * Implements hook_help().
  */
 function mandrill_help($path, $arg) {
+  $output = '';
   switch ($path) {
     case 'admin/help#mandrill':
-      return t('Allow for site emails to be sent through Mandrill.');
+      $output = t('Allow for site emails to be sent through Mandrill.');
   }
+  return $output;
 }
 
 /**
@@ -150,6 +152,10 @@ function mandrill_mail($key, &$message, $params) {
  *   A message array formatted for Mandrill's sending API, plus 2 additional
  *   indexes for the send_function and an array of $args, if needed by the send
  *   function.
+ * @param string $function
+ *   The name of the function to use to send the message.
+ * @param array $args
+ *   Array of arguments to pass to the function provided by $function.
  *
  * @return bool
  *   TRUE if no exception thrown
@@ -236,19 +242,18 @@ function mandrill_mailsend($message, $function, $args = array()) {
   }
 }
 
-
 /**
  * The actual function that calls the API send message.
  * 
  * This is the default function used by mandrill_mailsend().
  * 
- * @array $message
+ * @param array $message
  *   Associative array containing message data.
  * 
  * @return array
  *   Results of sending the message.
  *
- * @throws MandrillException
+ * @throws Mandrill_Error
  */
 function mandrill_sender_plain($message) {
   if ($mailer = mandrill_get_api_object()) {

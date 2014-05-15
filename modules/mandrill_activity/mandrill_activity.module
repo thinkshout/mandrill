@@ -79,7 +79,7 @@ function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_enti
 /**
  * Loads a single mandrill_activity_entity or all of them if no name provided.
  *
- * @string $name
+ * @param string $name
  *   Machine name of Mandrill Activity Entity to load.
  *
  * @return MandrillActivityEntity|array
@@ -93,7 +93,7 @@ function mandrill_activity_load($name = NULL) {
 /**
  * Content for the Mandrill log tab on entity instance pages.
  *
- * @object $entity
+ * @param object $entity
  *   Entity to load activity for.
  *
  * @param MandrillActivityEntity $mandrill_activity_entity
@@ -165,11 +165,10 @@ function mandrill_activity_page($entity, MandrillActivityEntity $mandrill_activi
   return $display;
 }
 
-
 /**
  * Return all activity on all lists for a given email address.
  *
- * @string $email
+ * @param string $email
  *   Email to load Mandrill activity for.
  *
  * @return array

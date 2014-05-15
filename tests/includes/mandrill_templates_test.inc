@@ -43,13 +43,13 @@ class Mandrill_TemplatesTest extends Mandrill_Templates {
       'labels' => array(
         'test-label'
       ),
-      'code' => '<div mc:edit="editable">editable content</div>',
+      'code' => '<div>editable content</div>',
       'subject' => 'Test Subject',
       'from_email' => 'admin@example.com',
       'from_name' => 'Admin',
       'text' => 'Test text',
       'publish_name' => 'Test Template',
-      'publish_code' => '<div mc:edit="editable">different than draft content</div>',
+      'publish_code' => '<div>different than draft content</div>',
       'publish_subject' => 'Test Publish Subject',
       'publish_from_email' => 'admin@example.com',
       'publish_from_name' => 'Test Publish Name',
