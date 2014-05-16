@@ -36,7 +36,6 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
       'mandrill',
       'mandrill_template',
       'entity',
-      'entity_token',
     );
     parent::setUp($enabled_modules);
     variable_set('mandrill_api_classname', 'DrupalMandrillTest');
