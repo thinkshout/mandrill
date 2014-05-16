@@ -56,9 +56,9 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
    * Test sending a templated message to multiple recipients.
    */
   public function testSendTemplatedMessage() {
-    $to = 'recipient.one@example.com <Recipient One>,'
-      . 'recipient.two@example.com <Recipient Two>,'
-      . 'recipient.three@example.com <Recipient Three>';
+    $to = 'Recipient One <recipient.one@example.com>,'
+      . 'Recipient Two <recipient.two@example.com>,'
+      . 'Recipient Three <recipient.three@example.com>';
 
     $message = $this->getMessageTestData();
     $message['to'] = $to;
@@ -81,7 +81,7 @@ class MandrillTemplateTestCase extends DrupalWebTestCase {
    * Test sending a templated message using an invalid template.
    */
   public function testSendTemplatedMessageInvalidTemplate() {
-    $to = 'recipient.one@example.com <Recipient One>';
+    $to = 'Recipient One <recipient.one@example.com>';
 
     $message = $this->getMessageTestData();
     $message['to'] = $to;
