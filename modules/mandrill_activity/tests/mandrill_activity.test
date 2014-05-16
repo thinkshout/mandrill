@@ -49,6 +49,9 @@ class MandrillActivityTestCase extends DrupalWebTestCase {
    */
   protected function tearDown() {
     parent::tearDown();
+
+    variable_del('mandrill_api_classname');
+    variable_del('mandrill_api_key');
   }
 
   /**
