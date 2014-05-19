@@ -52,6 +52,7 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
 
     variable_del('mandrill_api_classname');
     variable_del('mandrill_api_key');
+    variable_del('mandrill_test_mailsend_result');
   }
 
   /**
@@ -114,7 +115,7 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
 
     $mail_system->mail($message);
 
-    $mailsend_result = variable_get('mandrill_test_mailsend_result');
+    $mailsend_result = variable_get('mandrill_test_mailsend_result', NULL);
 
     $this->assertNotNull($mailsend_result, 'Tested mailsend_result hook triggered.');
 
