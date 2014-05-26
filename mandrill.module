@@ -186,18 +186,20 @@ function mandrill_mailsend($message, $function, $args = array()) {
           case "error":
           case "invalid":
           case "rejected":
-            $to = isset($result['email']) ? $result['email'] : 'recipient';
-            $status = isset($result['status']) ? $result['status'] : 'message';
-            $error_message = isset($result['message']) ? $result['message'] : 'no message';
-            watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
-              array(
-                '%from' => $message['from_email'],
-                '%to' => $to,
-                '@status' => $status,
-                '@message' => $error_message,
-              ),
-              WATCHDOG_ERROR
-            );
+            if (!variable_get('mailchimp_test_mode')) {
+              $to = isset($result['email']) ? $result['email'] : 'recipient';
+              $status = isset($result['status']) ? $result['status'] : 'message';
+              $error_message = isset($result['message']) ? $result['message'] : 'no message';
+              watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
+                array(
+                  '%from' => $message['from_email'],
+                  '%to' => $to,
+                  '@status' => $status,
+                  '@message' => $error_message,
+                ),
+                WATCHDOG_ERROR
+              );
+            }
             return FALSE;
 
           case "queued":

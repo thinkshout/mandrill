@@ -39,6 +39,7 @@ class MandrillTestCase extends DrupalWebTestCase {
     parent::setUp($enabled_modules);
     variable_set('mandrill_api_classname', 'DrupalMandrillTest');
     variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
+    variable_set('mailchimp_test_mode', TRUE);
   }
 
   /**
@@ -51,6 +52,7 @@ class MandrillTestCase extends DrupalWebTestCase {
 
     variable_del('mandrill_api_classname');
     variable_del('mandrill_api_key');
+    variable_del('mailchimp_test_mode');
   }
 
   /**
