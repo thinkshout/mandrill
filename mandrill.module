@@ -186,7 +186,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
           case "error":
           case "invalid":
           case "rejected":
-            if (!variable_get('mailchimp_test_mode')) {
+            if (!variable_get('mandrill_test_mode')) {
               $to = isset($result['email']) ? $result['email'] : 'recipient';
               $status = isset($result['status']) ? $result['status'] : 'message';
               $error_message = isset($result['message']) ? $result['message'] : 'no message';
