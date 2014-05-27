@@ -18,10 +18,12 @@ define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
  * Implements hook_help().
  */
 function mandrill_help($path, $arg) {
+  $output = '';
   switch ($path) {
     case 'admin/help#mandrill':
-      return t('Allow for site emails to be sent through Mandrill.');
+      $output = t('Allow for site emails to be sent through Mandrill.');
   }
+  return $output;
 }
 
 /**
@@ -150,6 +152,10 @@ function mandrill_mail($key, &$message, $params) {
  *   A message array formatted for Mandrill's sending API, plus 2 additional
  *   indexes for the send_function and an array of $args, if needed by the send
  *   function.
+ * @param string $function
+ *   The name of the function to use to send the message.
+ * @param array $args
+ *   Array of arguments to pass to the function provided by $function.
  *
  * @return bool
  *   TRUE if no exception thrown
@@ -169,40 +175,57 @@ function mandrill_mailsend($message, $function, $args = array()) {
     }
 
     $params = array($message) + $args;
-    $results = call_user_func_array($function, $params);
-    foreach ($results as $result) {
-      // Allow other modules to react based on a send result.
-      module_invoke_all('mandrill_mailsend_result', $result);
+    $response = call_user_func_array($function, $params);
 
-      switch ($result['status']) {
-        case "error":
-        case "invalid":
-        case "rejected":
-          $to = isset($result['email']) ? $result['email'] : 'recipient';
-          $status = isset($result['status']) ? $result['status'] : 'message';
-          $error_message = isset($result['message']) ? $result['message'] : 'no message';
-          watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
-            array(
-              '%from' => $message['from_email'],
-              '%to' => $to,
-              '@status' => $status,
-              '@message' => $error_message,
-            ),
-            WATCHDOG_ERROR
-          );
-          return FALSE;
+    if (!isset($response['status'])) {
+      foreach ($response as $result) {
+        // Allow other modules to react based on a send result.
+        module_invoke_all('mandrill_mailsend_result', $result);
 
-        case "queued":
-          watchdog('mandrill', 'Email from %from to %to queued by Mandrill App.',
-            array(
-              '%from' => $message['from_email'],
-              '%to' => $result['email'],
-            ),
-            WATCHDOG_INFO
-          );
-          break;
+        switch ($result['status']) {
+          case "error":
+          case "invalid":
+          case "rejected":
+            if (!variable_get('mandrill_test_mode')) {
+              $to = isset($result['email']) ? $result['email'] : 'recipient';
+              $status = isset($result['status']) ? $result['status'] : 'message';
+              $error_message = isset($result['message']) ? $result['message'] : 'no message';
+              watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
+                array(
+                  '%from' => $message['from_email'],
+                  '%to' => $to,
+                  '@status' => $status,
+                  '@message' => $error_message,
+                ),
+                WATCHDOG_ERROR
+              );
+            }
+            return FALSE;
 
+          case "queued":
+            watchdog('mandrill', 'Email from %from to %to queued by Mandrill App.',
+              array(
+                '%from' => $message['from_email'],
+                '%to' => $result['email'],
+              ),
+              WATCHDOG_INFO
+            );
+            break;
+
+        }
       }
+    }
+    else {
+      watchdog('mandrill', 'Mail send failed with status %status: code %code, %name, %message',
+        array(
+          '%status' => $response['status'],
+          '%code' => $response['code'],
+          '%name' => $response['name'],
+          '%message' => $response['message'],
+        ),
+        WATCHDOG_WARNING
+      );
+      return FALSE;
     }
     return TRUE;
   }
@@ -221,19 +244,18 @@ function mandrill_mailsend($message, $function, $args = array()) {
   }
 }
 
-
 /**
  * The actual function that calls the API send message.
  * 
  * This is the default function used by mandrill_mailsend().
  * 
- * @array $message
+ * @param array $message
  *   Associative array containing message data.
  * 
  * @return array
  *   Results of sending the message.
  *
- * @throws MandrillException
+ * @throws Mandrill_Error
  */
 function mandrill_sender_plain($message) {
   if ($mailer = mandrill_get_api_object()) {
@@ -249,15 +271,12 @@ function mandrill_sender_plain($message) {
  *
  * @param bool $reset
  *   Pass in TRUE to reset the statically cached object.
- * @param string $classname
- *   The Mandrill class to use for sending emails. Passing a parameter allows
- *   the class used to be overridden, E.g., for tests.
  *
  * @return Mandrill|bool
  *   Mandrill Object upon success
  *   FALSE if variable_get('mandrill_api_key') is unset
  */
-function mandrill_get_api_object($reset = FALSE, $classname = 'DrupalMandrill') {
+function mandrill_get_api_object($reset = FALSE) {
   $api =& drupal_static(__FUNCTION__, NULL);
 
   if ($api === NULL || $reset === TRUE) {
@@ -276,6 +295,10 @@ function mandrill_get_api_object($reset = FALSE, $classname = 'DrupalMandrill') 
       return FALSE;
     }
 
+    // We allow the class name to be overridden, following the example of core's
+    // mailsystem, in order to use alternate Mandrill classes. The bundled tests
+    // use this approach to extend the Mandrill class with a test server.
+    $classname = variable_get('mandrill_api_classname', 'DrupalMandrill');
     $api = new $classname($api_key, $api_timeout);
   }
 

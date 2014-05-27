@@ -8,6 +8,11 @@
 /**
  * Administrative settings.
  *
+ * @param array $form
+ *   Form render array.
+ * @param array $form_state
+ *   Array containing form state values.
+ *
  * @return array
  *   An array containing form items to place on the module settings page.
  */

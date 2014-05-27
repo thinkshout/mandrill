@@ -188,9 +188,9 @@ function mandrill_activity_entity_form_submit($form, &$form_state) {
 /**
  * Return all possible Drupal properties for a given entity type.
  *
- * @string $entity_type
+ * @param string $entity_type
  *   Name of entity whose properties to list.
- * @string $entity_bundle
+ * @param string $entity_bundle
  *   Entity bundle to get properties for.
  *
  * @return array
