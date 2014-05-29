@@ -186,6 +186,13 @@ function mandrill_admin_settings($form, &$form_state) {
       '#description' => t('When set, emails will not be immediately sent. Instead, they will be placed in a queue and sent when cron is triggered.'),
       '#default_value' => mandrill_process_async(),
     );
+    $form['asynchronous_options']['mandrill_async_queue_limit'] = array(
+      '#title' => t('Asynchronous message processing limit'),
+      '#type' => 'textfield',
+      '#description' => 'Maximum number of queued messages to process in a cron run. Set to 0 to process all queued messages.',
+      '#size' => 8,
+      '#default_value' => 0,
+    );
     $form['asynchronous_options']['mandrill_batch_log_queued'] = array(
       '#title' => t('Log queued emails in watchdog'),
       '#type' => 'checkbox',

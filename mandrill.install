@@ -24,6 +24,7 @@ function mandrill_uninstall() {
   variable_del('mandrill_track_opens');
   variable_del('mandrill_url_strip_qs');
   variable_del('mandrill_process_async');
+  variable_del('mandrill_async_queue_limit');
 }
 
 /**

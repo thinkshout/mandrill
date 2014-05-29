@@ -107,28 +107,89 @@ function mandrill_permission() {
 }
 
 /**
- * Implements hook_cron_queue_info().
+ * Implements hook_cron().
+ *
+ * Combines queued mail messages into single API calls when possible.
  */
-function mandrill_cron_queue_info() {
-  $queues = array();
-  $queues[MANDRILL_QUEUE] = array(
-    'worker callback' => 'mandrill_queue_worker_mailsend',
-    'time' => variable_get('mandrill_queue_worker_timeout', 15),
-  );
-  return $queues;
-}
+function mandrill_cron() {
+  $max_items = variable_get('mandrill_async_queue_limit', 0);
 
-/**
- * Sends a queued email.
- * @see mandrill_cron_queue_info()
- */
-function mandrill_queue_worker_mailsend($data) {
-  // Send the message stored in the queue item.
-  mandrill_mailsend(
-    $data['message'],
-    $data['function'],
-    $data['args']
-  );
+  $item_queue = DrupalQueue::get(MANDRILL_QUEUE);
+
+  $queued_items = array();
+
+  $item_count = 0;
+  $item = array();
+  while ($item !== FALSE) {
+    $item = $item_queue->claimItem();
+    if ($item != FALSE) {
+      $queued_items[] = $item;
+      $item_count++;
+    }
+
+    if (($max_items > 0) && ($item_count >= $max_items)) {
+      break;
+    }
+  }
+
+  $merged_messages = array();
+
+  // Loop through queued items and combine messages if possible.
+  foreach ($queued_items as $item) {
+    $message = $item->data['message'];
+    $function = $item->data['function'];
+    $args = $item->data['args'];
+
+    $message_id = $message['tags'][0];
+
+    // Group messages by the mail send function then by message ID.
+    if (!isset($merged_messages[$function])) {
+      $merged_messages[$function] = array();
+    }
+
+    if (!isset($merged_messages[$function][$message_id])) {
+      // Create a new merged message using this message.
+      $merged_messages[$function][$message_id] = array(
+        'message' => $message,
+        'args' => $args,
+      );
+    }
+    else {
+      // Loop through existing merged messages until a match is found.
+      $found_merge_message = FALSE;
+      foreach ($merged_messages[$function] as $merged_message_id => $merged_message) {
+        $first_message = $merged_messages[$function][$merged_message_id]['message'];
+        $first_args = $merged_messages[$function][$merged_message_id]['args'];
+
+        if (mandrill_compare_message($first_message, $first_args, $message, $args)) {
+          // Merge recipients.
+          foreach ($message['to'] as $recipient) {
+            $merged_messages[$function][$merged_message_id]['message']['to'][] = $recipient;
+          }
+
+          $found_merge_message = TRUE;
+        }
+      }
+
+      if (!$found_merge_message) {
+        // This message does not match existing message with same
+        // send function and message ID.
+        // This message has been altered in some way and cannot be merged.
+        $tmp_message_id = $message_id . '-' . uniqid();
+        $merged_messages[$function][$tmp_message_id] = array(
+          'message' => $message,
+          'args' => $args,
+        );
+      }
+    }
+  }
+
+  // Loop through each merged message and send as a single API call.
+  foreach ($merged_messages as $function => $messages) {
+    foreach ($messages as $message) {
+      mandrill_mailsend($message['message'], $function, $message['args']);
+    }
+  }
 }
 
 /**
@@ -455,4 +516,36 @@ function mandrill_from() {
     'email' => $email,
     'name' => $name,
   );
+}
+
+/**
+ * Compares two Mandrill message and returns TRUE if the messages match.
+ *
+ * @param array $first_message
+ *   The first message array to compare.
+ * @param array $first_args
+ *   The first message arguments array to compare.
+ * @param array $second_message
+ *   The second message array to compare.
+ * @param array $second_args
+ *   The second message arguments array to compare.
+ *
+ * @return boolean
+ *   TRUE if messages match.
+ */
+function mandrill_compare_message($first_message, $first_args, $second_message, $second_args) {
+  // Compare message IDs.
+  if ($first_message['tags'][0] != $second_message['tags'][0]) {
+    return FALSE;
+  }
+
+  // Compare message arguments.
+  $first_args_str = serialize($first_args);
+  $second_args_str = serialize($second_args);
+
+  if ($first_args_str != $second_args_str) {
+    return FALSE;
+  }
+
+  return TRUE;
 }

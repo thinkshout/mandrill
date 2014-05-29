@@ -1,0 +1,207 @@
+<?php
+/**
+ * @file
+ * Test class and methods for the Mandrill module.
+ */
+
+class MandrillAsyncTestCase extends DrupalWebTestCase {
+  /**
+   * Returns info displayed in the test interface.
+   *
+   * @return array
+   *   Formatted as specified by simpletest.
+   */
+  public static function getInfo() {
+    // Note: getInfo() strings are not translated with t().
+    return array(
+      'name' => 'Mandrill Async Tests',
+      'description' => 'Test Mandrill asynchronous sending functionality.',
+      'group' => 'Mandrill',
+    );
+  }
+
+  /**
+   * Pre-test setup function.
+   *
+   * Enables dependencies.
+   * Sets the mandrill_api_key variable to the test key.
+   */
+  protected function setUp() {
+    // Use a profile that contains required modules:
+    $prof = drupal_get_profile();
+    $this->profile = $prof;
+    // Enable modules required for the test.
+    $enabled_modules = array(
+      'libraries',
+      'mandrill',
+      'entity',
+    );
+    parent::setUp($enabled_modules);
+    variable_set('mandrill_api_classname', 'DrupalMandrillTest');
+    variable_set('mandrill_test_mode', TRUE);
+
+    // Create admin user.
+    $perms = array(
+      'access administration pages',
+      'administer mandrill',
+    );
+
+    $admin_user = $this->drupalCreateUser($perms);
+
+    $this->drupalLogin($admin_user);
+
+    $configuration_url = 'admin/config/services/mandrill';
+
+    $edit = array(
+      'mandrill_api_key' => 'MANDRILL_TEST_API_KEY',
+    );
+
+    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+
+    $edit = array(
+      'mandrill_process_async' => 1,
+    );
+
+    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+  }
+
+  /**
+   * Post-test function.
+   *
+   * Sets test mode to FALSE.
+   */
+  protected function tearDown() {
+    parent::tearDown();
+
+    variable_del('mandrill_api_classname');
+    variable_del('mandrill_test_mode');
+    variable_del('mandrill_test_send_responses');
+  }
+
+  /**
+   * Tests sending multiple messages asynchronously.
+   */
+  public function testSendAsyncMessages() {
+    variable_set('mandrill_test_send_responses', NULL);
+
+    // Send async messages.
+    $mail_system = new MandrillMailSystem();
+
+    $message = $this->getMessageTestData();
+
+    $expected_recipient_emails = array();
+
+    $recipient_count = 5;
+    for ($i = 1; $i <= $recipient_count; $i++) {
+      $recipient_email = 'recipient.' . $i . '@example.com';
+
+      $to = 'Recipient ' . $i . ' <' . $recipient_email . '>';
+      $message['to'] = $to;
+
+      $expected_recipient_emails[] = $recipient_email;
+
+      $response = $mail_system->mail($message);
+
+      $this->assertTrue($response, 'Tested creating message for async sending.');
+    }
+
+    $last_send_response = variable_get('mandrill_test_send_responses', NULL);
+    $this->assertNull($last_send_response, 'Tested messages not sent prior to cron run.');
+
+    // Run cron to process async messages.
+    $cron_run = drupal_cron_run();
+
+    $this->assertTrue($cron_run, 'Tested cron ran successfully.');
+
+    $last_send_responses = variable_get('mandrill_test_send_responses', NULL);
+    $this->assertNotNull($last_send_responses, 'Tested messages sent after cron run.');
+
+    $this->assertEqual(count($last_send_responses), 1, 'Tested correct number of messages sent.');
+
+    if (isset($last_send_responses[0])) {
+      foreach ($expected_recipient_emails as $index => $email) {
+        $this->assertEqual($last_send_responses[0][$index]['email'], $email, 'Tested expected recipient: ' . $email);
+      }
+    }
+  }
+
+  /**
+   * Tests sending multiple messages asynchronously with a process limit.
+   */
+  public function testSendAsyncMessagesWithLimit() {
+    variable_set('mandrill_test_send_responses', NULL);
+
+    // Set async queue limit.
+    $configuration_url = 'admin/config/services/mandrill';
+
+    $async_queue_limit = 2;
+
+    $edit = array(
+      'mandrill_async_queue_limit' => $async_queue_limit,
+    );
+
+    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+
+    $this->assertEqual(variable_get('mandrill_async_queue_limit', 0), $async_queue_limit, 'Tested async queue limit.');
+
+    // Send async messages.
+    $mail_system = new MandrillMailSystem();
+
+    $message = $this->getMessageTestData();
+
+    $expected_recipient_emails = array();
+
+    $recipient_count = 5;
+    for ($i = 1; $i <= $recipient_count; $i++) {
+      $recipient_email = 'recipient.' . $i . '@example.com';
+
+      $to = 'Recipient ' . $i . ' <' . $recipient_email . '>';
+      $message['to'] = $to;
+
+      $expected_recipient_emails[] = $recipient_email;
+
+      $response = $mail_system->mail($message);
+
+      $this->assertTrue($response, 'Tested creating message for async sending.');
+    }
+
+    // Run cron to process async messages.
+    $cron_run = drupal_cron_run();
+
+    $this->assertTrue($cron_run, 'Tested cron ran successfully.');
+
+    $last_send_responses = variable_get('mandrill_test_send_responses', NULL);
+    $this->assertNotNull($last_send_responses, 'Tested messages sent after cron run.');
+
+    $this->assertEqual(count($last_send_responses), 1, 'Tested correct number of messages sent.');
+
+    $this->assertEqual(count($last_send_responses[0]), $async_queue_limit,
+      'Tested correct number of queued messages processed. Got: ' . count($last_send_responses[0]) . ' / ' . $async_queue_limit);
+
+    // Rest async queue limit.
+    $edit = array(
+      'mandrill_async_queue_limit' => 0,
+    );
+
+    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+  }
+
+  /**
+   * Gets message data used in tests.
+   */
+  protected function getMessageTestData() {
+    $message = array(
+      'id' => 1,
+      'body' => '<p>Mail content</p>',
+      'subject' => 'Mail Subject',
+      'from_email' => 'sender@example.com',
+      'from_name' => 'Test Sender',
+    );
+
+    return $message;
+  }
+}

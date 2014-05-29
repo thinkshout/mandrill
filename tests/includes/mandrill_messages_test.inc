@@ -37,6 +37,8 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
       $response[] = $recipient_response;
     }
 
+    $this->addSendResponse($response);
+
     return $response;
   }
 
@@ -142,5 +144,19 @@ class Mandrill_MessagesTest extends Mandrill_Messages {
     $messages[] = $message;
 
     return $messages;
+  }
+
+  /**
+   * Adds a Mandrill send response array to a variable for use in tests.
+   *
+   * @param array $response
+   *   The Mandrill response array.
+   */
+  protected function addSendResponse($response) {
+    $send_responses = variable_get('mandrill_test_send_responses', array());
+
+    $send_responses[] = $response;
+
+    variable_set('mandrill_test_send_responses', $send_responses);
   }
 }
