@@ -540,7 +540,7 @@ function mandrill_from() {
  * @param array $second_args
  *   The second message arguments array to compare.
  *
- * @return boolean
+ * @return bool
  *   TRUE if messages match.
  */
 function mandrill_compare_message($first_message, $first_args, $second_message, $second_args) {
