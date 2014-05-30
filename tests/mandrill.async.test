@@ -128,69 +128,6 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Tests sending multiple messages asynchronously with a process limit.
-   */
-  public function testSendAsyncMessagesWithLimit() {
-    variable_set('mandrill_test_send_responses', NULL);
-
-    // Set async queue limit.
-    $configuration_url = 'admin/config/services/mandrill';
-
-    $async_queue_limit = 2;
-
-    $edit = array(
-      'mandrill_async_queue_limit' => $async_queue_limit,
-    );
-
-    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'));
-
-    $this->assertEqual(variable_get('mandrill_async_queue_limit', 0), $async_queue_limit, 'Tested async queue limit.');
-
-    // Send async messages.
-    $mail_system = new MandrillMailSystem();
-
-    $message = $this->getMessageTestData();
-
-    $expected_recipient_emails = array();
-
-    $recipient_count = 5;
-    for ($i = 1; $i <= $recipient_count; $i++) {
-      $recipient_email = 'recipient.' . $i . '@example.com';
-
-      $to = 'Recipient ' . $i . ' <' . $recipient_email . '>';
-      $message['to'] = $to;
-
-      $expected_recipient_emails[] = $recipient_email;
-
-      $response = $mail_system->mail($message);
-
-      $this->assertTrue($response, 'Tested creating message for async sending.');
-    }
-
-    // Run cron to process async messages.
-    $cron_run = drupal_cron_run();
-
-    $this->assertTrue($cron_run, 'Tested cron ran successfully.');
-
-    $last_send_responses = variable_get('mandrill_test_send_responses', NULL);
-    $this->assertNotNull($last_send_responses, 'Tested messages sent after cron run.');
-
-    $this->assertEqual(count($last_send_responses), 1, 'Tested correct number of messages sent.');
-
-    $this->assertEqual(count($last_send_responses[0]), $async_queue_limit,
-      'Tested correct number of queued messages processed. Got: ' . count($last_send_responses[0]) . ' / ' . $async_queue_limit);
-
-    // Rest async queue limit.
-    $edit = array(
-      'mandrill_async_queue_limit' => 0,
-    );
-
-    $this->drupalPost($configuration_url, $edit, t('Save configuration'));
-    $this->assertText(t('The configuration options have been saved.'));
-  }
-
-  /**
    * Gets message data used in tests.
    */
   protected function getMessageTestData() {
