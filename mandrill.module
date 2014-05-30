@@ -13,6 +13,8 @@
 
 define('MANDRILL_QUEUE', 'mandrill_queue');
 define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
+// Keep API requests under Mandrill limit of 10MB.
+define('MANDRILL_MAX_ASYNC_ITEMS', 5000);
 
 /**
  * Implements hook_help().
@@ -112,8 +114,6 @@ function mandrill_permission() {
  * Combines queued mail messages into single API calls when possible.
  */
 function mandrill_cron() {
-  $max_items = variable_get('mandrill_async_queue_limit', 0);
-
   $item_queue = DrupalQueue::get(MANDRILL_QUEUE);
 
   $queued_items = array();
@@ -127,7 +127,7 @@ function mandrill_cron() {
       $item_count++;
     }
 
-    if (($max_items > 0) && ($item_count >= $max_items)) {
+    if ($item_count >= MANDRILL_MAX_ASYNC_ITEMS) {
       break;
     }
   }
