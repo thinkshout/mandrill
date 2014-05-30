@@ -167,6 +167,16 @@ function mandrill_cron() {
             $merged_messages[$function][$merged_message_id]['message']['to'][] = $recipient;
           }
 
+          // Merge arguments.
+          foreach ($args as $arg_key => $arg_value) {
+            if (isset($merged_messages[$function][$merged_message_id]['args'][$arg_key])) {
+              $merged_messages[$function][$merged_message_id]['args'][$arg_key][] = $arg_value;
+            }
+            else {
+              $merged_messages[$function][$merged_message_id]['args'][$arg_key] = $arg_value;
+            }
+          }
+
           $found_merge_message = TRUE;
         }
       }
@@ -536,14 +546,6 @@ function mandrill_from() {
 function mandrill_compare_message($first_message, $first_args, $second_message, $second_args) {
   // Compare message IDs.
   if ($first_message['tags'][0] != $second_message['tags'][0]) {
-    return FALSE;
-  }
-
-  // Compare message arguments.
-  $first_args_str = serialize($first_args);
-  $second_args_str = serialize($second_args);
-
-  if ($first_args_str != $second_args_str) {
     return FALSE;
   }
 
