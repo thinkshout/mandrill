@@ -229,7 +229,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
     }
     return TRUE;
   }
-  catch (MandrillException $e) {
+  catch (Mandrill_Error $e) {
     watchdog('mandrill', 'Error sending email from %from to %to. @code: @message',
       array(
         '%from' => $message['from_email'],
