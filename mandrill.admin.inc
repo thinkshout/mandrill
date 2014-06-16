@@ -91,7 +91,6 @@ function mandrill_admin_settings($form, &$form_state) {
     $subaccounts = mandrill_get_subaccounts();
     $sub_acct_options = array('' => '-- Select --');
     if (count($subaccounts)) {
-      $sub_acct_options = array('' => '-- Select --');
       foreach ($subaccounts as $acct) {
         if ($acct['status'] == 'active') {
           $sub_acct_options[$acct['id']] = $acct['name'] . ' (' . $acct['reputation'] . ')';
