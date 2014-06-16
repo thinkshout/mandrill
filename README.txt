@@ -5,6 +5,16 @@ by the folks behind MailChimp. Learn more about Mandrill and how to sign up on
 [their website](http://mandrill.com). (Or don't, but then this module isn't
 terribly useful...)
 
+## REQUIREMENTS
+
+* Mandrill PHP library - https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.zip
+
+## INSTALLATION
+
+The Mandrill PHP library should exist in a directory named "mandrill" under "libraries"
+
+If your Drupal installation uses a .make file, see the example in mandrill.make.example
+
 ## INSTALLATION NOTES
 
 * If you previously installed version 1.3, you will get the following error
