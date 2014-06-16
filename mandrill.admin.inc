@@ -26,7 +26,14 @@ function mandrill_admin_settings($form, &$form_state) {
     '#default_value' => $key,
   );
 
-  if ($key) {
+  $library = libraries_detect('mandrill');
+
+  if (!$library['installed']) {
+    drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'),
+      'warning');
+  }
+
+  if ($key && $library['installed']) {
     $mailsystem_config_keys = mailsystem_get();
     $in_use = FALSE;
     $usage_rows = array();
