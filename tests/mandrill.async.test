@@ -105,7 +105,8 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
 
     $params = $this->getMessageTestParams();
 
-    $message = drupal_mail('mandrill', 'default', NULL, language_default(), $params, self::FROM_EMAIL, FALSE);
+    $message = drupal_mail('mandrill', 'default', NULL, language_default(), NULL, self::FROM_EMAIL, FALSE);
+    $message = array_merge($message, $params);
 
     $expected_recipient_emails = array();
 
