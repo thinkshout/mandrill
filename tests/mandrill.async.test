@@ -5,6 +5,8 @@
  */
 
 class MandrillAsyncTestCase extends DrupalWebTestCase {
+  const FROM_EMAIL = 'Test Sender <sender@example.com>';
+
   /**
    * Returns info displayed in the test interface.
    *
@@ -43,6 +45,7 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
     // Create admin user.
     $perms = array(
       'access administration pages',
+      'administer mailsystem',
       'administer mandrill',
     );
 
@@ -50,6 +53,7 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
 
     $this->drupalLogin($admin_user);
 
+    // Set the Mandrill API key.
     $configuration_url = 'admin/config/services/mandrill';
 
     $edit = array(
@@ -59,11 +63,22 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
     $this->drupalPost($configuration_url, $edit, t('Save configuration'));
     $this->assertText(t('The configuration options have been saved.'));
 
+    // Enable async processing.
     $edit = array(
       'mandrill_process_async' => 1,
     );
 
     $this->drupalPost($configuration_url, $edit, t('Save configuration'));
+    $this->assertText(t('The configuration options have been saved.'));
+
+    // Set default mail system.
+    $configuration_url = 'admin/config/system/mailsystem';
+
+    $edit = array(
+      'mailsystem[default-system]' => 'MandrillMailSystem',
+    );
+
+    $this->drupalPost($configuration_url, $edit, t('Save settings'));
     $this->assertText(t('The configuration options have been saved.'));
   }
 
@@ -86,10 +101,11 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
   public function testSendAsyncMessages() {
     variable_set('mandrill_test_send_responses', NULL);
 
-    // Send async messages.
-    $mail_system = new MandrillMailSystem();
+    $mail_system = drupal_mail_system('mandrill', 'default');
 
-    $message = $this->getMessageTestData();
+    $params = $this->getMessageTestParams();
+
+    $message = drupal_mail('mandrill', 'default', NULL, language_default(), $params, self::FROM_EMAIL, FALSE);
 
     $expected_recipient_emails = array();
 
@@ -97,14 +113,13 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
     for ($i = 1; $i <= $recipient_count; $i++) {
       $recipient_email = 'recipient.' . $i . '@example.com';
 
-      $to = 'Recipient ' . $i . ' <' . $recipient_email . '>';
-      $message['to'] = $to;
+      $message['to'] = 'Recipient ' . $i . ' <' . $recipient_email . '>';
 
       $expected_recipient_emails[] = $recipient_email;
 
-      $response = $mail_system->mail($message);
+      $result = $mail_system->mail($message);
 
-      $this->assertTrue($response, 'Tested creating message for async sending.');
+      $this->assertTrue($result, 'Tested creating message for async sending.');
     }
 
     $last_send_response = variable_get('mandrill_test_send_responses', NULL);
@@ -128,17 +143,14 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Gets message data used in tests.
+   * Gets message params used in tests.
    */
-  protected function getMessageTestData() {
-    $message = array(
-      'id' => 1,
+  protected function getMessageTestParams() {
+    $params = array(
       'body' => '<p>Mail content</p>',
       'subject' => 'Mail Subject',
-      'from_email' => 'sender@example.com',
-      'from_name' => 'Test Sender',
     );
 
-    return $message;
+    return $params;
   }
 }
