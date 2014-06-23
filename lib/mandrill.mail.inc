@@ -157,7 +157,7 @@ class MandrillMailSystem implements MailSystemInterface {
     $mandrill_params = array(
       'message' => $mandrill_message,
       'function' => 'mandrill_sender_plain',
-      'args' => array(),
+      'args' => $message['params'],
     );
     drupal_alter('mandrill_mail', $mandrill_params, $message);
 
