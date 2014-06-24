@@ -166,7 +166,7 @@ function mandrill_cron() {
         $first_message = $merged_messages[$function][$merged_message_id]['message'];
         $first_args = $merged_messages[$function][$merged_message_id]['args'];
 
-        if (mandrill_compare_message($first_message, $first_args, $message, $args)) {
+        if (mandrill_compare_message($first_message, $message)) {
           // Merge recipients.
           foreach ($message['to'] as $recipient) {
             $merged_messages[$function][$merged_message_id]['message']['to'][] = $recipient;
@@ -538,19 +538,23 @@ function mandrill_from() {
  *
  * @param array $first_message
  *   The first message array to compare.
- * @param array $first_args
- *   The first message arguments array to compare.
  * @param array $second_message
  *   The second message array to compare.
- * @param array $second_args
- *   The second message arguments array to compare.
  *
  * @return bool
  *   TRUE if messages match.
  */
-function mandrill_compare_message($first_message, $first_args, $second_message, $second_args) {
+function mandrill_compare_message($first_message, $second_message) {
   // Compare message IDs.
   if ($first_message['tags'][0] != $second_message['tags'][0]) {
+    return FALSE;
+  }
+
+  // Compare message content.
+  $first_hash = md5($first_message['subject'] . $first_message['text']);
+  $second_hash = md5($first_message['subject'] . $second_message['text']);
+
+  if ($first_hash != $second_hash) {
     return FALSE;
   }
 
