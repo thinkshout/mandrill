@@ -109,7 +109,7 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
     for ($i = 1; $i <= $recipient_count; $i++) {
       $recipient_email = 'recipient.' . $i . '@example.com';
 
-      $message['to'] = 'Recipient ' . $i . ' <' . $recipient_email . '>';
+      $recipient = 'Recipient ' . $i . ' <' . $recipient_email . '>';
 
       $expected_recipient_emails[] = $recipient_email;
 
@@ -123,7 +123,7 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
         ),
       );
 
-      $message = drupal_mail('mandrill', 'default', NULL, language_default(), $params, self::FROM_EMAIL, FALSE);
+      $message = drupal_mail('mandrill', 'default', $recipient, language_default(), $params, self::FROM_EMAIL, FALSE);
 
       $params = $this->getMessageTestParams();
       $message = array_merge($message, $params);
