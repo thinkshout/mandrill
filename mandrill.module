@@ -148,6 +148,11 @@ function mandrill_cron() {
     }
 
     if (!isset($merged_messages[$function][$message_id])) {
+      // Prepare args for merge.
+      foreach ($args as $arg_key => $arg_value) {
+        $args[$arg_key] = array($arg_value);
+      }
+
       // Create a new merged message using this message.
       $merged_messages[$function][$message_id] = array(
         'message' => $message,
@@ -173,7 +178,7 @@ function mandrill_cron() {
               $merged_messages[$function][$merged_message_id]['args'][$arg_key][] = $arg_value;
             }
             else {
-              $merged_messages[$function][$merged_message_id]['args'][$arg_key] = $arg_value;
+              $merged_messages[$function][$merged_message_id]['args'][$arg_key] = array($arg_value);
             }
           }
 
