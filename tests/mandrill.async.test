@@ -103,11 +103,6 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
 
     $mail_system = drupal_mail_system('mandrill', 'default');
 
-    $params = $this->getMessageTestParams();
-
-    $message = drupal_mail('mandrill', 'default', NULL, language_default(), NULL, self::FROM_EMAIL, FALSE);
-    $message = array_merge($message, $params);
-
     $expected_recipient_emails = array();
 
     $recipient_count = 5;
@@ -117,6 +112,21 @@ class MandrillAsyncTestCase extends DrupalWebTestCase {
       $message['to'] = 'Recipient ' . $i . ' <' . $recipient_email . '>';
 
       $expected_recipient_emails[] = $recipient_email;
+
+      $params = array(
+        'merge_vars' => array(
+          'rcpt' => $recipient_email,
+          'vars' => array(
+            'name' => 'recipient_name',
+            'content' => 'Recipient ' . $i,
+          ),
+        ),
+      );
+
+      $message = drupal_mail('mandrill', 'default', NULL, language_default(), $params, self::FROM_EMAIL, FALSE);
+
+      $params = $this->getMessageTestParams();
+      $message = array_merge($message, $params);
 
       $result = $mail_system->mail($message);
 
