@@ -43,7 +43,7 @@ function mandrill_menu() {
   $items['admin/config/services/mandrill/settings'] = array(
     'title' => 'Settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0,
+    'weight' => -11,
   );
   $items['admin/config/services/mandrill/test'] = array(
     'title' => 'Send test email',
@@ -54,6 +54,13 @@ function mandrill_menu() {
     'file' => 'mandrill.admin.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 1,
+  );
+  $items['mandrill/webhook'] = array(
+    'title' => 'Mandrill webhooks endpoint',
+    'page callback' => 'mandrill_process_webhook',
+    'access callback' => 'mandrill_process_webhook_access',
+    'access arguments' => array(2),
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -147,7 +154,7 @@ function mandrill_mail($key, &$message, $params) {
 
 /**
  * Abstracts sending of messages, allowing queueing option.
- * 
+ *
  * @param array $message
  *   A message array formatted for Mandrill's sending API, plus 2 additional
  *   indexes for the send_function and an array of $args, if needed by the send
@@ -246,12 +253,12 @@ function mandrill_mailsend($message, $function, $args = array()) {
 
 /**
  * The actual function that calls the API send message.
- * 
+ *
  * This is the default function used by mandrill_mailsend().
- * 
+ *
  * @param array $message
  *   Associative array containing message data.
- * 
+ *
  * @return array
  *   Results of sending the message.
  *
@@ -407,7 +414,7 @@ function mandrill_mail_key_blacklist() {
  *   a comma delimited list of email addresses in 1 of 2 forms:
  *   user@domain.com
  *   any number of names <user@domain.com>
- * 
+ *
  * @return array
  *   array of email addresses
  */
@@ -456,3 +463,133 @@ function mandrill_from() {
     'name' => $name,
   );
 }
+
+
+/**
+ * Access callback for mandrill_process_webhook_access().
+ *
+ * @string $key
+ */
+function mandrill_process_webhook_access($key) {
+  // TODO: Check Webook Key?
+  return $key == mandrill_webhook_key();
+}
+
+
+/**
+ * Process a webhook post from Mandrill.
+ */
+function mandrill_process_webhook() {
+  if (!isset($_POST)) {
+    return "Mandrill Webhook Endpoint.";
+  }
+
+  $data = NULL;
+  if (isset($_POST['mandrill_events'])) {
+    $data = $_POST['mandrill_events'];
+    $data_decoded = json_decode($data);
+  }
+
+  // Allow other modules to act on a webhook.
+  module_invoke_all('mandrill_process_webhook', $data);
+
+  // Log event if requested.
+  if (variable_get('mandrill_webhook_logging', FALSE)) {
+    watchdog('mailchimp', 'Mandrill webhook event has been processed.' . '<pre>'. print_r($data_decoded, TRUE) .'</pre>',
+      array(), WATCHDOG_INFO
+    );
+  }
+
+  return NULL;
+}
+
+/**
+ * Generate a key to include in the webhook url based on a hash.
+ *
+ * @string $list_id
+ *
+ * @return string
+ *   The key.
+ */
+function mandrill_webhook_key() {
+  return drupal_hash_base64($GLOBALS['base_url'] . drupal_get_private_key() . drupal_get_hash_salt());
+}
+
+/**
+ * Generate the webhook endpoint URL.
+ *
+ * @return string
+ *   The endpoint URL.
+ */
+function mandrill_webhook_url() {
+  return url('mandrill/webhook/' . mandrill_webhook_key(), array("absolute" => true));
+}
+
+/**
+ * Wrapper around Mandrill->webhooks->getList().
+ */
+function mandrill_webhook_get_list() {
+  try {
+    $mandrill = mandrill_get_api_object();
+    $result = $mandrill->webhooks->getList();
+  }
+  catch (Exception $e) {
+    watchdog('mailchimp', 'An error occurred listing webhooks. "%message"', array(
+      '%message' => $e->getMessage(),
+    ), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return $result;
+}
+
+/**
+ * Wrapper around Mandrill->webhooks->add().
+ */
+function mandrill_webhook_add($url, $description = NULL, $events = array()) {
+  try {
+    $mandrill = mandrill_get_api_object();
+    $result = $mandrill->webhooks->add($url, $description, $events);
+  }
+  catch (Exception $e) {
+    watchdog('mailchimp', 'An error occurred adding webhook. "%message"', array(
+      '%message' => $e->getMessage(),
+    ), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return $result['id'];
+}
+
+/**
+ * Wrapper around Mandrill->webhooks->update().
+ */
+function mandrill_webhook_update($id, $url, $description = NULL, $events = array()) {
+  try {
+    $mandrill = mandrill_get_api_object();
+    $result = $mandrill->webhooks->update($id, $url, $description, $events);
+  }
+  catch (Exception $e) {
+    watchdog('mailchimp', 'An error occurred updating webhook. "%message"', array(
+      '%message' => $e->getMessage(),
+    ), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return $result['id'];
+}
+
+/**
+ * Wrapper around Mandrill->webhooks->delete().
+ */
+function mandrill_webhook_delete($id) {
+  try {
+    $mandrill = mandrill_get_api_object();
+    $mandrill->webhooks->delete($id);
+  }
+  catch (Exception $e) {
+    watchdog('mailchimp', 'An error occurred deleting webhook. "%message"', array(
+      '%message' => $e->getMessage(),
+    ), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return TRUE;
+}
+

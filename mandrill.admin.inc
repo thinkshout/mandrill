@@ -217,9 +217,162 @@ function mandrill_admin_settings($form, &$form_state) {
         ),
       ),
     );
+
+    // Webhook admin.
+    $verified = FALSE;
+    $webhook_id = variable_get('mandrill_webhook_id');
+    $webhook_list = mandrill_webhook_get_list();
+    // Check if webhook ID is in list.
+    foreach ($webhook_list as $data) {
+      if ($data['id'] == $webhook_id) {
+        $verified = TRUE;
+      }
+      break;
+
+    }
+
+    $events = array();
+    if ($verified) {
+      foreach ($data['events'] as $event) {
+        $events[$event] = $event;
+      }
+    }
+    else {
+      $webhook_id = NULL;
+      variable_del('mandrill_webhook_id');
+    }
+    // Save webhook variables for later.
+    $form_state['webhook_verified'] = $verified;
+    $form_state['webhook_id'] = $webhook_id;
+
+    // Update form based on list check.
+    $form['webhook'] = array(
+      '#title' => t('Webhook'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+    );
+    $form['webhook']['mandrill_webhook_enable'] = array(
+      '#title' => t('Enable webhook'),
+      '#type' => 'checkbox',
+      '#default_value' => $verified,
+    );
+    $form['webhook']['webhook_events_container'] = array(
+      '#type' => 'container',
+      '#states' => array(
+        "visible" => array(
+          "input[name='mandrill_webhook_enable']" => array("checked" => TRUE)
+        ),
+      ),
+    );
+    $form['webhook']['webhook_events_container']['mandrill_webhook_events'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t("Events"),
+      '#options' => array(
+        'send' => 'Message Is Sent',
+        'hard_bounce' => 'Message Is Bounced',
+        'soft_bounce' => 'Message Is Soft-Bounced',
+        'open' => 'Message Is Opened',
+        'click' => 'Message Is Clicked',
+        'spam' => 'Message Is Marked As Spam',
+        'unsub' => 'Message Recipient Unsubscribes',
+        'reject' => 'Message Is Rejected',
+      ),
+      '#default_value' => $events,
+    );
+
+    $form['webhook']['webhook_events_container']['mandrill_webhook_logging'] = array(
+      '#title' => t('Enable webhook logging'),
+      '#type' => 'checkbox',
+      '#default_value' => variable_get('mandrill_webhook_logging', FALSE),
+    );
+
+
   }
+
+  // Add submit callback.
+  $form['#submit'][] = 'mandrill_admin_settings_submit';
   return system_settings_form($form);
 }
+
+/**
+ * Mandrill admin settings form submit handler.
+ * (In addition to system_settings_form_submit()).
+ *
+ * @param $form
+ * @param $form_state
+ */
+function mandrill_admin_settings_submit($form, &$form_state) {
+  $events = array();
+  // Format values for Mandrill API.
+  foreach ($form_state['values']['mandrill_webhook_events'] as $key => $value) {
+    if ($value !== 0) {
+      $events[] = $key;
+    }
+  }
+  $webhook_id = $form_state['webhook_id'];
+  $decription = t('Drupal Mandrill Webhook');
+
+  // Handle state and events.
+  switch ($form_state['input']['mandrill_webhook_enable']) {
+    case '1':
+      if ($webhook_id) {
+        $result = mandrill_webhook_update(
+          $webhook_id,
+          mandrill_webhook_url(),
+          $decription,
+          $events
+        );
+        $action = t('Updated');
+      }
+      else {
+        $result = mandrill_webhook_add(
+          mandrill_webhook_url(),
+          $decription,
+          $events
+        );
+        $action = t('Enabled');
+      }
+      variable_set('mandrill_webhook_id', $result);
+      break;
+
+    case '':
+      $result = mandrill_webhook_delete(
+        variable_get('mandrill_webhook_id')
+      );
+      $action = t('Disabled');
+      variable_del('mandrill_webhook_id');
+      break;
+
+    default:
+      $result = FALSE;
+      $action = t('None');
+      break;
+
+  }
+  if ($result) {
+    drupal_set_message(t('Webhooks have been %action.',
+      array(
+        '%action' => $action,
+      )
+    ));
+  }
+  else {
+    drupal_set_message(t('Unable to perform webhook action "%action".',
+      array(
+        '%action' => $action,
+      )
+    ), 'warning');
+
+  }
+
+  // Remove unused variables.
+  variable_del('mandrill_webhook_events');
+  variable_del('mandrill_webhook_enable');
+  unset($form_state['values']['mandrill_webhook_events']);
+  unset($form_state['values']['mandrill_webhook_enable']);
+}
+
+
 
 /**
  * Javascript callback for the mandrill_admin_settings form.
@@ -228,7 +381,7 @@ function mandrill_admin_settings($form, &$form_state) {
  *   a drupal form
  * @param array $form_state
  *   drupal form_state
- * 
+ *
  * @return array
  *   a form section
  */
