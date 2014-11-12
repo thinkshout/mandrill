@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Mandrill Groups content types feature.
+ */
+
+include_once 'mandrill_groups_content_types.features.inc';

@@ -1,0 +1,14 @@
+name = Mandrill Groups
+description = Discussion groups
+core = 7.x
+package = Mandrill
+configure = admin/config/services/mandrill/groups
+
+dependencies[] = features
+dependencies[] = mandrill
+dependencies[] = og
+dependencies[] = og_ui
+
+; For development
+;dependencies[] = diff
+;dependencies[] = admin_menu

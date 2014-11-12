@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function mandrill_groups_install() {
+  // Necessary to get new node types defined in mandrill_groups.module.
+  node_types_rebuild();
+  // Add fields to our new node types.
+  _mandrill_groups_add_fields();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mandrill_groups_uninstall() {
+  $content_types = array('mandrill_group', 'mandrill_discussion');
+  $sql = 'SELECT nid FROM {node} n WHERE n.type IN :type';
+  $result = db_query($sql, array(':type' => $content_types));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+  node_delete_multiple($nids);
+  foreach ($content_types as $content_type) {
+    node_type_delete($content_type);
+  }
+}
+
+/**
+ * Add all custom fields for the content types created by this module.
+ */
+function _mandrill_groups_add_fields() {
+  // Define content types that will be created.
+  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
+
+  // Create all fields associated with content types this module defines.
+  foreach (_mandrill_groups_installed_fields() as $field) {
+    $field = field_info_field($field['field_name']);
+    if (empty($field)) {
+      field_create_field($field);
+    }
+  }
+  // Add field instances to content types.
+  foreach ($mandrill_groups_content_types as $content_type) {
+    // Add fields from _mandrill_groups_installed_instances() to all content
+    // types.
+    foreach (_mandrill_groups_installed_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = $content_type;
+      $instance = field_info_instance('node', $instance['field_name'], $content_type);
+      if (empty($instance)) {
+        field_create_instance($instance);
+      }
+    }
+    // Add OG (organic groups) fields to content types.
+    if ($content_type == 'mandrill_groups_discussion') {
+      // Set variables that are normally set by OG from values pulled from the
+      // Organic groups tab of the content type edit form.
+      variable_set('og_group_type_' . $content_type, TRUE);
+      variable_set('og_group_content_type_' . $content_type, TRUE);
+      variable_set('target_type_' . $content_type, 'node');
+      variable_set('target_bundles_' . $content_type, array('mandrill_groups_group'));
+    }
+    elseif ($content_type == 'mandrill_groups_group') {
+      variable_set('og_group_type_' . $content_type, TRUE);
+    }
+    // Save the new content type via OG - this ensures fields necessary for
+    // correct OG config are added to the content type. Also variables set above
+    // are unset in og_ui_node_type_save().
+    og_ui_node_type_save($content_type);
+  }
+}
+
+/**
+ * Define the fields for our content types.
+ *
+ * @return array
+ *   An associative array specifying the fields to add to our
+ *   new content types.
+ */
+function _mandrill_groups_installed_fields() {
+  return array(
+    'mandrill_groups_email' => array(
+      'field_name' => 'mandrill_groups_email',
+      'type' => 'text',
+    ),
+  );
+}
+
+/**
+ * Create field instances for our content types.
+ *
+ * @return array
+ *   An associative array specifying the field instances set on our new
+ *   content types.
+ */
+function _mandrill_groups_installed_instances() {
+  return array(
+    'mandrill_groups_email' => array(
+      'field_name' => 'mandrill_groups_email',
+      'label' => t('Mandrill Groups Email'),
+    ),
+  );
+}

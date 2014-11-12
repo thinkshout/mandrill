@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Allows for creation and management of discussion groups that can be
+ * interacted with via Drupal or email.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function mandrill_groups_menu() {
+  $items = array();
+
+  $items['admin/config/services/mandrill/groups'] = array(
+    'title' => 'Groups',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_groups_settings_form'),
+    'access arguments' => array('administer mandrill'),
+    'description' => 'Handles Mandrill Incoming Webhooks',
+    'file' => 'mandrill_groups.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['mandrill/webhook/inbound'] = array(
+    'title' => 'Mandrill Inbound',
+    'description' => 'Inbound email via Mandrill',
+    'page callback' => 'mandrill_groups_callback',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function mandrill_groups_node_info() {
+  // Define content types.
+  return array(
+    'mandrill_groups_group' => array(
+      'name' => t('Mandrill Group'),
+      'base' => 'mandrill_groups',
+      'description' => t('Users subscribe to a Mandrill Group to be notified of all new Mandrill Discussions within that group.'),
+      'title_label' => t('Mandrill Group name'),
+      // Set the 'locked' attribute to TRUE, so users won't be able to change
+      // our content type.
+      'locked' => TRUE,
+    ),
+    'mandrill_groups_discussion' => array(
+      'name' => t('Mandrill Discussion'),
+      'base' => 'mandrill_groups',
+      'description' => t('Discussion thread that is part of a Mandrill Group. Users may opt in or out of individual Mandrill Discussions.'),
+      'title_label' => t('Mandrill Discussion topic'),
+      'locked' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/node-example.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function mandrill_groups_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+
+function mandrill_groups_form_alter(&$form, &$form_state) {
+  $a=1;
+}
