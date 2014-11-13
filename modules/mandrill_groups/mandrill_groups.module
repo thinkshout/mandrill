@@ -107,3 +107,24 @@ function _mandrill_groups_field_unique($node) {
 
   return FALSE;
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function mandrill_groups_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'mandrill_groups_group_node_form' || $form_id == 'mandrill_groups_discussion_node_form') {
+    // Do not allow users to set the Mandrill Groups Email field.
+    // This field is set programatically using the title, which is validated
+    // for uniqueness, in mandrill_groups_node_presave().
+    $form['mandrill_groups_email']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function mandrill_groups_node_presave($node) {
+  $node_wrapper = entity_metadata_wrapper('node', $node);
+  // Set Mandrill Groups Email field using unique title property.
+  $node_wrapper->mandrill_groups_email->set(preg_replace('@[^a-z0-9-]+@', '-', strtolower($node->title)));
+}
