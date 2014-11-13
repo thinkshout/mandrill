@@ -55,3 +55,27 @@ function mandrill_groups_settings_form($form, &$form_state) {
 
   return system_settings_form($form);
 }
+
+/**
+ * Validation for mandrill_groups_settings_form.
+ *
+ * @param array $form
+ *   Form render array.
+ * @param array $form_state
+ *   Array containing form state values.
+ */
+function mandrill_groups_settings_form_validate($form, &$form_state) {
+  try{
+    $mandrill = mandrill_get_api_object();
+    $domain = $form['mandrill_groups_inbound_domain']['#value'];
+    $pattern = 'mailbox-*';
+    $url = url('mandrill/webhook/inbound', array('absolute' => TRUE));
+    $result = $mandrill->inbound->addRoute($domain, $pattern, $url);
+  }
+  catch(Mandrill_Error $e) {
+    // Mandrill errors are thrown as exceptions.
+    echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+    // A mandrill error occurred: Mandrill_Unknown_InboundDomain - Unknown Inbound Domain: mandrill.com
+    throw $e;
+  }
+}
