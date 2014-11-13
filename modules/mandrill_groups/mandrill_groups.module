@@ -109,15 +109,29 @@ function mandrill_groups_form($node, $form_state) {
 //}
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_FORM_ID_alter() for mandrill_groups_group_node_form().
  */
-function mandrill_groups_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'mandrill_groups_group_node_form' || $form_id == 'mandrill_groups_discussion_node_form') {
-    // Do not allow users to set the Mandrill Groups Email field.
-    // This field is set programatically using the title, which is validated
-    // for uniqueness, in mandrill_groups_node_presave().
-    $form['mandrill_groups_email']['#access'] = FALSE;
-  }
+function mandrill_groups_form_mandrill_groups_group_node_form_alter(&$form, &$form_state, $form_id) {
+  // Do not allow users to set the Mandrill Groups Email field.
+  // This field is set programatically using the title, which is validated
+  // for uniqueness, in mandrill_groups_node_presave().
+  $form['mandrill_groups_email']['#access'] = FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for mandrill_groups_group_node_form().
+ */
+function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form, &$form_state, $form_id) {
+  // Do not allow users to set the Mandrill Groups Email field.
+  // This field is set programatically using the title, which is validated
+  // for uniqueness, in mandrill_groups_node_presave().
+  $form['mandrill_groups_email']['#access'] = FALSE;
+//  // Hide field that sets associated group for discussion being created
+//  // because group is determined programatically when user does not have
+//  // permission to create Mandrill Groups.
+//  if (!user_access('create mandrill_groups_group content')) {
+//    $form['og_group_ref']['#access'] = FALSE;
+//  }
 }
 
 ///**
@@ -128,5 +142,3 @@ function mandrill_groups_form_alter(&$form, &$form_state, $form_id) {
 //  // Set Mandrill Groups Email field using unique title property.
 //  $node_wrapper->mandrill_groups_email->set(preg_replace('@[^a-z0-9-]+@', '-', strtolower($node->title)));
 //}
-
-
