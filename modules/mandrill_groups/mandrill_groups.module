@@ -132,7 +132,16 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
 //  if (!user_access('create mandrill_groups_group content')) {
 //    $form['og_group_ref']['#access'] = FALSE;
 //  }
+//  if (isset($_GET['nid'])) {
+//    // @todo - isn't working
+//    $form["field_accounts"][LANGUAGE_NONE][0]['value']['#default_value'] = $_GET['nid'];
+//  }
+//  $form['#submit'][] = 'tmp_set_value';
 }
+
+//function tmp_set_value(&$form, &$form_state) {
+//  form_set_value('og_group_ref', $_GET['nid'], $form_state);
+//}
 
 ///**
 // * Implements hook_node_presave().
@@ -142,3 +151,17 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
 //  // Set Mandrill Groups Email field using unique title property.
 //  $node_wrapper->mandrill_groups_email->set(preg_replace('@[^a-z0-9-]+@', '-', strtolower($node->title)));
 //}
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function mandrill_groups_node_view_alter(&$build) {
+  // Add link to Mandrill Group full node view to create discussion
+  // Include group nid in URL to be used in setting default value on Mandrill
+  // Discussion node form.
+  if ($build['#bundle'] == 'mandrill_groups_group' && $build['#view_mode'] == 'full') {
+    $build['add_discussion'] = array(
+      '#markup' => '<a href="/node/add/mandrill-groups-discussion?nid=' . $build['#node']->nid . '">Add discussion</a>'
+    );
+  }
+}
