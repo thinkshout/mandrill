@@ -57,16 +57,33 @@ function _mandrill_groups_add_fields() {
         field_create_instance($instance);
       }
     }
-    // Add OG (organic groups) fields to content types.
+    // // Set variables that are set by the node type edit form options tabs.
     if ($content_type == 'mandrill_groups_discussion') {
-      // Set variables that are normally set by OG from values pulled from the
-      // Organic groups tab of the content type edit form.
+      // Don't display author and date information.
+      variable_set('node_submitted_mandrill_groups_discussion', 0);
+      // Not "promoted to front page".
+      variable_set('node_options_mandrill_groups_discussion', array('status'));
+      // Add OG (organic groups) fields to content types by setting the
+      // following variables. og_ui_node_type_save() reacts to the presence or
+      // absence of these variables to determine whether to add OG fields to
+      // the node type.
       variable_set('og_group_type_' . $content_type, TRUE);
       variable_set('og_group_content_type_' . $content_type, TRUE);
       variable_set('target_type_' . $content_type, 'node');
       variable_set('target_bundles_' . $content_type, array('mandrill_groups_group'));
     }
     elseif ($content_type == 'mandrill_groups_group') {
+      // // Set variables that are set by the node type edit form options tabs.
+      // Don't display author and date information.
+      variable_set('node_submitted_mandrill_groups_group', 0);
+      // Not "promoted to front page".
+      variable_set('node_options_mandrill_groups_discussion', array('status'));
+      // Commenting closed.
+      variable_set('comment_mandrill_groups_group', 1);
+      // Add OG (organic groups) fields to content types by setting the
+      // following variables. og_ui_node_type_save() reacts to the presence or
+      // absence of these variables to determine whether to add OG fields to
+      // the node type.
       variable_set('og_group_type_' . $content_type, TRUE);
     }
     // Save the new content type via OG - this ensures fields necessary for
