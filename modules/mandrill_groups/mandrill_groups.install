@@ -88,6 +88,10 @@ function _mandrill_groups_installed_fields() {
     'mandrill_groups_email' => array(
       'field_name' => 'mandrill_groups_email',
       'type' => 'text',
+      'locked' => TRUE,
+      'settings' => array(
+        'no_ui' => TRUE,
+      ),
     ),
   );
 }
