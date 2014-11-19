@@ -68,8 +68,10 @@ function mandrill_groups_settings_form_validate($form, &$form_state) {
   try{
     $mandrill = mandrill_get_api_object();
     $domain = $form['mandrill_groups_inbound_domain']['#value'];
-    $pattern = 'mailbox-*';
-    $url = url('mandrill/webhook/inbound', array('absolute' => TRUE));
+    $pattern = '*';
+//    $url = url('mandrill/webhook/inbound', array('absolute' => TRUE));
+    // current ngrok URL for development
+    $url = 'http://56c8a7bf.ngrok.com';
     $result = $mandrill->inbound->addRoute($domain, $pattern, $url);
   }
   catch(Mandrill_Error $e) {
