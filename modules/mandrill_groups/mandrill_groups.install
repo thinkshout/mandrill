@@ -3,11 +3,13 @@
 /**
  * Implements hook_install().
  */
-function mandrill_groups_install() {
+function mandrill_groups_enable() {
   // Necessary to get new node types defined in mandrill_groups.module.
   node_types_rebuild();
   // Add fields to our new node types.
   _mandrill_groups_add_fields();
+  // Add permissions for OG node types.
+  _mandrill_groups_add_permissions();
 }
 
 /**
@@ -77,7 +79,7 @@ function _mandrill_groups_add_fields() {
       // Don't display author and date information.
       variable_set('node_submitted_mandrill_groups_group', 0);
       // Not "promoted to front page".
-      variable_set('node_options_mandrill_groups_discussion', array('status'));
+      variable_set('node_options_mandrill_groups_group', array('status'));
       // Commenting closed.
       variable_set('comment_mandrill_groups_group', 1);
       // Add OG (organic groups) fields to content types by setting the
@@ -127,4 +129,37 @@ function _mandrill_groups_installed_instances() {
       'label' => t('Mandrill Groups Email'),
     ),
   );
+}
+
+/**
+ * Sets permissions on the Mandrill Group and Mandrill Discussion content types.
+ */
+function _mandrill_groups_add_permissions() {
+  $permission_sets = array(
+    array(
+      2 => array(
+        'create mandrill_groups_discussion content',
+      ),
+      3 => array(
+        'create mandrill_groups_discussion content',
+      ),
+    ),
+  );
+
+  foreach ($permission_sets as $rid => $permissions) {
+    foreach ($permissions as $permission_name) {
+      db_merge('role_permission')
+        ->key(array(
+          'rid' => $rid,
+          'permission' => $permission_name,
+        ))
+        ->fields(array(
+          'module' => 'mandrill_groups',
+        ))
+        ->execute();
+    }
+  }
+  // Clear the user access cache.
+  drupal_static_reset('user_access');
+  drupal_static_reset('user_role_permissions');
 }
