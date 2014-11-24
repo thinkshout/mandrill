@@ -22,10 +22,10 @@ function mandrill_groups_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['mandrill/webhook/inbound'] = array(
+  $items['mandrill/webhook/groups'] = array(
     'title' => 'Mandrill Inbound',
     'description' => 'Inbound email via Mandrill',
-    'page callback' => 'mandrill_groups_callback',
+    'page callback' => 'mandrill_groups_process_webhook',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -72,6 +72,17 @@ function mandrill_groups_node_info() {
  */
 function mandrill_groups_form($node, $form_state) {
   return node_content_form($node, $form_state);
+}
+
+function mandrill_groups_process_webhook() {
+  if (!isset($_POST)) {
+    return "Mandrill Groups Webhook Endpoint.";
+  }
+  $events = drupal_json_decode($_POST['mandrill_events']);
+  foreach ($events as $event) {
+    // process events
+  }
+  return count($events) . " events processed.";
 }
 
 ///**
