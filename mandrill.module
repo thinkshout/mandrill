@@ -408,6 +408,74 @@ function mandrill_get_webhooks() {
 }
 
 /**
+ * Get a list of inbound email domains.
+ */
+function mandrill_get_inbound_domains() {
+  $domains = array();
+  try {
+    $mandrill = mandrill_get_api_object();
+    $domains = $mandrill->inbound->domains();
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $domains;
+}
+
+/**
+ * Get a list of inbound email routes for a domain.
+ */
+function mandrill_get_inbound_routes($domain) {
+  $routes = array();
+  try {
+    $mandrill = mandrill_get_api_object();
+    $routes = $mandrill->inbound->routes($domain);
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $routes;
+}
+
+/**
+ * Create a new inbound domain.
+ */
+function mandrill_add_inbound_domain($domain) {
+  $result = NULL;
+  try {
+    $mandrill = mandrill_get_api_object();
+    $result = $mandrill->inbound->addDomain($domain);
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $result;
+}
+
+/**
+ * Create a new inbound route for a domain.
+ */
+function mandrill_add_inbound_route($domain, $pattern, $url) {
+  $route = NULL;
+  try {
+    $mandrill = mandrill_get_api_object();
+    $route = $mandrill->inbound->addRoute($domain, $pattern, $url);
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $route;
+}
+
+/**
  * Helper to return a comma delimited list of mail keys to not log content for.
  *
  * @return string
