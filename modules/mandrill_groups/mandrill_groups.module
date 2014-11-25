@@ -74,15 +74,47 @@ function mandrill_groups_form($node, $form_state) {
   return node_content_form($node, $form_state);
 }
 
+/**
+ * Webhook processing for mandrill_groups.
+ */
 function mandrill_groups_process_webhook() {
   if (!isset($_POST)) {
     return "Mandrill Groups Webhook Endpoint.";
+  }
+  // Validate any submissions with $_POST variables to confirm they are from
+  // Mandrill.
+  elseif (!mandrill_groups_webhook_validate()) {
+    return 'Invalid signature.';
   }
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
     // process events
   }
   return count($events) . " events processed.";
+}
+
+/**
+ * Validate that a webhook with post data is coming from Mandrill.
+ */
+function mandrill_groups_webhook_validate() {
+  $url = $GLOBALS['base_url'] . '/mandrill/webhook/groups?domain=' . $_GET['domain'];
+  $key = NULL;
+  $webhooks = mandrill_get_webhooks();
+  foreach ($webhooks as $webhook) {
+    if ($webhook['url'] == $url) {
+      $key = $webhook['auth_key'];
+      break;
+    }
+  }
+  if (!$key) {
+    return FALSE;
+  }
+  ksort($_POST);
+  foreach ($_POST as $arg => $val) {
+    $url .= $arg . $val;
+  }
+  $key = base64_encode(hash_hmac('sha1', $url, $key, TRUE));
+  return $key == $_SERVER['HTTP_X_MANDRILL_SIGNATURE'];
 }
 
 ///**
