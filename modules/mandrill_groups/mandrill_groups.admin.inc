@@ -23,18 +23,21 @@ function mandrill_groups_settings_form($form, &$form_state) {
   // Set arrays for table rows.
   $rows_valid = array();
   $rows_invalid = array();
-  foreach ($mandrill->inbound->domains() as $domain) {
+  foreach (mandrill_get_inbound_domains() as $domain) {
 
     // Check if MX record for domain is valid.
-    $mx_valid = isset($domain['valid_mx']);
+    $mx_valid = boolval($domain['valid_mx']);
 
     // If MX record is valid, ensure the Mandrill Groups route is configured.
     if ($mx_valid) {
       // Check if Mandrill Groups route is configured for the current domain.
-      $routes = $mandrill->inbound->routes($domain['domain']);
+      $routes = mandrill_get_inbound_routes($domain['domain']);
       $route_ok = FALSE;
       foreach ($routes as $route) {
-        if ($route['url'] == url('mandrill/webhook/inbound', array('absolute' => TRUE))) {
+        if ($route['url'] == url("mandrill/webhook/inbound", array(
+            'absolute' => TRUE,
+            'query' => array('domain' => $domain['domain']),
+          ))) {
           $route_ok = TRUE;
         }
       }
@@ -42,7 +45,16 @@ function mandrill_groups_settings_form($form, &$form_state) {
         $domain_status = 'OK';
       }
       else {
-        $domain_status = t('Mandrill Groups route not configured. Add the following route to this domain in your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a>: %url', array('%url' => url('mandrill/webhook/inbound', array('absolute' => TRUE))));
+        $domain_status = t('Mandrill Groups route not configured. Add the following route to this domain in your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a>: %url',
+          array(
+            '%url' => url("mandrill/webhook/inbound", array(
+              'absolute' => TRUE,
+              'query' => array(
+                'domain' => $domain['domain'],
+              ),
+            )),
+          )
+        );
       }
     }
     else {
@@ -88,10 +100,14 @@ function mandrill_groups_settings_form($form, &$form_state) {
 
   // Option to add a domain to Mandrill if desired one does not appear in table
   // above.
+  $description = 'Don\'t see the domain you want in the above table? '
+    . 'Add it here and click "Save configuration."<br />The Mandrill Groups '
+    . 'route for your site will be automatically added to the new domain, but '
+    . 'you\'ll have to configure the MX record to route to Mandrill';
   $form['add_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Add Mandrill Domain'),
-    '#description' => 'Don\'t see the domain you want in the above table? Add it here and click "Save configuration."<br />The Mandrill Groups route for your site will be automatically added to the new domain.',
+    '#description' => t($description),
     '#attributes' => array('placeholder' => t('example.yoursite.com')),
   );
   return system_settings_form($form);
@@ -106,20 +122,15 @@ function mandrill_groups_settings_form($form, &$form_state) {
  *   Array containing form state values.
  */
 function mandrill_groups_settings_form_validate($form, &$form_state) {
-//  try{
-//    $mandrill = mandrill_get_api_object();
-//    $domain = $form['mandrill_groups_inbound_domain']['#value'];
-//    $pattern = '*';
-////    $url = url('mandrill/webhook/inbound', array('absolute' => TRUE));
-//    // current ngrok URL for development
-//    $url = 'http://56c8a7bf.ngrok.com';
-//    $result = $mandrill->inbound->addRoute($domain, $pattern, $url);
-//  }
-//  catch(Mandrill_Error $e) {
-//    // Mandrill errors are thrown as exceptions.
-//    echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
-//    // A mandrill error occurred: Mandrill_Unknown_InboundDomain - Unknown Inbound Domain: mandrill.com
-//    throw $e;
-//  }
-
+  // Add a new domain if one was provided on the form.
+  $domain = $form_state['input']['add_domain'];
+  if ($domain) {
+    mandrill_add_inbound_domain($domain);
+    mandrill_add_inbound_route($domain, '*', url("mandrill/webhook/inbound",
+      array(
+        'absolute' => TRUE,
+        'query' => array('domain' => $domain),
+      )
+    ));
+  }
 }
