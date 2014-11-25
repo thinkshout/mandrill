@@ -17,6 +17,9 @@ Also it has integration with some modules:
 * Mandrill
 * Organic Groups
 
+Recommended: Patch to organic groups 7.x-2.7 to display valid configuration on
+node type edit pages: https://www.drupal.org/node/1674078#comment-6460240
+
 -- INSTALLATION --
 @todo
 1. Ensure Mandrill module is enabled and configured for your Mandrill account.
