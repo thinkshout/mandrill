@@ -391,6 +391,23 @@ function mandrill_get_subaccounts() {
 }
 
 /**
+ * Get a list of webhooks.
+ */
+function mandrill_get_webhooks() {
+  $webhooks = array();
+  try {
+    $mandrill = mandrill_get_api_object();
+    $webhooks = $mandrill->webhooks->getList();
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $webhooks;
+}
+
+/**
  * Helper to return a comma delimited list of mail keys to not log content for.
  *
  * @return string
