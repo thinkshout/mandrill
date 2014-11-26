@@ -109,7 +109,7 @@ function _mandrill_groups_installed_fields() {
       'type' => 'text',
       'locked' => TRUE,
       'settings' => array(
-        'no_ui' => TRUE,
+        'no_ui' => FALSE,
       ),
     ),
   );

@@ -18,6 +18,7 @@
 function mandrill_groups_settings_form($form, &$form_state) {
   $form = array();
 
+  // Static webhook endpoint.
   // Create table of user's Mandrill inbound domains and their statuses.
   $mandrill = mandrill_get_api_object();
   // Set arrays for table rows.

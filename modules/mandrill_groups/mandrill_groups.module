@@ -70,6 +70,8 @@ function mandrill_groups_node_info() {
   );
 }
 
+
+
 /**
  * Implements hook_form().
  *
@@ -99,12 +101,15 @@ function mandrill_groups_process_webhook() {
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
     // process events
+    mandrill_groups_create_comment($event['msg']);
   }
   return count($events) . " events processed.";
 }
 
 /**
  * Validate that a webhook with post data is coming from Mandrill.
+ * 
+ * See http://help.mandrill.com/entries/23704122-Authenticating-webhook-requests
  */
 function mandrill_groups_webhook_validate() {
   $url = $GLOBALS['base_url'] . '/mandrill/webhook/groups?domain=' . $_GET['domain'];
@@ -164,16 +169,6 @@ function mandrill_groups_webhook_validate() {
 /**
  * Implements hook_form_FORM_ID_alter() for mandrill_groups_group_node_form().
  */
-function mandrill_groups_form_mandrill_groups_group_node_form_alter(&$form, &$form_state, $form_id) {
-  // Do not allow users to set the Mandrill Groups Email field.
-  // This field is set programatically using the title, which is validated
-  // for uniqueness, in mandrill_groups_node_presave().
-  $form['mandrill_groups_email']['#access'] = FALSE;
-}
-
-/**
- * Implements hook_form_FORM_ID_alter() for mandrill_groups_group_node_form().
- */
 function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form, &$form_state, $form_id) {
   // Do not allow users to set the Mandrill Groups Email field.
   // This field is set programatically using the title, which is validated
@@ -216,5 +211,68 @@ function mandrill_groups_node_view_alter(&$build) {
     $build['add_discussion'] = array(
       '#markup' => '<a href="/node/add/mandrill-groups-discussion?nid=' . $build['#node']->nid . '">Add discussion</a>'
     );
+  }
+}
+
+/**
+ * Create a new comment based on an email received via Mandrill.
+ *
+ * Formatting for the subject of the message will be:
+ * subject text [mgd#000000]
+ */
+function mandrill_groups_create_comment($message) {
+  $user = user_load_by_mail($message['from_email']);
+  if (!$user) {
+    // @todo log rejected message?
+    return FALSE;
+  }
+  $discussion_tag = '';
+  list($subject, $discussion_tag) = explode('[mgd#', $message['subject']);
+  $discussion_tag = trim($discussion_tag, '] ');
+  $discussion_id = (int) $discussion_tag;
+  $discussion = node_load($discussion_id);
+  $group = mandrill_groups_load_by_mail($message['email']);
+  // @todo verify discussion is part of group and that user has access to that group.
+  $comment_body = array(
+    'value' => $message['html'],
+    'format' => 'plain_text',
+  );
+  $values = array(
+    'subject' => $message['subject'],
+    'uid' => $user->uid,
+    'nid' => $discussion->nid,
+    'mail' => $message['from_email'],
+    'name' => $user->name,
+    'date' => 'now',
+    'status' => COMMENT_PUBLISHED,
+    'node_type' => 'comment_node_mandrill_groups_discussion',
+  );
+  $comment = entity_create('comment', $values);
+  $wrapper = entity_metadata_wrapper('comment', $comment);
+  $wrapper->comment_body->set($comment_body);
+  // If you use more standard save methodology, the comment gets lost, so:
+  comment_submit($comment);
+  comment_save($comment);
+
+  watchdog('mandrill_groups', 'Comment posted: %subject.', array('%subject' => $comment->subject), WATCHDOG_NOTICE, l(t('view'), 'comment/' . $comment->cid, array('fragment' => 'comment-' . $comment->cid)));
+  return $comment;
+}
+/**
+ * Load a Mandrill group node based on the group email.
+ */
+function mandrill_groups_load_by_mail($email) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->propertyCondition('type', 'mandrill_groups_group', '=')
+    ->fieldCondition('mandrill_groups_email', 'value', $email);
+  $results = $query->execute();
+  if (isset($results['node'])) {
+    $result_ids = array_keys($results['node']);
+    $first = reset($result_ids);
+    $node = node_load($first);
+    return $node;
+  }
+  else {
+    return FALSE;
   }
 }
