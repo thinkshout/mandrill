@@ -70,8 +70,6 @@ function mandrill_groups_node_info() {
   );
 }
 
-
-
 /**
  * Implements hook_form().
  *
@@ -257,6 +255,7 @@ function mandrill_groups_create_comment($message) {
   watchdog('mandrill_groups', 'Comment posted: %subject.', array('%subject' => $comment->subject), WATCHDOG_NOTICE, l(t('view'), 'comment/' . $comment->cid, array('fragment' => 'comment-' . $comment->cid)));
   return $comment;
 }
+
 /**
  * Load a Mandrill group node based on the group email.
  */
