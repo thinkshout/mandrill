@@ -245,7 +245,7 @@ function mandrill_groups_create_comment($message) {
     'format' => 'plain_text',
   );
   $values = array(
-    'subject' => $message['subject'],
+    'subject' => $subject,
     'uid' => $user->uid,
     'nid' => $discussion->nid,
     'mail' => $message['from_email'],
