@@ -242,7 +242,7 @@ function mandrill_groups_create_comment($message) {
   // @todo verify discussion is part of group and that user has access to that group.
   $comment_body = array(
     'value' => $message['html'],
-    'format' => 'plain_text',
+    'format' => 'mandrill_groups_html',
   );
   $values = array(
     'subject' => $subject,
