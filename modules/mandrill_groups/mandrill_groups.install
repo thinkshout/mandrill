@@ -14,6 +14,32 @@ function mandrill_groups_enable() {
   _mandrill_groups_add_fields();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
+
+  $format_name = 'mandrill_groups_html';
+
+  if (!filter_format_exists($format_name)) {
+    // Add text formats.
+    $format = array(
+      'format' => $format_name,
+      'name' => 'Mandrill Groups HTML',
+      'weight' => 0,
+      'filters' => array(
+        // URL filter.
+        $format_name => array(
+          'weight' => 0,
+          'status' => 1,
+        ),
+        // HTML corrector filter.
+        'filter_htmlcorrector' => array(
+          'weight' => 1,
+          'status' => 1,
+        ),
+      ),
+    );
+    $format = (object) $format;
+    filter_format_save($format);
+  }
+
 }
 
 /**
