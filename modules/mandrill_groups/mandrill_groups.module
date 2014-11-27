@@ -224,13 +224,21 @@ function mandrill_groups_create_comment($message) {
     // @todo log rejected message?
     return FALSE;
   }
-  $discussion_tag = '';
+  $group = mandrill_groups_load_by_mail($message['email']);
+  if (!og_is_member('node', $group->nid, 'user', $user)) {
+    // This email address doesn't have access to this group.
+    return FALSE;
+  }
   list($subject, $discussion_tag) = explode('[#MGD', $message['subject']);
   $discussion_tag = trim($discussion_tag, '] ');
   $discussion_id = (int) $discussion_tag;
-  $discussion = node_load($discussion_id);
-  $group = mandrill_groups_load_by_mail($message['email']);
   $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group);
+  $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
+  if ($group->nid != $discussion_wrapper->og_group_ref->raw()) {
+    // Trying to post to a discussion using wrong group email.
+    return FALSE;
+  }
+  //if ($discussion->og_group_ref->value())
   // @todo verify discussion is part of group and that user has access to that group.
   $comment_body = array(
     'value' => $message['html'],
