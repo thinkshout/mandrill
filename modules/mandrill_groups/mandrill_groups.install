@@ -7,8 +7,8 @@
 /**
  * Implements hook_install().
  */
-function mandrill_groups_enable() {
-  // Necessary to get new node types defined in mandrill_groups.module.
+function mandrill_groups_install() {
+  // Necessary to get new node types defined in mandrill_groups_node_info().
   node_types_rebuild();
   // Add fields to our new node types.
   _mandrill_groups_add_fields();
