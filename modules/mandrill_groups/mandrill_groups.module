@@ -216,7 +216,7 @@ function mandrill_groups_node_view_alter(&$build) {
  * Create a new comment based on an email received via Mandrill.
  *
  * Formatting for the subject of the message will be:
- * subject text [mgd#000000]
+ * subject text [#MGD000000]
  */
 function mandrill_groups_create_comment($message) {
   $user = user_load_by_mail($message['from_email']);
@@ -225,7 +225,7 @@ function mandrill_groups_create_comment($message) {
     return FALSE;
   }
   $discussion_tag = '';
-  list($subject, $discussion_tag) = explode('[mgd#', $message['subject']);
+  list($subject, $discussion_tag) = explode('[#MGD', $message['subject']);
   $discussion_tag = trim($discussion_tag, '] ');
   $discussion_id = (int) $discussion_tag;
   $discussion = node_load($discussion_id);
