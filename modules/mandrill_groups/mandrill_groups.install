@@ -4,12 +4,16 @@
  * Install hooks for mandrill_groups module.
  */
 
+define('MANDRILL_GROUPS_CONTENT_TYPES', array('mandrill_group', 'mandrill_discussion'));
+
 /**
  * Implements hook_install().
  */
 function mandrill_groups_install() {
   // Necessary to get new node types defined in mandrill_groups_node_info().
   node_types_rebuild();
+  // Configure content types.
+  _mandrill_groups_config_content_types();
   // Add fields to our new node types.
   _mandrill_groups_add_fields();
   // Add permissions for OG node types.
@@ -46,15 +50,14 @@ function mandrill_groups_install() {
  * Implements hook_uninstall().
  */
 function mandrill_groups_uninstall() {
-  $content_types = array('mandrill_group', 'mandrill_discussion');
   $sql = 'SELECT nid FROM {node} n WHERE n.type IN :type';
-  $result = db_query($sql, array(':type' => $content_types));
+  $result = db_query($sql, array(':type' => MANDRILL_GROUPS_CONTENT_TYPES));
   $nids = array();
   foreach ($result as $row) {
     $nids[] = $row->nid;
   }
   node_delete_multiple($nids);
-  foreach ($content_types as $content_type) {
+  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
     node_type_delete($content_type);
   }
 }
@@ -66,7 +69,6 @@ function _mandrill_groups_add_fields() {
   //@todo we need to set the comment property to "2" for non-threaded comments.
   //@todo Set the discussion og_group_ref field to have cardinality 1.
   // Define content types that will be created.
-  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
 
   // Create all fields associated with content types this module defines.
   $mandrill_groups_installed_fields = _mandrill_groups_installed_fields();
@@ -78,19 +80,26 @@ function _mandrill_groups_add_fields() {
     }
   }
   // Add field instances to content types.
-  foreach ($mandrill_groups_content_types as $content_type) {
-    // Add fields from _mandrill_groups_installed_instances() to all content
-    // types.
-    $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
-    foreach ($mandrill_groups_installed_instances as $instance) {
-      $instance['entity_type'] = 'node';
-      $instance['bundle'] = $content_type;
-      // @todo - possibly could get rid of this check
-      $existing_instance = field_info_instance('node', $instance['field_name'], $content_type);
-      if (!$existing_instance) {
-        field_create_instance($instance);
+  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
+    if ($content_type == 'mandrill_group') {
+      $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
+      foreach ($mandrill_groups_installed_instances as $instance) {
+        $instance['bundle'] = $content_type;
+        // @todo - possibly could get rid of this check
+        $existing_instance = field_info_instance($instance['entity_type'], $instance['field_name'], $content_type);
+        if (!$existing_instance) {
+          field_create_instance($instance);
+        }
       }
     }
+  }
+}
+
+/**
+ * Configure content type settings.
+ */
+function _mandrill_groups_config_content_types() {
+  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
     // // Set variables that are set by the node type edit form options tabs.
     if ($content_type == 'mandrill_groups_discussion') {
       // Don't display author and date information.
@@ -157,6 +166,7 @@ function _mandrill_groups_installed_fields() {
 function _mandrill_groups_installed_instances() {
   return array(
     'mandrill_groups_email' => array(
+      'entity_type' => 'node',
       'field_name' => 'mandrill_groups_email',
       'label' => t('Mandrill Groups Email'),
     ),
