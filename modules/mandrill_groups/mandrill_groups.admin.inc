@@ -35,7 +35,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
       $routes = mandrill_get_inbound_routes($domain['domain']);
       $route_ok = FALSE;
       foreach ($routes as $route) {
-        if ($route['url'] == url("mandrill/webhook/inbound", array(
+        if ($route['url'] == url("mandrill/webhook/groups", array(
             'absolute' => TRUE,
             'query' => array('domain' => $domain['domain']),
           ))) {
@@ -48,7 +48,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
       else {
         $domain_status = t('Mandrill Groups route not configured. Add the following route to this domain in your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a>: %url',
           array(
-            '%url' => url("mandrill/webhook/inbound", array(
+            '%url' => url("mandrill/webhook/groups", array(
               'absolute' => TRUE,
               'query' => array(
                 'domain' => $domain['domain'],
@@ -59,7 +59,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
       }
     }
     else {
-      $domain_status = 'Invalid MX record. Use the "DNS Settings" button in your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a> to ensure your DNS records are set correctly for this domain.';
+      $domain_status = 'Invalid MX record. Use the "DNS Settings" button in your <a href="https://mandrillapp.com/groups">Mandrill inbound configuration</a> to ensure your DNS records are set correctly for this domain.';
     }
 
     // Populate tables.
