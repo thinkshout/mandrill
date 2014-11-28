@@ -207,7 +207,7 @@ function mandrill_groups_node_view_alter(&$build) {
   // Discussion node form.
   if ($build['#bundle'] == 'mandrill_groups_group' && $build['#view_mode'] == 'full') {
     $build['add_discussion'] = array(
-      '#markup' => '<a href="/node/add/mandrill-groups-discussion?nid=' . $build['#node']->nid . '">Add discussion</a>'
+      '#markup' => '<a href="/node/add/mandrill-groups-discussion?nid=' . $build['#node']->nid . '">Add discussion</a>',
     );
   }
 }
@@ -215,31 +215,53 @@ function mandrill_groups_node_view_alter(&$build) {
 /**
  * Create a new comment based on an email received via Mandrill.
  *
- * Formatting for the subject of the message will be:
- * subject text [#MGD000000]
+ * Formatting for the subject of the message will be special when attached to
+ * an existing discussion, adding a tag to identify the discussion. Example:
+ *
+ * subject text [#MGD000001]
+ *
+ * If no #MGD tag is included, or an invalid number is given, a new discussion
+ * will be created.
  */
 function mandrill_groups_create_comment($message) {
   $user = user_load_by_mail($message['from_email']);
   if (!$user) {
-    // @todo log rejected message?
+    watchdog('mandrill_groups', 'Message from %email denied: no user with that email address exists.',
+      array(
+        '%email' => $message['from_email'],
+      ));
     return FALSE;
   }
   $group = mandrill_groups_load_by_mail($message['email']);
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     // This email address doesn't have access to this group.
+    watchdog('mandrill_groups', 'Message from %email denied because no user with that email address has access to group %groupname (NID: %groupid)',
+      array(
+        '%email' => $message['from_email'],
+        '%groupname' => $group->title,
+        '%groupid' => $group->nid,
+      ));
     return FALSE;
   }
+  // Parse the subject line to extract a discussion ID, if present:
   list($subject, $discussion_tag) = explode('[#MGD', $message['subject']);
+  $subject = trim($subject);
   $discussion_tag = trim($discussion_tag, '] ');
   $discussion_id = (int) $discussion_tag;
+  // Load existing discussion, or create a new one:
   $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
+  // Verify the discussion matches the group attached to this email address:
   if ($group->nid != $discussion_wrapper->og_group_ref->raw()) {
     // Trying to post to a discussion using wrong group email.
+    watchdog('mandrill_groups', 'Message from %email for discussion %discussion denied because the wrong targeting email was used (%groupemail)',
+      array(
+        '%email' => $message['from_email'],
+        '%discussion' => $discussion->nid,
+        '%groupemail' => $message['email'],
+      ));
     return FALSE;
   }
-  //if ($discussion->og_group_ref->value())
-  // @todo verify discussion is part of group and that user has access to that group.
   $comment_body = array(
     'value' => $message['html'],
     'format' => 'mandrill_groups_html',
