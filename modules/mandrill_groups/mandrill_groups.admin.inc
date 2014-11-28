@@ -27,7 +27,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
   foreach (mandrill_get_inbound_domains() as $domain) {
 
     // Check if MX record for domain is valid.
-    $mx_valid = boolval($domain['valid_mx']);
+    $mx_valid = !empty($domain['valid_mx']);
 
     // If MX record is valid, ensure the Mandrill Groups route is configured.
     if ($mx_valid) {
