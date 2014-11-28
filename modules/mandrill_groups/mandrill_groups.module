@@ -282,6 +282,14 @@ function mandrill_groups_create_comment($message) {
     return FALSE;
   }
   $group = mandrill_groups_load_by_mail($message['email']);
+  if (empty($group)) {
+    watchdog('mandrill_groups', 'Message from %email denied: no group with the email address %groupemail exists.',
+      array(
+        '%email' => $message['from_email'],
+        '%groupemail' => $message['email'],
+      ));
+    return FALSE;
+  }
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     // This email address doesn't have access to this group.
     watchdog('mandrill_groups', 'Message from %email denied because no user with that email address has access to group %groupname (NID: %groupid)',
