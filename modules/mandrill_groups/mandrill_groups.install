@@ -110,7 +110,6 @@ function _mandrill_groups_config_content_types() {
       // following variables. og_ui_node_type_save() reacts to the presence or
       // absence of these variables to determine whether to add OG fields to
       // the node type.
-      variable_set('og_group_type_' . $content_type, TRUE);
       variable_set('og_group_content_type_' . $content_type, TRUE);
       variable_set('target_type_' . $content_type, 'node');
       variable_set('target_bundles_' . $content_type, array('mandrill_groups_group'));
