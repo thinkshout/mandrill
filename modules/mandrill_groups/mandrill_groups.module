@@ -346,21 +346,25 @@ function mandrill_groups_create_comment($message) {
 
 /**
  * Load a Mandrill group node based on the group email.
+ *
+ * @return node[]
+ *   Depending whether $email is set, an array of groups or a single one.
  */
-function mandrill_groups_load_by_mail($email) {
+function mandrill_groups_load_by_mail($email = NULL) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
-    ->propertyCondition('type', 'mandrill_groups_group', '=')
-    ->fieldCondition('mandrill_groups_email', 'value', $email);
+    ->propertyCondition('type', 'mandrill_groups_group', '=');
+  if ($email) {
+    $query->fieldCondition('mandrill_groups_email', 'value', $email);
+  }
   $results = $query->execute();
   if (isset($results['node'])) {
     $result_ids = array_keys($results['node']);
     $first = reset($result_ids);
-    $node = node_load($first);
-    return $node;
+    return $email ? node_load($first) : node_load_multiple($result_ids);
   }
   else {
-    return FALSE;
+    return array();
   }
 }
 
