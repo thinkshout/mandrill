@@ -49,7 +49,7 @@ function mandrill_groups_install() {
  */
 function mandrill_groups_uninstall() {
   $mandrill_groups_content_types = array('mandrill_group', 'mandrill_discussion');
-  $sql = 'SELECT nid FROM {node} n WHERE n.type IN :type';
+  $sql = 'SELECT nid FROM {node} n WHERE n.type IN (:type)';
   $result = db_query($sql, array(':type' => $mandrill_groups_content_types));
   $nids = array();
   foreach ($result as $row) {
