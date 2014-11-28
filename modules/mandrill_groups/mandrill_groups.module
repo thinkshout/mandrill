@@ -92,6 +92,8 @@ function mandrill_groups_form($node, $form_state) {
     '#default_value' => isset($default_name) ? $default_name : $node->title,
     '#maxlength' => 32,
     '#machine_name' => array(
+      // @todo: replace this with a false() function and do our own validation
+      // @      to allow for duplicate machine names under different domains.
       'exists' => 'mandrill_groups_load_by_mail_name',
       'source' => array('title'),
       'label' => t('Email Name'),
@@ -147,7 +149,7 @@ function mandrill_groups_process_webhook() {
   }
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
-    // process events
+    // Process events:
     mandrill_groups_create_comment($event['msg']);
   }
   return count($events) . " events processed.";
