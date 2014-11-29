@@ -65,10 +65,9 @@ function mandrill_groups_uninstall() {
  * Add all custom fields for the content types created by this module.
  */
 function _mandrill_groups_add_fields() {
-  //@todo we need to set the comment property to "2" for non-threaded comments.
   //@todo Set the discussion og_group_ref field to have cardinality 1.
-  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
   // Define content types that will be created.
+  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
 
   // Create all fields associated with content types this module defines.
   $mandrill_groups_installed_fields = _mandrill_groups_installed_fields();
@@ -81,7 +80,7 @@ function _mandrill_groups_add_fields() {
   }
   // Add field instances to content types.
   foreach ($mandrill_groups_content_types as $content_type) {
-    if ($content_type == 'mandrill_group') {
+    if ($content_type == 'mandrill_groups_group') {
       $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
       foreach ($mandrill_groups_installed_instances as $instance) {
         $instance['bundle'] = $content_type;
