@@ -33,18 +33,77 @@ function mandrill_groups_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
-
-  $items['mandrill/add/route'] = array(
-    'title' => 'Mandrill Add Route',
-    'description' => 'Add a route to a Mandrill domain.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('mandrill_groups_add_routes_form'),
-    'file' => 'mandrill_groups.admin.inc',
-    'access callback' => TRUE,
-    'type' => MENU_CALLBACK,
+  $items['node/%node/discussions'] = array(
+    'title' => 'Discussions',
+    'page callback' => 'group_node_discussions',
+    'page arguments' => array(1),
+    'access callback' => 'group_node_discussion_access',
+//    'access arguments' => array('create mandrill_groups_discussion content', 1),
+    'weight' => 0,
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
 
   return $items;
+}
+
+/**
+ * Access callback for "Discussion" tab on Group nodes.
+ *
+ * Only show tab if user is a member of the Group and has permission to add
+ * Discussions.
+ */
+function group_node_discussion_access($permission, $group) {
+  global $user;
+  if (!og_is_member('node', $group->nid, 'user', $user)) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Get all discussions for the current Group.
+ *
+ * @param array $group
+ *   The group that is currently being viewed.
+ *
+ * @return array
+ *   An array of rendered discussions for the current Group.
+ */
+function group_node_discussions($group) {
+
+  // Construct database query to get all discussions related to the current
+  // Group.
+  $query = db_select('node', 'n');
+  $query->fields('n', array('nid'));
+  $query->leftJoin('og_membership', 'o', 'n.nid = o.etid');
+  $query->condition('n.status', NODE_PUBLISHED);
+  $query->condition('o.entity_type', 'node');
+  $query->condition('o.gid', $group->nid);
+  $result = $query->execute();
+
+  // Add link to create discussion if the user has permission to.
+  $permission = 'create mandrill_groups_discussion content';
+  $discussions = array();
+  if (og_user_access('node', $group->nid, $permission)) {
+    // Include group nid in URL to be used in setting default value on Mandrill
+    // Discussion node form.
+    $discussions['add_discussion'] = array(
+      '#markup' => '<ul class="action-links"><li><a href="/node/add/mandrill-groups-discussion?nid=' . $group->nid . '">Add discussion</a></li></ul>',
+    );
+  }
+
+  // Create render array of discussion teasers.
+  foreach ($result as $nid) {
+    $node = node_load($nid->nid);
+    $discussion_teaser = node_view($node, 'teaser');
+    $discussions[] = array(
+      '#type' => 'markup',
+      '#markup' => render($discussion_teaser),
+    );
+  }
+
+  return $discussions;
 }
 
 /**
@@ -308,20 +367,6 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
 //  // Set Mandrill Groups Email field using unique title property.
 //  $node_wrapper->mandrill_groups_email->set(preg_replace('@[^a-z0-9-]+@', '-', strtolower($node->title)));
 //}
-
-/**
- * Implements hook_node_view_alter().
- */
-function mandrill_groups_node_view_alter(&$build) {
-  // Add link to Mandrill Group full node view to create discussion
-  // Include group nid in URL to be used in setting default value on Mandrill
-  // Discussion node form.
-  if ($build['#bundle'] == 'mandrill_groups_group' && $build['#view_mode'] == 'full') {
-    $build['add_discussion'] = array(
-      '#markup' => '<a href="/node/add/mandrill-groups-discussion?nid=' . $build['#node']->nid . '">Add discussion</a>',
-    );
-  }
-}
 
 /**
  * Create a new comment based on an email received via Mandrill.
