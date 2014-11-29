@@ -111,6 +111,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
     '#description' => t($description),
     '#attributes' => array('placeholder' => t('example.yoursite.com')),
   );
+  $form['#submit'][] = 'mandrill_groups_settings_form_submit';
   return system_settings_form($form);
 }
 
@@ -122,7 +123,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
  * @param array $form_state
  *   Array containing form state values.
  */
-function mandrill_groups_settings_form_validate($form, &$form_state) {
+function mandrill_groups_settings_form_submit($form, &$form_state) {
   // Add a new domain if one was provided on the form.
   $domain = $form_state['input']['add_domain'];
   if ($domain) {
