@@ -94,10 +94,11 @@ function mandrill_groups_form($node, $form_state) {
     '#machine_name' => array(
       // @todo: replace this with a false() function and do our own validation
       // @      to allow for duplicate machine names under different domains.
-      'exists' => 'mandrill_groups_load_by_mail_name',
+      'exists' => FALSE,
       'source' => array('title'),
       'label' => t('Email Name'),
     ),
+    '#element_validate' => array('mandrill_groups_validate_group_email'),
     '#description' => t('A unique email name for this list. It must only contain lowercase letters, numbers, and underscores. The @domain part of the email address is selected below.'),
   );
   $inbound = mandrill_get_inbound_domains();
@@ -126,6 +127,17 @@ function mandrill_groups_form_mandrill_groups_group_node_form_alter(&$form, &$fo
   // added in mandrill_groups_form().
   $form['mandrill_groups_email']['#access'] = FALSE;
   $form['#validate'][] = 'mandrill_groups_apply_form_settings';
+}
+
+function mandrill_groups_validate_group_email($element, $form_state) {
+  $email = $form_state['input']['email_user'] . '@' . $form_state['input']['email_domain'];
+  $existing_node = mandrill_groups_load_by_mail($email);
+  if (empty($existing_node)) {
+    return;
+  }
+  if (!isset($form_state['node']->nid) || $form_state['node']->nid != $existing_node->nid) {
+    form_error($element, t('The email address @email is already in use, please pick another.', array('@email' => $email)));
+  }
 }
 
 /**
@@ -364,30 +376,6 @@ function mandrill_groups_load_by_mail($email = NULL) {
     $result_ids = array_keys($results['node']);
     $first = reset($result_ids);
     return $email ? node_load($first) : node_load_multiple($result_ids);
-  }
-  else {
-    return array();
-  }
-}
-
-/**
- * Load a Mandrill group node based on the group email without domain.
- *
- * @return node[]
- *   Depending whether $email is set, an array of groups or a single one.
- */
-function mandrill_groups_load_by_mail_name($email_name = NULL) {
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'node')
-    ->propertyCondition('type', 'mandrill_groups_group', '=');
-  if ($email_name) {
-    $query->fieldCondition('mandrill_groups_email', 'value', $email_name . '@', 'STARTS_WITH');
-  }
-  $results = $query->execute();
-  if (isset($results['node'])) {
-    $result_ids = array_keys($results['node']);
-    $first = reset($result_ids);
-    return $email_name ? node_load($first) : node_load_multiple($result_ids);
   }
   else {
     return array();
