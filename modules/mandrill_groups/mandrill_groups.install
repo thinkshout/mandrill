@@ -4,8 +4,6 @@
  * Install hooks for mandrill_groups module.
  */
 
-define('MANDRILL_GROUPS_CONTENT_TYPES', array('mandrill_group', 'mandrill_discussion'));
-
 /**
  * Implements hook_install().
  */
@@ -51,13 +49,14 @@ function mandrill_groups_install() {
  */
 function mandrill_groups_uninstall() {
   $sql = 'SELECT nid FROM {node} n WHERE n.type IN :type';
-  $result = db_query($sql, array(':type' => MANDRILL_GROUPS_CONTENT_TYPES));
+  $types = _mandrill_groups_get_content_types();
+  $result = db_query($sql, array(':type' => $types));
   $nids = array();
   foreach ($result as $row) {
     $nids[] = $row->nid;
   }
   node_delete_multiple($nids);
-  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
+  foreach ($types as $content_type) {
     node_type_delete($content_type);
   }
 }
@@ -80,7 +79,7 @@ function _mandrill_groups_add_fields() {
     }
   }
   // Add field instances to content types.
-  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
+  foreach (_mandrill_groups_get_content_types() as $content_type) {
     if ($content_type == 'mandrill_group') {
       $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
       foreach ($mandrill_groups_installed_instances as $instance) {
@@ -99,7 +98,7 @@ function _mandrill_groups_add_fields() {
  * Configure content type settings.
  */
 function _mandrill_groups_config_content_types() {
-  foreach (MANDRILL_GROUPS_CONTENT_TYPES as $content_type) {
+  foreach (_mandrill_groups_get_content_types() as $content_type) {
     // // Set variables that are set by the node type edit form options tabs.
     if ($content_type == 'mandrill_groups_discussion') {
       // Don't display author and date information.
@@ -252,4 +251,11 @@ function _mandrill_groups_add_permissions() {
   // Clear the user access cache. - @todo necessary? if so, we should also be clearing OG static vars.
   drupal_static_reset('user_access');
   drupal_static_reset('user_role_permissions');
+}
+
+/**
+ * Helper function to keep content type labels in one place.
+ */
+function _mandrill_groups_get_content_types() {
+  return array('mandrill_group', 'mandrill_discussion');
 }
