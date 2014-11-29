@@ -115,6 +115,7 @@ function mandrill_groups_create_fields() {
   }
 }
 
+/**
  * Implements hook_form().
  *
  * Drupal needs us to provide a form that lets the user
@@ -173,6 +174,9 @@ function mandrill_groups_form_mandrill_groups_group_node_form_alter(&$form, &$fo
   $form['#validate'][] = 'mandrill_groups_apply_form_settings';
 }
 
+/**
+ * Field validator that looks for a unique email_user/email_domain combo.
+ */
 function mandrill_groups_validate_group_email($element, $form_state) {
   $email = $form_state['input']['email_user'] . '@' . $form_state['input']['email_domain'];
   $existing_node = mandrill_groups_load_by_mail($email);
