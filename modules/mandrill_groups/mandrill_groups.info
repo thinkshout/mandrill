@@ -8,7 +8,3 @@ dependencies[] = features
 dependencies[] = mandrill
 dependencies[] = og
 dependencies[] = og_ui
-
-; For development
-;dependencies[] = diff
-;dependencies[] = admin_menu
