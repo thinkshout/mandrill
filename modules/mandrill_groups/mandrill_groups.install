@@ -48,15 +48,17 @@ function mandrill_groups_install() {
  * Implements hook_uninstall().
  */
 function mandrill_groups_uninstall() {
-  $sql = 'SELECT nid FROM {node} n WHERE n.type IN :type';
-  $types = _mandrill_groups_get_content_types();
-  $result = db_query($sql, array(':type' => $types));
+
+  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
+  $sql = 'SELECT nid FROM {node} n WHERE n.type IN (:type)';
+  $result = db_query($sql, array(':type' => $mandrill_groups_content_types));
   $nids = array();
   foreach ($result as $row) {
     $nids[] = $row->nid;
   }
   node_delete_multiple($nids);
-  foreach ($types as $content_type) {
+
+  foreach ($mandrill_groups_content_types as $content_type) {
     node_type_delete($content_type);
   }
 }
@@ -65,9 +67,9 @@ function mandrill_groups_uninstall() {
  * Add all custom fields for the content types created by this module.
  */
 function _mandrill_groups_add_fields() {
-  //@todo we need to set the comment property to "2" for non-threaded comments.
   //@todo Set the discussion og_group_ref field to have cardinality 1.
   // Define content types that will be created.
+  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
 
   // Create all fields associated with content types this module defines.
   $mandrill_groups_installed_fields = _mandrill_groups_installed_fields();
@@ -79,8 +81,8 @@ function _mandrill_groups_add_fields() {
     }
   }
   // Add field instances to content types.
-  foreach (_mandrill_groups_get_content_types() as $content_type) {
-    if ($content_type == 'mandrill_group') {
+  foreach ($mandrill_groups_content_types as $content_type) {
+    if ($content_type == 'mandrill_groups_group') {
       $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
       foreach ($mandrill_groups_installed_instances as $instance) {
         $instance['bundle'] = $content_type;
@@ -98,18 +100,21 @@ function _mandrill_groups_add_fields() {
  * Configure content type settings.
  */
 function _mandrill_groups_config_content_types() {
-  foreach (_mandrill_groups_get_content_types() as $content_type) {
+  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
+
+  foreach ($mandrill_groups_content_types as $content_type) {
     // // Set variables that are set by the node type edit form options tabs.
     if ($content_type == 'mandrill_groups_discussion') {
       // Don't display author and date information.
       variable_set('node_submitted_mandrill_groups_discussion', 0);
       // Not "promoted to front page".
       variable_set('node_options_mandrill_groups_discussion', array('status'));
+      // Commenting closed.
+      variable_set('comment_default_mode_mandrill_groups_discussion', 0);
       // Add OG (organic groups) fields to content types by setting the
       // following variables. og_ui_node_type_save() reacts to the presence or
       // absence of these variables to determine whether to add OG fields to
       // the node type.
-      variable_set('og_group_type_' . $content_type, TRUE);
       variable_set('og_group_content_type_' . $content_type, TRUE);
       variable_set('target_type_' . $content_type, 'node');
       variable_set('target_bundles_' . $content_type, array('mandrill_groups_group'));
@@ -251,11 +256,4 @@ function _mandrill_groups_add_permissions() {
   // Clear the user access cache. - @todo necessary? if so, we should also be clearing OG static vars.
   drupal_static_reset('user_access');
   drupal_static_reset('user_role_permissions');
-}
-
-/**
- * Helper function to keep content type labels in one place.
- */
-function _mandrill_groups_get_content_types() {
-  return array('mandrill_group', 'mandrill_discussion');
 }
