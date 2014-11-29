@@ -109,7 +109,7 @@ function _mandrill_groups_config_content_types() {
       // Not "promoted to front page".
       variable_set('node_options_mandrill_groups_discussion', array('status'));
       // Commenting closed.
-      variable_set('comment_mandrill_groups_group', 2);
+      variable_set('comment_default_mode_mandrill_groups_discussion', 0);
       // Add OG (organic groups) fields to content types by setting the
       // following variables. og_ui_node_type_save() reacts to the presence or
       // absence of these variables to determine whether to add OG fields to
