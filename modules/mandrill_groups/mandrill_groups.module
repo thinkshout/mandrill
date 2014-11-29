@@ -6,6 +6,10 @@
  * interacted with via Drupal or email.
  */
 
+define('MANDRILL_GROUPS_OG_REFERENCE_FIELD', 'mandrill_groups_og_ref');
+define('MANDRILL_GROUPS_EMAIL_FIELD', 'mandrill_groups_email');
+
+
 /**
  * Implements hook_menu().
  */
@@ -71,6 +75,46 @@ function mandrill_groups_node_info() {
 }
 
 /**
+ * Create and add the Organic Groups reference field.
+ */
+function mandrill_groups_create_fields() {
+  // Clear the field cache so the field type is found.
+  field_cache_clear();
+  $automatic_fields = array(
+    MANDRILL_GROUPS_OG_REFERENCE_FIELD => array(
+      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
+      'type' => 'entityreference',
+      'locked' => FALSE,
+      'cardinality' => 1,
+      'settings' => array(
+        'target_type' => 'node',
+        'handler' => 'og',
+        'handler_settings' => array(
+          'target_bundles' => array(
+            'mandrill_groups_group' => 'mandrill_groups_group',
+          ),
+        ),
+      ),
+    ),
+    MANDRILL_GROUPS_EMAIL_FIELD => array(
+      'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
+      'type' => 'text',
+      'locked' => TRUE,
+      'settings' => array(
+        'no_ui' => FALSE,
+      ),
+    ),
+  );
+  // If the fields don't already exist, create them.
+  foreach ($automatic_fields as $field_name => $field_def) {
+    $prior_field = field_read_field($field_name, array('include_inactive' => TRUE));
+    if (empty($prior_field)) {
+      $new_field = $field_def;
+      field_create_field($new_field);
+    }
+  }
+}
+
  * Implements hook_form().
  *
  * Drupal needs us to provide a form that lets the user
@@ -323,7 +367,7 @@ function mandrill_groups_create_comment($message) {
   $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
   // Verify the discussion matches the group attached to this email address:
-  if ($group->nid != $discussion_wrapper->og_group_ref->raw()) {
+  if ($group->nid != $discussion_wrapper->MANDRILL_GROUPS_OG_REFERENCE_FIELD->raw()) {
     // Trying to post to a discussion using wrong group email.
     watchdog('mandrill_groups', 'Message from %email for discussion %discussion denied because the wrong targeting email was used (%groupemail)',
       array(
@@ -396,7 +440,7 @@ function mandrill_groups_create_discussion($subject, $group) {
   );
   $discussion = entity_create('node', $values);
   $wrapper = entity_metadata_wrapper('node', $discussion);
-  $wrapper->og_group_ref->set((int) $group->nid);
+  $wrapper->MANDRILL_GROUPS_OG_REFERENCE_FIELD->set((int) $group->nid);
   $wrapper->save();
   return $discussion;
 }

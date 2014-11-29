@@ -12,8 +12,10 @@ function mandrill_groups_install() {
   node_types_rebuild();
   // Configure content types.
   _mandrill_groups_config_content_types();
+  // Create our custom fields.
+  mandrill_groups_create_fields();
   // Add fields to our new node types.
-  _mandrill_groups_add_fields();
+  mandrill_groups_add_field_instances();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
 
@@ -66,33 +68,30 @@ function mandrill_groups_uninstall() {
 /**
  * Add all custom fields for the content types created by this module.
  */
-function _mandrill_groups_add_fields() {
-  //@todo Set the discussion og_group_ref field to have cardinality 1.
-  // Define content types that will be created.
-  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
-
-  // Create all fields associated with content types this module defines.
-  $mandrill_groups_installed_fields = _mandrill_groups_installed_fields();
-  foreach ($mandrill_groups_installed_fields as $field) {
-    // @todo - possibly could get rid of this check
-    $existing_field = field_info_field($field['field_name']);
-    if (!$existing_field) {
-      field_create_field($field);
-    }
+function mandrill_groups_add_field_instances() {
+  if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, 'mandrill_groups_group')) {
+    $email_field_instance = array(
+      'entity_type' => 'node',
+      'bundle' => 'mandrill_groups_group',
+      'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
+      'label' => t('Mandrill Groups Email'),
+    );
+    field_create_instance($email_field_instance);
   }
-  // Add field instances to content types.
-  foreach ($mandrill_groups_content_types as $content_type) {
-    if ($content_type == 'mandrill_groups_group') {
-      $mandrill_groups_installed_instances = _mandrill_groups_installed_instances();
-      foreach ($mandrill_groups_installed_instances as $instance) {
-        $instance['bundle'] = $content_type;
-        // @todo - possibly could get rid of this check
-        $existing_instance = field_info_instance($instance['entity_type'], $instance['field_name'], $content_type);
-        if (!$existing_instance) {
-          field_create_instance($instance);
-        }
-      }
-    }
+
+  if (!field_info_instance('node', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'mandrill_groups_discussion')) {
+    $group_ref_instance = array(
+      'entity_type' => 'node',
+      'bundle' => 'mandrill_groups_discussion',
+      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
+      'label' => t('Group Membership'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'og_complex',
+        'module' => 'og',
+      ),
+    );
+    field_create_instance($group_ref_instance);
   }
 }
 
@@ -138,43 +137,6 @@ function _mandrill_groups_config_content_types() {
     // are unset in og_ui_node_type_save().
     og_ui_node_type_save($content_type);
   }
-}
-
-/**
- * Define the fields for our content types.
- *
- * @return array
- *   An associative array specifying the fields to add to our
- *   new content types.
- */
-function _mandrill_groups_installed_fields() {
-  return array(
-    'mandrill_groups_email' => array(
-      'field_name' => 'mandrill_groups_email',
-      'type' => 'text',
-      'locked' => TRUE,
-      'settings' => array(
-        'no_ui' => FALSE,
-      ),
-    ),
-  );
-}
-
-/**
- * Create field instances for our content types.
- *
- * @return array
- *   An associative array specifying the field instances set on our new
- *   content types.
- */
-function _mandrill_groups_installed_instances() {
-  return array(
-    'mandrill_groups_email' => array(
-      'entity_type' => 'node',
-      'field_name' => 'mandrill_groups_email',
-      'label' => t('Mandrill Groups Email'),
-    ),
-  );
 }
 
 /**
