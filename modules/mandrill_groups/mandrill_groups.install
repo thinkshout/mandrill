@@ -47,6 +47,21 @@ function mandrill_groups_install() {
 }
 
 /**
+ * Implements hook_enable().
+ */
+function mandrill_groups_enable() {
+  mailsystem_set(array('mandrill_groups' => 'MandrillMailSystem'));
+}
+
+/**
+ * Implements hook_disable().
+ */
+function mandrill_groups_disable() {
+  // Tell mailsystem to remove mandrill groups:
+  mailsystem_clear(array('mandrill_groups' => 'MandrillMailSystem'));
+}
+
+/**
  * Implements hook_uninstall().
  */
 function mandrill_groups_uninstall() {
