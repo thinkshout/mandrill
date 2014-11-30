@@ -415,8 +415,12 @@ function mandrill_get_webhooks() {
 function mandrill_get_inbound_domains() {
   $domains = array();
   try {
-    $mandrill = mandrill_get_api_object();
-    $domains = $mandrill->inbound->domains();
+    if ($mandrill = mandrill_get_api_object()) {
+      $domains = $mandrill->inbound->domains();
+    }
+    else {
+      $domains = FALSE;
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
