@@ -24,9 +24,10 @@ function mandrill_groups_settings_form($form, &$form_state) {
   $rows_valid = array();
   $rows_invalid = array();
   foreach (mandrill_get_inbound_domains() as $domain) {
+    // Define operations for Mandrill Inbound Domain.
+    $operations = l(t('delete'), 'admin/config/services/mandrill/groups/' . $domain['domain'] . '/delete');
 
     // Check if MX record for domain is valid.
-
     $mx_valid = (boolean) $domain['valid_mx'];
 
     // If MX record is valid, ensure the Mandrill Groups route is configured.
@@ -61,24 +62,29 @@ function mandrill_groups_settings_form($form, &$form_state) {
     else {
       $domain_status = 'Invalid MX record. Use the "DNS Settings" button in your <a href="https://mandrillapp.com/groups">Mandrill inbound configuration</a> to ensure your DNS records are set correctly for this domain.';
     }
+
     // Populate tables.
     if ($domain_status == 'OK') {
       $rows_valid[] = array(
         $domain['domain'],
         $domain_status,
+        $operations,
       );
     }
     else {
       $rows_invalid[] = array(
         $domain['domain'],
         $domain_status,
+        $operations,
       );
     }
   }
+
   // Table header.
   $header = array(
     'domain' => t('Domain'),
     'status' => t('Status'),
+    'operations' => t('Operations'),
   );
 
   // List of valid inbound domains from Mandrill to choose from.
@@ -98,7 +104,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
   $invalid_domains = array(
     'header' => $header,
     'rows' => $rows_invalid,
-    'caption' => 'Invalid Domains'
+    'caption' => 'Invalid Domains',
   );
   $output = theme('table', $invalid_domains);
   $form['mandrill_groups_invalid_inbound_domains'] = array(
@@ -118,7 +124,10 @@ function mandrill_groups_settings_form($form, &$form_state) {
     '#description' => t($description),
     '#attributes' => array('placeholder' => t('example.yoursite.com')),
   );
+
+  // Add submit handler that adds domain and route if present.
   $form['#submit'][] = 'mandrill_groups_settings_form_submit';
+
   return system_settings_form($form);
 }
 
@@ -142,4 +151,27 @@ function mandrill_groups_settings_form_submit($form, &$form_state) {
       )
     ));
   }
+}
+
+/**
+ * Inbound domain deletion form.
+ */
+function mandrill_groups_inbound_domain_delete_form($form, &$form_state, $domain) {
+  // Necessary to pass $domain on to
+  // mandrill_groups_inbound_domain_delete_form_submit.
+  $form_state['domain'] = $domain;
+  return confirm_form($form,
+    t('Are you sure you want to delete the Mandrill inbound domain form "%name"?', array('%name' => $domain)),
+    t('This action cannot be undone.'),
+    t('Delete Mandrill Inbound Domain'));
+}
+
+/**
+ * Submit handler for mandrill_groups_inbound_domain_delete_form().
+ */
+function mandrill_groups_inbound_domain_delete_form_submit($form, &$form_state) {
+  $domain = $form_state['domain'];
+  mandrill_delete_inbound_domain($domain);
+  drupal_set_message(t('%name has been deleted.', array('%name' => $domain)));
+  $form_state['redirect'] = 'admin/config/services/mandrill/groups';
 }

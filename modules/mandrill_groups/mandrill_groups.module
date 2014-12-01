@@ -43,6 +43,13 @@ function mandrill_groups_menu() {
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
+  $items['admin/config/services/mandrill/groups/%/delete'] = array(
+    'title' => 'Delete Inbound Domain Form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_groups_inbound_domain_delete_form', 5),
+    'access arguments' => array('administer mandrill groups inbound domains'),
+    'file' => 'mandrill_groups.admin.inc',
+  );
 
   return $items;
 }
@@ -55,7 +62,7 @@ function mandrill_groups_menu() {
  *   API key is present, else false.
  */
 function mandrill_groups_access() {
-  $access = user_access('administer mandrill groups domains');
+  $access = user_access('administer mandrill groups inbound domains');
   $valid_api_key = variable_get('mandrill_api_key');
   return $access & !empty($valid_api_key);
 }
@@ -65,8 +72,8 @@ function mandrill_groups_access() {
  */
 function mandrill_groups_permission() {
   return array(
-    'administer mandrill groups domains' => array(
-      'title' => t('Administer Mandrill Groups Domains'),
+    'administer mandrill groups inbound domains' => array(
+      'title' => t('Administer Mandrill Groups Inbound Domains'),
       'description' => t('Add and delete Mandrill Domains available for use when creating Mandrill Groups.'),
       'restrict access' => FALSE,
     ),
