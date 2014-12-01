@@ -207,22 +207,22 @@ function mandrill_groups_form($node, $form_state) {
       '#element_validate' => array('mandrill_groups_validate_group_email'),
       '#description' => t('A unique email name for this list. It must only contain lowercase letters, numbers, and underscores. The @domain part of the email address is selected below.'),
     );
+    $domain_options = array();
     if ($inbound = mandrill_get_inbound_domains()) {
-      $domain_options = array();
       foreach ($inbound as $domain) {
         $domain_options[$domain['domain']] = '@' . $domain['domain'];
         if (!$domain['valid_mx']) {
           $domain_options[$domain['domain']] .= ' (mx not validated)';
         }
       }
-      $form['email_domain'] = array(
-        '#type' => 'select',
-        '#title' => 'Email Domain (@domain.com)',
-        '#options' => $domain_options,
-        '#default_value' => isset($default_domain) ? $default_domain : '',
-        '#required' => TRUE,
-      );
     }
+    $form['email_domain'] = array(
+      '#type' => 'select',
+      '#title' => 'Email Domain (@domain.com)',
+      '#options' => $domain_options,
+      '#default_value' => isset($default_domain) ? $default_domain : '',
+      '#required' => TRUE,
+    );
   }
   return $form;
 }
