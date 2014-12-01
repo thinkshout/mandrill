@@ -152,6 +152,7 @@ function mandrill_groups_create_fields() {
           'target_bundles' => array(
             'mandrill_groups_group' => 'mandrill_groups_group',
           ),
+          'membership_type' => 'og_membership_type_default',
         ),
       ),
     ),
