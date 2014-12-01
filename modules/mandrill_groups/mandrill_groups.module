@@ -38,7 +38,7 @@ function mandrill_groups_menu() {
     'page callback' => 'group_node_discussions',
     'page arguments' => array(1),
     'access callback' => 'group_node_discussion_access',
-//    'access arguments' => array('create mandrill_groups_discussion content', 1),
+    'access arguments' => array(1),
     'weight' => 0,
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -83,10 +83,15 @@ function mandrill_groups_permission() {
 /**
  * Access callback for "Discussion" tab on Group nodes.
  *
- * Only show tab if user is a member of the Group and has permission to add
- * Discussions.
+ * Only show tab if user is a member of the Group.
+ *
+ * @param array $group
+ *   Group being accessed.
+ *
+ * @return bool
+ *   Return True if user is a member of the current Group.
  */
-function group_node_discussion_access($permission, $group) {
+function group_node_discussion_access($group) {
   global $user;
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     return FALSE;
