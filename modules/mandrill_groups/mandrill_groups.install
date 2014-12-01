@@ -130,16 +130,25 @@ function mandrill_groups_add_field_instances() {
  */
 function _mandrill_groups_config_content_types() {
   // Don't display author and date information.
-  variable_set('node_submitted_mandrill_groups_group', 0);
-  // Not "promoted to front page".
-  variable_set('node_options_mandrill_groups_group', array('status'));
-  // Commenting closed.
-  variable_set('comment_mandrill_groups_group', 1);
+  variable_set('node_submitted_mandrill_groups_group', FALSE);
+  variable_set('node_submitted_mandrill_groups_discussion', FALSE);
+  $publishing_defaults = array(
+    'status' => NODE_PUBLISHED,
+    'promoted' => NODE_NOT_PROMOTED,
+    'sticky' => NODE_NOT_STICKY,
+  );
+  variable_set('node_options_mandrill_groups_group', $publishing_defaults);
+  variable_set('node_options_mandrill_groups_discussion', $publishing_defaults);
+  // Commenting off for Groups, on for discussions..
+  variable_set('comment_mandrill_groups_group', COMMENT_NODE_CLOSED);
+  variable_set('comment_mandrill_groups_discussion', COMMENT_NODE_OPEN);
+  // Default to no threading, as the email function doesn't handle it elegantly.
+  variable_set('comment_default_mode_mandrill_groups_discussion', COMMENT_MODE_FLAT);
   // Add OG (organic groups) fields to content types by setting the
   // following variables. og_ui_node_type_save() reacts to the presence or
   // absence of these variables to determine whether to add OG fields to
   // the node type.
-  variable_set('og_group_type_' . 'mandrill_groups_group', TRUE);
+  variable_set('og_group_type_mandrill_groups_group', OG_STATE_ACTIVE);
   // Save the new content type via OG - this ensures fields necessary for
   // correct OG config are added to the content type. Also variables set above
   // are unset in og_ui_node_type_save().
