@@ -134,48 +134,6 @@ function mandrill_groups_node_info() {
 }
 
 /**
- * Create and add the Organic Groups reference field.
- */
-function mandrill_groups_create_fields() {
-  // Clear the field cache so the field type is found.
-  field_cache_clear();
-  $automatic_fields = array(
-    MANDRILL_GROUPS_OG_REFERENCE_FIELD => array(
-      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
-      'type' => 'entityreference',
-      'locked' => FALSE,
-      'cardinality' => 1,
-      'settings' => array(
-        'target_type' => 'node',
-        'handler' => 'og',
-        'handler_settings' => array(
-          'target_bundles' => array(
-            'mandrill_groups_group' => 'mandrill_groups_group',
-          ),
-          'membership_type' => 'og_membership_type_default',
-        ),
-      ),
-    ),
-    MANDRILL_GROUPS_EMAIL_FIELD => array(
-      'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
-      'type' => 'text',
-      'locked' => TRUE,
-      'settings' => array(
-        'no_ui' => FALSE,
-      ),
-    ),
-  );
-  // If the fields don't already exist, create them.
-  foreach ($automatic_fields as $field_name => $field_def) {
-    $prior_field = field_read_field($field_name, array('include_inactive' => TRUE));
-    if (empty($prior_field)) {
-      $new_field = $field_def;
-      field_create_field($new_field);
-    }
-  }
-}
-
-/**
  * Implements hook_form().
  *
  * Drupal needs us to provide a form that lets the user
