@@ -23,8 +23,6 @@ function mandrill_groups_settings_form($form, &$form_state) {
   // Set arrays for table rows.
   $rows_valid = array();
   $rows_invalid = array();
-  $default_row = array();
-  $default_domain = variable_get('mandrill_groups_inbound_domain', '');
   foreach (mandrill_get_inbound_domains() as $domain) {
 
     // Check if MX record for domain is valid.
@@ -66,15 +64,14 @@ function mandrill_groups_settings_form($form, &$form_state) {
     // Populate tables.
     if ($domain_status == 'OK') {
       $rows_valid[] = array(
-        'domain' => $domain['domain'],
-        'status' => $domain_status,
+        $domain['domain'],
+        $domain_status,
       );
-      $default_row[] = ($default_domain == $domain['domain']) ? TRUE : FALSE;
     }
     else {
       $rows_invalid[] = array(
-        'domain' => $domain['domain'],
-        'status' => $domain_status,
+        $domain['domain'],
+        $domain_status,
       );
     }
   }
@@ -85,27 +82,36 @@ function mandrill_groups_settings_form($form, &$form_state) {
   );
 
   // List of valid inbound domains from Mandrill to choose from.
-  $form['mandrill_groups_inbound_domains'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $rows_valid,
-    '#default_value' => $default_row,
-    '#empty' => t('<p>There are currently no inbound domains configured in Mandrill. Add one using the "Add Mandrill Domain" textbox below or head to your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a> and modify an existing one.'),
+  $valid_domains = array(
+    'header' => $header,
+    'rows' => $rows_valid,
+    'caption' => 'Valid Domains',
+    'empty' => t('<p>There are currently no valid inbound domains configured in Mandrill. Add one using the "Add Mandrill Domain" textbox below or head to your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a> and modify an existing one.'),
   );
+  $output = theme('table', $valid_domains);
+  $form['mandrill_groups_valid_inbound_domains'] = array(
+    '#type' => 'markup',
+    '#markup' => $output,
+  );
+
   // List of invalid inbound domains from Mandrill.
+  $invalid_domains = array(
+    'header' => $header,
+    'rows' => $rows_invalid,
+    'caption' => 'Invalid Domains'
+  );
+  $output = theme('table', $invalid_domains);
   $form['mandrill_groups_invalid_inbound_domains'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $rows_invalid,
-    '#disabled' => TRUE,
+    '#type' => 'markup',
+    '#markup' => $output,
   );
 
   // Option to add a domain to Mandrill if desired one does not appear in table
   // above.
   $description = 'Don\'t see the domain you want in the above table? '
     . 'Add it here and click "Save configuration."<br />The Mandrill Groups '
-    . 'route for your site will be automatically added to the new domain, but '
-    . 'you\'ll have to configure the MX record to route to Mandrill';
+    . 'route for this site will be automatically added to the new domain, but '
+    . 'you\'ll have to configure the MX record to route to Mandrill.';
   $form['add_domain'] = array(
     '#type' => 'textfield',
     '#title' => t('Add Mandrill Domain'),

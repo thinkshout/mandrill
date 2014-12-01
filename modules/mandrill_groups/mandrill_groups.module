@@ -20,7 +20,7 @@ function mandrill_groups_menu() {
     'title' => 'Groups',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mandrill_groups_settings_form'),
-    'access arguments' => array('administer mandrill'),
+    'access callback' => array('mandrill_groups_access'),
     'description' => 'Handles Mandrill Incoming Webhooks',
     'file' => 'mandrill_groups.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -45,6 +45,32 @@ function mandrill_groups_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Access callback for mandrill_groups.
+ *
+ * @return bool
+ *   True if current user has access to administer mandrill and valid Mandrill
+ *   API key is present, else false.
+ */
+function mandrill_groups_access() {
+  $access = user_access('administer mandrill groups domains');
+  $valid_api_key = variable_get('mandrill_api_key');
+  return $access & !empty($valid_api_key);
+}
+
+/**
+ * Implements hook_permission().
+ */
+function mandrill_groups_permission() {
+  return array(
+    'administer mandrill groups domains' => array(
+      'title' => t('Administer Mandrill Groups Domains'),
+      'description' => t('Add and delete Mandrill Domains available for use when creating Mandrill Groups.'),
+      'restrict access' => FALSE,
+    ),
+  );
 }
 
 /**
