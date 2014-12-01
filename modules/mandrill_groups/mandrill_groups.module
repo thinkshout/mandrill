@@ -156,8 +156,6 @@ function mandrill_groups_form($node, $form_state) {
       '#default_value' => isset($default_name) ? $default_name : $node->title,
       '#maxlength' => 32,
       '#machine_name' => array(
-        // @todo: replace this with a false() function and do our own validation
-        // @      to allow for duplicate machine names under different domains.
         'exists' => FALSE,
         'source' => array('title'),
         'label' => t('Email Name'),

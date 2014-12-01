@@ -277,8 +277,4 @@ function _mandrill_groups_add_permissions() {
         ->execute();
     }
   }
-
-  // Clear the user access cache. - @todo necessary? if so, we should also be clearing OG static vars.
-  drupal_static_reset('user_access');
-  drupal_static_reset('user_role_permissions');
 }
