@@ -22,7 +22,7 @@ function mandrill_groups_menu() {
     'page arguments' => array('mandrill_groups_settings_form'),
     'access callback' => array('mandrill_groups_access'),
     'description' => 'Handles Mandrill Incoming Webhooks',
-    'file' => 'mandrill_groups.admin.inc',
+    'file' => 'includes/mandrill_groups.admin.inc',
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -48,7 +48,7 @@ function mandrill_groups_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mandrill_groups_inbound_domain_delete_form', 5),
     'access arguments' => array('administer mandrill groups inbound domains'),
-    'file' => 'mandrill_groups.admin.inc',
+    'file' => 'includes/mandrill_groups.admin.inc',
   );
 
   return $items;
