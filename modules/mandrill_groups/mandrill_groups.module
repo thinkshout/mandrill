@@ -68,6 +68,19 @@ function mandrill_groups_access() {
 }
 
 /**
+ * Implements hook_permission().
+ */
+function mandrill_groups_permission() {
+  return array(
+    'administer mandrill discussion group' => array(
+      'title' => t('Administer Mandrill Discussion Group'),
+      'description' => t('Select which Mandrill Group a Mandrill Discussion is related to.'),
+      'restrict access' => FALSE,
+    ),
+  );
+}
+
+/**
  * Access callback for "Discussion" tab on Group nodes.
  *
  * Only show tab if user is a member of the Group.
@@ -293,6 +306,9 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
   $params = drupal_get_query_parameters();
   if (isset($params['nid'])) {
     $form['mandrill_groups_og_ref'][$form['language']['#value']][0]['default']['#default_value'][0] = $params['nid'];
+  }
+  if (!user_access('administer mandrill discussion group')) {
+    $form['mandrill_groups_og_ref']['#access'] = FALSE;
   }
 }
 
