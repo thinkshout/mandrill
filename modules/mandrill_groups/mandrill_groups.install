@@ -105,8 +105,23 @@ function mandrill_groups_add_field_instances() {
         'type' => 'og_complex',
         'module' => 'og',
       ),
+      'settings' => array(
+        'behaviors' => array(
+          'og_widget' => array(
+            'status' => 1,
+            'default' => array(
+              'widget_type' => 'options_select',
+            ),
+            'admin' => array(
+              'widget_type' => 'entityreference_autocomplete',
+            ),
+            'access_override' => 0,
+          ),
+        ),
+      ),
     );
     field_create_instance($group_ref_instance);
+    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'node', 'mandrill_groups_discussion');
   }
 }
 
@@ -118,7 +133,7 @@ function _mandrill_groups_config_content_types() {
 
   foreach ($mandrill_groups_content_types as $content_type) {
     // // Set variables that are set by the node type edit form options tabs.
-    if ($content_type == 'mandrill_groups_discussion') {
+    if ($content_type == 'mandrill_groups_discussion' && FALSE) {
       // Don't display author and date information.
       variable_set('node_submitted_mandrill_groups_discussion', 0);
       // Not "promoted to front page".
@@ -146,11 +161,11 @@ function _mandrill_groups_config_content_types() {
       // absence of these variables to determine whether to add OG fields to
       // the node type.
       variable_set('og_group_type_' . $content_type, TRUE);
+      // Save the new content type via OG - this ensures fields necessary for
+      // correct OG config are added to the content type. Also variables set above
+      // are unset in og_ui_node_type_save().
+      og_ui_node_type_save($content_type);
     }
-    // Save the new content type via OG - this ensures fields necessary for
-    // correct OG config are added to the content type. Also variables set above
-    // are unset in og_ui_node_type_save().
-    og_ui_node_type_save($content_type);
   }
 }
 
