@@ -286,7 +286,9 @@ function mandrill_groups_webhook_validate() {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for mandrill_groups_discussion_node_form().
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * FORM ID: mandrill_groups_discussion_node_form.
  */
 function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form, &$form_state, $form_id) {
   // Hide the "Groups audience" field if we have the Group to relate the new
@@ -457,5 +459,4 @@ function mandrill_groups_create_discussion($subject, $group) {
  * Implements hook_comment_insert().
  */
 function mandrill_groups_comment_insert($comment) {
-  $a =1;
 }
