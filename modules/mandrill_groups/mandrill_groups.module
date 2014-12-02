@@ -22,7 +22,7 @@ function mandrill_groups_menu() {
     'page arguments' => array('mandrill_groups_settings_form'),
     'access callback' => array('mandrill_groups_access'),
     'description' => 'Handles Mandrill Incoming Webhooks',
-    'file' => 'mandrill_groups.admin.inc',
+    'file' => 'includes/mandrill_groups.admin.inc',
     'type' => MENU_LOCAL_TASK,
   );
 
@@ -38,10 +38,17 @@ function mandrill_groups_menu() {
     'page callback' => 'group_node_discussions',
     'page arguments' => array(1),
     'access callback' => 'group_node_discussion_access',
-//    'access arguments' => array('create mandrill_groups_discussion content', 1),
+    'access arguments' => array(1),
     'weight' => 0,
     'type' => MENU_LOCAL_TASK,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items['admin/config/services/mandrill/groups/%/delete'] = array(
+    'title' => 'Delete Inbound Domain Form',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mandrill_groups_inbound_domain_delete_form', 5),
+    'access arguments' => array('administer mandrill'),
+    'file' => 'includes/mandrill_groups.admin.inc',
   );
 
   return $items;
@@ -55,7 +62,7 @@ function mandrill_groups_menu() {
  *   API key is present, else false.
  */
 function mandrill_groups_access() {
-  $access = user_access('administer mandrill groups domains');
+  $access = user_access('administer mandrill');
   $valid_api_key = variable_get('mandrill_api_key');
   return $access & !empty($valid_api_key);
 }
@@ -65,9 +72,9 @@ function mandrill_groups_access() {
  */
 function mandrill_groups_permission() {
   return array(
-    'administer mandrill groups domains' => array(
-      'title' => t('Administer Mandrill Groups Domains'),
-      'description' => t('Add and delete Mandrill Domains available for use when creating Mandrill Groups.'),
+    'administer mandrill discussion group' => array(
+      'title' => t('Administer Mandrill Discussion Group'),
+      'description' => t('Select which Mandrill Group a Mandrill Discussion is related to.'),
       'restrict access' => FALSE,
     ),
   );
@@ -76,10 +83,15 @@ function mandrill_groups_permission() {
 /**
  * Access callback for "Discussion" tab on Group nodes.
  *
- * Only show tab if user is a member of the Group and has permission to add
- * Discussions.
+ * Only show tab if user is a member of the Group.
+ *
+ * @param array $group
+ *   Group being accessed.
+ *
+ * @return bool
+ *   Return True if user is a member of the current Group.
  */
-function group_node_discussion_access($permission, $group) {
+function group_node_discussion_access($group) {
   global $user;
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     return FALSE;
@@ -291,11 +303,11 @@ function mandrill_groups_webhook_validate() {
  * FORM ID: mandrill_groups_discussion_node_form.
  */
 function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form, &$form_state, $form_id) {
-  // Hide the "Groups audience" field if we have the Group to relate the new
-  // discussion to in the URL.
+  // Set default value of "Group Membership" field if we have the Group to
+  // relate the new discussion to in the URL.
   $params = drupal_get_query_parameters();
   if (isset($params['nid'])) {
-
+    $form['mandrill_groups_og_ref'][$form['language']['#value']][0]['default']['#default_value'][0] = $params['nid'];
   }
   $form['#validate'][] = 'mandrill_groups_add_discussion_group';
 //  if (isset($_GET['nid'])) {

@@ -465,6 +465,23 @@ function mandrill_add_inbound_domain($domain) {
 }
 
 /**
+ * Delete an inbound domain.
+ */
+function mandrill_delete_inbound_domain($domain) {
+  $result = NULL;
+  try {
+    $mandrill = mandrill_get_api_object();
+    $result = $mandrill->inbound->deleteDomain($domain);
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $result;
+}
+
+/**
  * Create a new inbound route for a domain.
  */
 function mandrill_add_inbound_route($domain, $pattern, $url) {
