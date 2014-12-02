@@ -459,4 +459,50 @@ function mandrill_groups_create_discussion($subject, $group) {
  * Implements hook_comment_insert().
  */
 function mandrill_groups_comment_insert($comment) {
+  if ($comment->node_type != 'comment_node_mandrill_groups_discussion') {
+    return;
+  }
+  // Load posting user:
+  $author = user_load($comment->uid);
+  // Load parent group.
+  $node = node_load($comment->nid);
+  $node_wrapper = entity_metadata_wrapper('node', $node);
+  // Load members.
+  $members = $node_wrapper->mandrill_groups_og_ref->members->value();
+  // Check subscription data.
+  // Check delivery preferences.
+  // Create email.
+  $addresses = array();
+  foreach ($members as $member) {
+    $addresses[] = $member->mail;
+  }
+  $content = field_view_field('comment', $comment, 'comment_body');
+  $message = array(
+    'id' => 'mandrill_groups_discussion',
+    'to' => implode(',', $addresses),
+    'subject' => $comment->subject . ' [#MGD' . $node->nid . ']',
+    'body' => array($content[0]['#markup']),
+    'headers' => array(
+      'Reply-To' => $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value(),
+    ),
+    'mandrill_from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
+    'mandrill_overrides' => array(
+      'preserve_recipients' => FALSE,
+    ),
+  );
+  
+  drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message);
+  // Set in-reply-to header (http://webapps.stackexchange.com/questions/965/how-does-gmail-decide-to-thread-email-messages)
+  // Generate group-description text for email? Mergevars?
+  // Send email.
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mandrill_groups_mail($key, &$message, $params) {
+  if ($key == 'discussion') {
+    $message['subject'] = $params['subject'];
+    $message['body'] = $params['body'];
+  }
 }
