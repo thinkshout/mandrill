@@ -482,8 +482,8 @@ function mandrill_groups_comment_insert($comment) {
   $node_wrapper = entity_metadata_wrapper('node', $node);
   // Load members.
   $members = $node_wrapper->mandrill_groups_og_ref->members->value();
-  // Check subscription data.
-  // Check delivery preferences.
+  // @todo Check subscription data.
+  // @todo Check delivery preferences.
   // Create email.
   $addresses = array();
   foreach ($members as $member) {
@@ -500,14 +500,12 @@ function mandrill_groups_comment_insert($comment) {
       'preserve_recipients' => FALSE,
     ),
   );
-
   // Mandrill automatically puts the "From" into "Reply To" and replaces the
   // "From" with the official system email address.
   $from = $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value();
+  // @todo Generate group-description text for email? Mergevars?
+  // Send Email.
   drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message, $from);
-  // Set in-reply-to header (http://webapps.stackexchange.com/questions/965/how-does-gmail-decide-to-thread-email-messages)
-  // Generate group-description text for email? Mergevars?
-  // Send email.
 }
 
 /**
