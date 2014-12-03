@@ -17,7 +17,10 @@
  */
 function mandrill_groups_settings_form($form, &$form_state) {
   $form = array();
-
+  // Check for appropriate access for users to use discussion groups.
+  if (!count(user_roles(FALSE, 'post comments'))) {
+    drupal_set_message(t('There are no roles with access to post comments. Mandrill Groups will not operate properly until this is resolved.'), 'warning');
+  }
   // Static webhook endpoint.
   // Create table of user's Mandrill inbound domains and their statuses.
   // Set arrays for table rows.
