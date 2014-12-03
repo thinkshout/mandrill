@@ -493,7 +493,7 @@ function mandrill_groups_comment_insert($comment) {
   $message = array(
     'id' => 'mandrill_groups_discussion',
     'to' => implode(',', $addresses),
-    'subject' => $comment->subject . ' [#MGD' . $node->nid . ']',
+    'subject' => $node->title . ' [#MGD' . $node->nid . ']',
     'body' => array($content[0]['#markup']),
     'headers' => array(
       'Reply-To' => $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value(),
@@ -546,3 +546,19 @@ function mandrill_groups_schema_alter(&$schema) {
   );
 }
 
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Hide the comment title on Mandrill discussions.
+ */
+function mandrill_groups_preprocess_comment(&$variables) {
+  $node_type = $variables['node']->type;
+  if ($node_type == 'mandrill_groups_discussion') {
+    $subject_enabled = variable_get('comment_subject_field_' . $node_type, 0);
+
+    if (!$subject_enabled) {
+      // Don't display the comment title.
+      $variables['title_attributes_array']['class'][] = 'element-invisible';
+    }
+  }
+}

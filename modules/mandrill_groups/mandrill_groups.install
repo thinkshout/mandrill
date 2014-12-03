@@ -148,6 +148,7 @@ function _mandrill_groups_config_content_types() {
   variable_set('comment_mandrill_groups_group', COMMENT_NODE_CLOSED);
   variable_set('comment_mandrill_groups_discussion', COMMENT_NODE_OPEN);
   // Disable Comment subject lines.
+  variable_set('comment_subject_field_mandrill_groups_discussion', FALSE);
   // Default to no threading, as the email function doesn't handle it elegantly.
   variable_set('comment_default_mode_mandrill_groups_discussion', COMMENT_MODE_FLAT);
   // Add OG (organic groups) fields to content types by setting the
