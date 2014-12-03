@@ -128,13 +128,13 @@ class MandrillMailSystem implements MailSystemInterface {
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
 
     $from = mandrill_from();
-    $overrides = isset($message['mandrill_overrides']) ? $message['mandrill_overrides'] : array();
+    $overrides = isset($message['params']['mandrill_overrides']) ? $message['params']['mandrill_overrides'] : array();
     $mandrill_message = $overrides + array(
       'html' => $message['body'],
       'text' => $plain_text,
       'subject' => $message['subject'],
       'from_email' => $from['email'],
-      'from_name' => isset($message['mandrill_from_name']) ? $message['mandrill_from_name'] : $from['name'],
+      'from_name' => isset($message['params']['mandrill_from_name']) ? $message['params']['mandrill_from_name'] : $from['name'],
       'to' => $to,
       'headers' => $headers,
       'track_opens' => variable_get('mandrill_track_opens', TRUE),
