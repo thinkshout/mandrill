@@ -495,16 +495,16 @@ function mandrill_groups_comment_insert($comment) {
     'to' => implode(',', $addresses),
     'subject' => $node->title . ' [#MGD' . $node->nid . ']',
     'body' => array($content[0]['#markup']),
-    'headers' => array(
-      'Reply-To' => $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value(),
-    ),
     'mandrill_from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
     'mandrill_overrides' => array(
       'preserve_recipients' => FALSE,
     ),
   );
-  
-  drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message);
+
+  // Mandrill automatically puts the "From" into "Reply To" and replaces the
+  // "From" with the official system email address.
+  $from = $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value();
+  drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message, $from);
   // Set in-reply-to header (http://webapps.stackexchange.com/questions/965/how-does-gmail-decide-to-thread-email-messages)
   // Generate group-description text for email? Mergevars?
   // Send email.
