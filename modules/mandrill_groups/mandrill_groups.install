@@ -231,12 +231,6 @@ function _mandrill_groups_add_permissions() {
     'delete own mandrill_groups_discussion content',
     'edit any mandrill_groups_discussion content',
     'edit own mandrill_groups_discussion content',
-    // Mandrill Group permissions.
-    'create mandrill_groups_group content',
-    'delete any mandrill_groups_group content',
-    'delete own mandrill_groups_group content',
-    'edit any mandrill_groups_group content',
-    'edit own mandrill_groups_group content',
   );
 
   $og_role_permissions = array(
