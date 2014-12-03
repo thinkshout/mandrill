@@ -311,16 +311,7 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
     $form['mandrill_groups_og_ref']['#access'] = user_access('administer content');
   }
   $form['#validate'][] = 'mandrill_groups_add_discussion_group';
-//  if (isset($_GET['nid'])) {
-//    // @todo - isn't working
-//    $form["field_accounts"][LANGUAGE_NONE][0]['value']['#default_value'] = $_GET['nid'];
-//  }
-//  $form['#submit'][] = 'tmp_set_value';
 }
-
-//function tmp_set_value(&$form, &$form_state) {
-//  form_set_value('og_group_ref', $_GET['nid'], $form_state);
-//}
 
 /**
  * Relate Discussion node to a Group.
