@@ -4,7 +4,7 @@ core = 7.x
 package = Mandrill
 configure = admin/config/services/mandrill/groups
 
-dependencies[] = features
+dependencies[] = comment
 dependencies[] = mandrill
 dependencies[] = og
 dependencies[] = og_ui
