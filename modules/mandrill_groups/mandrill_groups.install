@@ -20,7 +20,14 @@ function mandrill_groups_install() {
   _mandrill_groups_add_permissions();
   // Modify comment table to hold reply-to info for Mandrill Groups comments.
   _mandrill_groups_alter_comment();
+  // Add "mandrill_groups_html" text format specific to this module.
+  _mandrill_groups_add_text_format();
+}
 
+/**
+ * Create "mandrill_groups_html" text format.
+ */
+function _mandrill_groups_add_text_format() {
   $format_name = 'mandrill_groups_html';
 
   if (!filter_format_exists($format_name)) {
@@ -45,8 +52,8 @@ function mandrill_groups_install() {
     $format = (object) $format;
     filter_format_save($format);
   }
-
 }
+
 
 /**
  * Implements hook_enable().
@@ -137,10 +144,9 @@ function _mandrill_groups_config_content_types() {
   // Don't display author and date information.
   variable_set('node_submitted_mandrill_groups_group', FALSE);
   variable_set('node_submitted_mandrill_groups_discussion', FALSE);
+  // Sets status to published. Not sticky or promoted to front page.
   $publishing_defaults = array(
-    'status' => NODE_PUBLISHED,
-    'promoted' => NODE_NOT_PROMOTED,
-    'sticky' => NODE_NOT_STICKY,
+    'status',
   );
   variable_set('node_options_mandrill_groups_group', $publishing_defaults);
   variable_set('node_options_mandrill_groups_discussion', $publishing_defaults);
@@ -160,6 +166,7 @@ function _mandrill_groups_config_content_types() {
   // correct OG config are added to the content type. Also variables set above
   // are unset in og_ui_node_type_save().
   og_ui_node_type_save('mandrill_groups_group');
+  og_ui_node_type_save('mandrill_groups_discussion');
 }
 
 /**
