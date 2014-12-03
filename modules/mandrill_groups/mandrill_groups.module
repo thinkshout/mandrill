@@ -365,7 +365,7 @@ function mandrill_groups_process_message($message) {
       ));
     return FALSE;
   }
-  if ($message['subject'] == 'unsubscribe') {
+  if (!strcasecmp(trim($message['subject']), 'unsubscribe')) {
     og_ungroup('node', $group->nid, 'user', $user->uid);
     // An unsubscribe has been processed.
     watchdog('mandrill_groups', 'Unsubscribe from %email processed for group %groupname (NID: %groupid)',
