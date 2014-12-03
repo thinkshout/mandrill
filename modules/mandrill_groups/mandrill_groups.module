@@ -266,7 +266,7 @@ function mandrill_groups_process_webhook() {
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
     // Process events:
-    mandrill_groups_create_comment($event['msg']);
+    mandrill_groups_process_message($event['msg']);
   }
   return count($events) . " events processed.";
 }
@@ -347,7 +347,7 @@ function mandrill_groups_add_discussion_group(&$form, &$form_state) {
  * If no #MGD tag is included, or an invalid number is given, a new discussion
  * will be created.
  */
-function mandrill_groups_create_comment($message) {
+function mandrill_groups_process_message($message) {
   $user = user_load_by_mail($message['from_email']);
   if (!$user) {
     watchdog('mandrill_groups', 'Message from %email denied: no user with that email address exists.',
