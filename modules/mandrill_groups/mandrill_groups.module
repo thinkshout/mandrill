@@ -535,3 +535,29 @@ function mandrill_groups_preprocess_comment(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function mandrill_groups_entity_property_info_alter(&$info) {
+  $info['users']['fields']['mandrill_groups_email_frequency'] = array(
+    'label' => t('Mandrill Groups Email Frequency'),
+    'description' => t('How often notification emails for new comments will be sent by Mandrill Groups module.'),
+    'type' => 'text',
+    'schema field' => 'mandrill_groups_email_frequency',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+}
+
+/**
+ * Implements hook_schema_alter().
+ */
+function mandrill_groups_schema_alter(&$schema) {
+  $schema['users']['fields']['mandrill_groups_email_frequency'] = array(
+    'description' => 'How often notification emails for new comments will be sent by Mandrill Groups module.',
+    'type' => 'varchar',
+    'length' => 25,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+}
