@@ -365,6 +365,9 @@ function mandrill_groups_process_message($message) {
       ));
     return FALSE;
   }
+  if ($message['subject'] == 'unsubscribe') {
+    og_ungroup('node', $group->nid, 'user', $user->uid);
+  }
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     // This email address doesn't have access to this group.
     watchdog('mandrill_groups', 'Message from %email denied because no user with that email address has access to group %groupname (NID: %groupid)',
