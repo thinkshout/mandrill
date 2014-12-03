@@ -88,8 +88,6 @@ function mandrill_groups_uninstall() {
     node_type_delete($content_type);
   }
 
-  // Drop "reply-to" field from comment table.
-  db_drop_field('comment', 'mandrill_groups_message_id');
 }
 
 /**
@@ -287,21 +285,4 @@ function _mandrill_groups_add_permissions() {
   }
 }
 
-/**
- * Add a column for reply-to information to the comment table.
- *
- * The reply-to information allows us to get the correct threading behavior
- * in folks' inboxes. In other words, we can tell an outgoing message which
- * message it is in reply to.
- */
-function _mandrill_groups_alter_comment() {
-  // Add "Message-ID" string field to the comment table.
-  $reply_to = array(
-    'description' => 'Email header Message-ID property for the comment.',
-    'type' => 'varchar',
-    'length' => 255,
-    'not null' => FALSE,
-    'default' => NULL,
-  );
-  db_add_field('comment', 'mandrill_groups_message_id', $reply_to);
-}
+
