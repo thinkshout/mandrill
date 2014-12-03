@@ -378,7 +378,7 @@ function mandrill_groups_create_comment($message) {
   $discussion_tag = trim($discussion_tag, '] ');
   $discussion_id = (int) $discussion_tag;
   // Load existing discussion, or create a new one:
-  $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group);
+  $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group, $user);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
   // Verify the discussion matches the group attached to this email address:
   if ($group->nid != $discussion_wrapper->{MANDRILL_GROUPS_OG_REFERENCE_FIELD}->raw()) {
@@ -444,10 +444,10 @@ function mandrill_groups_load_by_mail($email = NULL) {
 /**
  * Create a new discussion within a group.
  */
-function mandrill_groups_create_discussion($subject, $group) {
+function mandrill_groups_create_discussion($subject, $group, $user) {
   $values = array(
     'type' => 'mandrill_groups_discussion',
-    'uid' => $group->uid,
+    'uid' => $user->uid,
     'title' => $subject,
     'status' => 1,
     'comment' => 2,
