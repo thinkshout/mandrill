@@ -367,6 +367,14 @@ function mandrill_groups_process_message($message) {
   }
   if ($message['subject'] == 'unsubscribe') {
     og_ungroup('node', $group->nid, 'user', $user->uid);
+    // An unsubscribe has been processed.
+    watchdog('mandrill_groups', 'Unsubscribe from %email processed for group %groupname (NID: %groupid)',
+      array(
+        '%email' => $message['from_email'],
+        '%groupname' => $group->title,
+        '%groupid' => $group->nid,
+      ));
+    return TRUE;
   }
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     // This email address doesn't have access to this group.
