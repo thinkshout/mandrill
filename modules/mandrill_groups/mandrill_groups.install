@@ -18,7 +18,7 @@ function mandrill_groups_install() {
   mandrill_groups_add_field_instances();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
-  // Modify comment table to hold reply-to info for each Mandrill Groups comment.
+  // Modify comment table to hold reply-to info for Mandrill Groups comments.
   _mandrill_groups_alter_comment();
 
   $format_name = 'mandrill_groups_html';
@@ -147,6 +147,7 @@ function _mandrill_groups_config_content_types() {
   // Commenting off for Groups, on for discussions..
   variable_set('comment_mandrill_groups_group', COMMENT_NODE_CLOSED);
   variable_set('comment_mandrill_groups_discussion', COMMENT_NODE_OPEN);
+  // Disable Comment subject lines.
   // Default to no threading, as the email function doesn't handle it elegantly.
   variable_set('comment_default_mode_mandrill_groups_discussion', COMMENT_MODE_FLAT);
   // Add OG (organic groups) fields to content types by setting the

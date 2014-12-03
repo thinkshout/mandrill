@@ -545,3 +545,4 @@ function mandrill_groups_schema_alter(&$schema) {
     'default' => NULL,
   );
 }
+
