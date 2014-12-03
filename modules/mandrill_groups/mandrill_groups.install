@@ -15,7 +15,7 @@ function mandrill_groups_install() {
   // Create our custom fields.
   _mandrill_groups_create_fields();
   // Add fields to our new node types.
-  mandrill_groups_add_field_instances();
+  _mandrill_groups_add_field_instances();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
   // Modify comment table to hold reply-to info for Mandrill Groups comments.
@@ -88,7 +88,7 @@ function mandrill_groups_uninstall() {
 /**
  * Add all custom fields for the content types created by this module.
  */
-function mandrill_groups_add_field_instances() {
+function _mandrill_groups_add_field_instances() {
   if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, 'mandrill_groups_group')) {
     $email_field_instance = array(
       'entity_type' => 'node',
