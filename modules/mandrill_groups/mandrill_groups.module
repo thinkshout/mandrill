@@ -389,8 +389,7 @@ function mandrill_groups_process_message($message) {
   // Parse the subject line to extract a discussion ID, if present:
   list($subject, $discussion_tag) = explode('[#MGD', $message['subject']);
   $subject = trim($subject);
-  $discussion_tag = trim($discussion_tag, '] ');
-  $discussion_id = (int) $discussion_tag;
+  $discussion_id = (int) trim($discussion_tag, '] ');
   // Load existing discussion, or create a new one:
   $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group, $user);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
