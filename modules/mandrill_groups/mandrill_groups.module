@@ -308,6 +308,7 @@ function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form,
   $params = drupal_get_query_parameters();
   if (isset($params['nid'])) {
     $form['mandrill_groups_og_ref'][$form['language']['#value']][0]['default']['#default_value'][0] = $params['nid'];
+    $form['mandrill_groups_og_ref']['#access'] = user_access('administer content');
   }
   $form['#validate'][] = 'mandrill_groups_add_discussion_group';
 //  if (isset($_GET['nid'])) {
