@@ -8,7 +8,8 @@
 
 define('MANDRILL_GROUPS_OG_REFERENCE_FIELD', 'mandrill_groups_og_ref');
 define('MANDRILL_GROUPS_EMAIL_FIELD', 'mandrill_groups_email');
-
+define('MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD', 'mandrill_groups_email_frequency');
+define('MANDRILL_GROUPS_MEMBERSHIP_TYPE', 'mandrill_groups_membership_type');
 
 /**
  * Implements hook_menu().
@@ -417,7 +418,6 @@ function mandrill_groups_process_message($message) {
     'date' => 'now',
     'status' => COMMENT_PUBLISHED,
     'node_type' => 'comment_node_mandrill_groups_discussion',
-    'mandrill_groups_message_id' => $message['headers']['Message-Id'],
   );
   $comment = entity_create('comment', $values);
   $wrapper = entity_metadata_wrapper('comment', $comment);
@@ -518,32 +518,6 @@ function mandrill_groups_mail($key, &$message, $params) {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
-}
-
-/**
- * Implements hook_entity_property_info_alter().
- */
-function mandrill_groups_entity_property_info_alter(&$info) {
-  $info['comment']['properties']['mandrill_groups_message_id'] = array(
-    'label' => t('Mandrill Groups Message-ID'),
-    'description' => t('The email Message-ID header value for a Mandrill Groups comment.'),
-    'type' => 'text',
-    'schema field' => 'mandrill_groups_message_id',
-    'setter callback' => 'entity_property_verbatim_set',
-  );
-}
-
-/**
- * Implements hook_schema_alter().
- */
-function mandrill_groups_schema_alter(&$schema) {
-  $schema['comment']['fields']['mandrill_groups_message_id'] = array(
-    'description' => 'The email header Message-ID value of the comment.',
-    'type' => 'varchar',
-    'length' => 255,
-    'not null' => FALSE,
-    'default' => NULL,
-  );
 }
 
 /**

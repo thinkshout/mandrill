@@ -12,14 +12,14 @@ function mandrill_groups_install() {
   node_types_rebuild();
   // Configure content types.
   _mandrill_groups_config_content_types();
+  // Create MANDRILL_GROUPS_MEMBERSHIP_TYPE membership type.
+  _mandrill_groups_create_membership_type();
   // Create our custom fields.
   _mandrill_groups_create_fields();
   // Add fields to our new node types.
   _mandrill_groups_add_field_instances();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
-  // Modify comment table to hold reply-to info for Mandrill Groups comments.
-  _mandrill_groups_alter_comment();
   // Add "mandrill_groups_html" text format specific to this module.
   _mandrill_groups_add_text_format();
 }
@@ -87,54 +87,6 @@ function mandrill_groups_uninstall() {
   foreach ($mandrill_groups_content_types as $content_type) {
     node_type_delete($content_type);
   }
-
-  // Drop "reply-to" field from comment table.
-  db_drop_field('comment', 'mandrill_groups_message_id');
-}
-
-/**
- * Add all custom fields for the content types created by this module.
- */
-function _mandrill_groups_add_field_instances() {
-  if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, 'mandrill_groups_group')) {
-    $email_field_instance = array(
-      'entity_type' => 'node',
-      'bundle' => 'mandrill_groups_group',
-      'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
-      'label' => t('Mandrill Groups Email'),
-    );
-    field_create_instance($email_field_instance);
-  }
-
-  if (!field_info_instance('node', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'mandrill_groups_discussion')) {
-    $group_ref_instance = array(
-      'entity_type' => 'node',
-      'bundle' => 'mandrill_groups_discussion',
-      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
-      'label' => t('Discussion Group'),
-      'required' => TRUE,
-      'widget' => array(
-        'type' => 'og_complex',
-        'module' => 'og',
-      ),
-      'settings' => array(
-        'behaviors' => array(
-          'og_widget' => array(
-            'status' => 1,
-            'default' => array(
-              'widget_type' => 'options_select',
-            ),
-            'admin' => array(
-              'widget_type' => 'entityreference_autocomplete',
-            ),
-            'access_override' => 0,
-          ),
-        ),
-      ),
-    );
-    field_create_instance($group_ref_instance);
-    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'node', 'mandrill_groups_discussion');
-  }
 }
 
 /**
@@ -170,6 +122,22 @@ function _mandrill_groups_config_content_types() {
 }
 
 /**
+ * Create og_membership_type for the Mandrill Groups module.
+ *
+ * We need this because we don't want to modify settings on the default
+ * membership type in case OG is being used in other ways on the site.
+ */
+function _mandrill_groups_create_membership_type() {
+  // Not using og_membership_type_create() due to https://www.drupal.org/node/1783162
+  $values = array(
+    'name' => MANDRILL_GROUPS_MEMBERSHIP_TYPE,
+    'description' => 'Mandrill Groups Membership',
+  );
+  $og_membership_type_wrapper = entity_property_values_create_entity('og_membership_type', $values);
+  og_membership_type_save($og_membership_type_wrapper->value());
+}
+
+/**
  * Create and add the Organic Groups reference field & Group Email field.
  */
 function _mandrill_groups_create_fields() {
@@ -193,7 +161,7 @@ function _mandrill_groups_create_fields() {
             'property' => 'title',
             'direction' => 'ASC',
           ),
-          'membership_type' => 'og_membership_type_default',
+          'membership_type' => MANDRILL_GROUPS_MEMBERSHIP_TYPE,
         ),
       ),
     ),
@@ -205,6 +173,18 @@ function _mandrill_groups_create_fields() {
         'no_ui' => FALSE,
       ),
     ),
+    MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD => array(
+      'field_name' => MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD,
+      'type' => 'list_text',
+      'locked' => TRUE,
+      'settings' => array(
+        'allowed_values' => array(
+          0 => 'Immediately when comments are added',
+          1 => 'Daily',
+          2 => 'Weekly',
+        ),
+      ),
+    ),
   );
   // If the fields don't already exist, create them.
   foreach ($automatic_fields as $field_name => $field_def) {
@@ -214,6 +194,100 @@ function _mandrill_groups_create_fields() {
       field_create_field($new_field);
     }
   }
+}
+
+/**
+ * Add all custom fields for the content types created by this module.
+ */
+function _mandrill_groups_add_field_instances() {
+  // Create instance of group email field on group entity.
+  if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, 'mandrill_groups_group')) {
+    $email_field_instance = array(
+      'entity_type' => 'node',
+      'bundle' => 'mandrill_groups_group',
+      'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
+      'label' => t('Mandrill Groups Email'),
+    );
+    field_create_instance($email_field_instance);
+  }
+  // Create instance of group reference field on discussion entity.
+  if (!field_info_instance('node', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'mandrill_groups_discussion')) {
+    $group_ref_instance = array(
+      'entity_type' => 'node',
+      'bundle' => 'mandrill_groups_discussion',
+      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
+      'label' => t('Discussion Group'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'og_complex',
+        'module' => 'og',
+      ),
+      'settings' => array(
+        'behaviors' => array(
+          'og_widget' => array(
+            'status' => 1,
+            'default' => array(
+              'widget_type' => 'options_select',
+            ),
+            'admin' => array(
+              'widget_type' => 'entityreference_autocomplete',
+            ),
+            'access_override' => 0,
+          ),
+        ),
+      ),
+    );
+    field_create_instance($group_ref_instance);
+    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'node', 'mandrill_groups_discussion');
+  }
+  // Create instance of group reference field on user entity.
+  if (!field_info_instance('user', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'user')) {
+    $group_ref_instance = array(
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
+      'label' => t('Mandrill Group Membership'),
+      'widget' => array(
+        'type' => 'og_complex',
+        'module' => 'og',
+      ),
+      'settings' => array(
+        'behaviors' => array(
+          'og_widget' => array(
+            'status' => 1,
+            'default' => array(
+              'widget_type' => 'options_select',
+            ),
+            'admin' => array(
+              'widget_type' => 'entityreference_autocomplete',
+            ),
+            'access_override' => 0,
+          ),
+        ),
+      ),
+    );
+    field_create_instance($group_ref_instance);
+    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'user', 'user');
+  }
+  // Create instance of email frequency field on Mandrill Groups OG membership type.
+  if (!field_info_instance('og_membership', MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD, MANDRILL_GROUPS_MEMBERSHIP_TYPE)) {
+    $email_frequency_field_instance = array(
+      'entity_type' => 'og_membership',
+      'bundle' => MANDRILL_GROUPS_MEMBERSHIP_TYPE,
+      'field_name' => MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD,
+      'label' => t('Mandrill Groups Email Frequency'),
+      // Make field required so user is prompted to set email frequency field
+      // when joining the group.
+      'required' => TRUE,
+      // Set default value to send email immediately when comments are created.
+      'default_value' => array(array('value' => 0)),
+    );
+    field_create_instance($email_frequency_field_instance);
+  }
+  // Update display field formatter for the OG group field on our Mandrill Group content type.
+  $instance = field_info_instance('node', OG_GROUP_FIELD, 'mandrill_groups_group');
+  $instance['display']['default']['settings']['field_name'] = MANDRILL_GROUPS_OG_REFERENCE_FIELD;
+  field_update_instance($instance);
 }
 
 /**
@@ -285,23 +359,4 @@ function _mandrill_groups_add_permissions() {
         ->execute();
     }
   }
-}
-
-/**
- * Add a column for reply-to information to the comment table.
- *
- * The reply-to information allows us to get the correct threading behavior
- * in folks' inboxes. In other words, we can tell an outgoing message which
- * message it is in reply to.
- */
-function _mandrill_groups_alter_comment() {
-  // Add "Message-ID" string field to the comment table.
-  $reply_to = array(
-    'description' => 'Email header Message-ID property for the comment.',
-    'type' => 'varchar',
-    'length' => 255,
-    'not null' => FALSE,
-    'default' => NULL,
-  );
-  db_add_field('comment', 'mandrill_groups_message_id', $reply_to);
 }
