@@ -41,7 +41,7 @@ function mandrill_groups_menu() {
     'title' => 'Discussions',
     'page callback' => 'mandrill_groups_node_discussions',
     'page arguments' => array(1),
-    'access callback' => 'group_node_discussion_access',
+    'access callback' => 'mandrill_groups_node_discussion_access',
     'access arguments' => array(1),
     'weight' => 0,
     'type' => MENU_LOCAL_TASK,
@@ -95,7 +95,7 @@ function mandrill_groups_permission() {
  * @return bool
  *   Return True if user is a member of the current Group.
  */
-function group_node_discussion_access($group) {
+function mandrill_groups_node_discussion_access($group) {
   global $user;
   if (!og_is_member('node', $group->nid, 'user', $user)) {
     return FALSE;
