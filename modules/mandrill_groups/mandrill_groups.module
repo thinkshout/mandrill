@@ -495,27 +495,38 @@ function mandrill_groups_comment_insert($comment) {
     $addresses[] = $member->mail;
   }
   $content = field_view_field('comment', $comment, 'comment_body');
-  $postscript = format_string($node_wrapper->mandrill_groups_og_ref->{MANDRILL_GROUPS_POSTSCRIPT_FIELD}->value(), array(
-    '@group_name' => $node_wrapper->mandrill_groups_og_ref->label(),
-    '@site_name' => variable_get('site_name'),
-    '@group_email' => $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value(),
-    '@group_link' => $node_wrapper->mandrill_groups_og_ref->url->value(),
-    '@discussion_link' => $node_wrapper->url->value(),
-    '@settings_link' => $GLOBALS['base_url'] . '/user',
-  ));
   $message = array(
     'id' => MANDRILL_GROUPS_DISCUSSION_NODE,
-    'to' => implode(',', $addresses),
     'subject' => $node->title . ' [#MGD' . $node->nid . ']',
-    'body' => array($content[0]['#markup'], $postscript),
+    'body' => array($content[0]['#markup']),
     'mandrill_from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
     'mandrill_overrides' => array(
       'preserve_recipients' => FALSE,
     ),
   );
+  mandrill_groups_send_email($addresses, $message, $node);
+}
+
+/**
+ * Send a message relate to a particular discussion.
+ *
+ * This function appends the appropriate postscript to emails, whether they are
+ * individual comment messages or consolidated messages.
+ */
+function mandrill_groups_send_email($addresses, $message, $discussion) {
+  $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
+  $postscript = format_string($discussion_wrapper->mandrill_groups_og_ref->{MANDRILL_GROUPS_POSTSCRIPT_FIELD}->value(), array(
+    '@group_name' => $discussion_wrapper->mandrill_groups_og_ref->label(),
+    '@site_name' => variable_get('site_name'),
+    '@group_email' => $discussion_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value(),
+    '@group_link' => $discussion_wrapper->mandrill_groups_og_ref->url->value(),
+    '@discussion_link' => $discussion_wrapper->url->value(),
+    '@settings_link' => $GLOBALS['base_url'] . '/user',
+  ));
+  $message['body'][] = $postscript;
   // Mandrill automatically puts the "From" into "Reply To" and replaces the
   // "From" with the official system email address.
-  $from = $node_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value();
+  $from = $discussion_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value();
   // Send Email.
   drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message, $from);
 }
