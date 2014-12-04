@@ -75,7 +75,7 @@ function mandrill_groups_disable() {
  */
 function mandrill_groups_uninstall() {
 
-  $mandrill_groups_content_types = array(MANDRILL_GROUPS_GROUP_NODE, ' . MANDRILL_GROUPS_DISCUSSION_NODE . '_NODE);
+  $mandrill_groups_content_types = array(MANDRILL_GROUPS_GROUP_NODE, MANDRILL_GROUPS_DISCUSSION_NODE);
   $sql = 'SELECT nid FROM {node} n WHERE n.type IN (:type)';
   $result = db_query($sql, array(':type' => $mandrill_groups_content_types));
   $nids = array();
@@ -95,7 +95,7 @@ function mandrill_groups_uninstall() {
 function _mandrill_groups_config_content_types() {
   // Don't display author and date information.
   variable_set('node_submitted_' . MANDRILL_GROUPS_GROUP_NODE, FALSE);
-  variable_set('node_submitted_' . ' . MANDRILL_GROUPS_DISCUSSION_NODE . '_NODE, FALSE);
+  variable_set('node_submitted_' . MANDRILL_GROUPS_DISCUSSION_NODE, FALSE);
   // Sets status to published. Not sticky or promoted to front page.
   $publishing_defaults = array(
     'status',
