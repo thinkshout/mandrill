@@ -122,6 +122,7 @@ function mandrill_groups_node_discussions($group) {
   $query->condition('n.status', NODE_PUBLISHED);
   $query->condition('g.entity_type', 'node');
   $query->condition('g.mandrill_groups_og_ref_target_id', $group->nid);
+  $query->orderBy('n.changed', 'DESC');
   $result = $query->execute();
 
   // Add link to create discussion if the user has permission to.
