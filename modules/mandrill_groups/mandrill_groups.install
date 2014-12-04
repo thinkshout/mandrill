@@ -59,7 +59,7 @@ function _mandrill_groups_add_text_format() {
  * Implements hook_enable().
  */
 function mandrill_groups_enable() {
-  mailsystem_set(array('mandrill_groups_discussion' => 'MandrillMailSystem'));
+  mailsystem_set(array(MANDRILL_GROUPS_DISCUSSION_NODE => 'MandrillMailSystem'));
 }
 
 /**
@@ -67,7 +67,7 @@ function mandrill_groups_enable() {
  */
 function mandrill_groups_disable() {
   // Tell mailsystem to remove mandrill groups:
-  mailsystem_clear(array('mandrill_groups_discussion' => 'MandrillMailSystem'));
+  mailsystem_clear(array(MANDRILL_GROUPS_DISCUSSION_NODE => 'MandrillMailSystem'));
 }
 
 /**
@@ -75,7 +75,7 @@ function mandrill_groups_disable() {
  */
 function mandrill_groups_uninstall() {
 
-  $mandrill_groups_content_types = array('mandrill_groups_group', 'mandrill_groups_discussion');
+  $mandrill_groups_content_types = array(MANDRILL_GROUPS_GROUP_NODE, ' . MANDRILL_GROUPS_DISCUSSION_NODE . '_NODE);
   $sql = 'SELECT nid FROM {node} n WHERE n.type IN (:type)';
   $result = db_query($sql, array(':type' => $mandrill_groups_content_types));
   $nids = array();
@@ -94,31 +94,31 @@ function mandrill_groups_uninstall() {
  */
 function _mandrill_groups_config_content_types() {
   // Don't display author and date information.
-  variable_set('node_submitted_mandrill_groups_group', FALSE);
-  variable_set('node_submitted_mandrill_groups_discussion', FALSE);
+  variable_set('node_submitted_' . MANDRILL_GROUPS_GROUP_NODE, FALSE);
+  variable_set('node_submitted_' . ' . MANDRILL_GROUPS_DISCUSSION_NODE . '_NODE, FALSE);
   // Sets status to published. Not sticky or promoted to front page.
   $publishing_defaults = array(
     'status',
   );
-  variable_set('node_options_mandrill_groups_group', $publishing_defaults);
-  variable_set('node_options_mandrill_groups_discussion', $publishing_defaults);
+  variable_set('node_options_' . MANDRILL_GROUPS_GROUP_NODE , $publishing_defaults);
+  variable_set('node_options_' . MANDRILL_GROUPS_DISCUSSION_NODE , $publishing_defaults);
   // Commenting off for Groups, on for discussions..
-  variable_set('comment_mandrill_groups_group', COMMENT_NODE_CLOSED);
-  variable_set('comment_mandrill_groups_discussion', COMMENT_NODE_OPEN);
+  variable_set('comment_' . MANDRILL_GROUPS_GROUP_NODE, COMMENT_NODE_CLOSED);
+  variable_set('comment_' . MANDRILL_GROUPS_DISCUSSION_NODE, COMMENT_NODE_OPEN);
   // Disable Comment subject lines.
-  variable_set('comment_subject_field_mandrill_groups_discussion', FALSE);
+  variable_set('comment_subject_field_' . MANDRILL_GROUPS_DISCUSSION_NODE, FALSE);
   // Default to no threading, as the email function doesn't handle it elegantly.
-  variable_set('comment_default_mode_mandrill_groups_discussion', COMMENT_MODE_FLAT);
+  variable_set('comment_default_mode_' . MANDRILL_GROUPS_DISCUSSION_NODE, COMMENT_MODE_FLAT);
   // Add OG (organic groups) fields to content types by setting the
   // following variables. og_ui_node_type_save() reacts to the presence or
   // absence of these variables to determine whether to add OG fields to
   // the node type.
-  variable_set('og_group_type_mandrill_groups_group', OG_STATE_ACTIVE);
+  variable_set('og_group_type_' . MANDRILL_GROUPS_GROUP_NODE, OG_STATE_ACTIVE);
   // Save the new content type via OG - this ensures fields necessary for
   // correct OG config are added to the content type. Also variables set above
   // are unset in og_ui_node_type_save().
-  og_ui_node_type_save('mandrill_groups_group');
-  og_ui_node_type_save('mandrill_groups_discussion');
+  og_ui_node_type_save(MANDRILL_GROUPS_GROUP_NODE);
+  og_ui_node_type_save(MANDRILL_GROUPS_DISCUSSION_NODE);
 }
 
 /**
@@ -154,7 +154,7 @@ function _mandrill_groups_create_fields() {
         'handler' => 'og',
         'handler_settings' => array(
           'target_bundles' => array(
-            'mandrill_groups_group' => 'mandrill_groups_group',
+            MANDRILL_GROUPS_GROUP_NODE => MANDRILL_GROUPS_GROUP_NODE,
           ),
           'sort' => array(
             'type' => 'property',
@@ -206,19 +206,19 @@ function _mandrill_groups_create_fields() {
  */
 function _mandrill_groups_add_field_instances() {
   // Create instance of group email field on group entity.
-  if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, 'mandrill_groups_group')) {
+  if (!field_info_instance('node', MANDRILL_GROUPS_EMAIL_FIELD, MANDRILL_GROUPS_GROUP_NODE)) {
     $email_field_instance = array(
       'entity_type' => 'node',
-      'bundle' => 'mandrill_groups_group',
+      'bundle' => MANDRILL_GROUPS_GROUP_NODE,
       'field_name' => MANDRILL_GROUPS_EMAIL_FIELD,
       'label' => t('Mandrill Groups Email'),
     );
     field_create_instance($email_field_instance);
   }
-  if (!field_info_instance('node', MANDRILL_GROUPS_POSTSCRIPT_FIELD, 'mandrill_groups_group')) {
+  if (!field_info_instance('node', MANDRILL_GROUPS_POSTSCRIPT_FIELD, MANDRILL_GROUPS_GROUP_NODE)) {
     $postscript_field_instance = array(
       'entity_type' => 'node',
-      'bundle' => 'mandrill_groups_group',
+      'bundle' => MANDRILL_GROUPS_GROUP_NODE,
       'field_name' => MANDRILL_GROUPS_POSTSCRIPT_FIELD,
       'label' => t('Email Postscript'),
       'description' => 'This text will be included at the end of emails generated by comments in this group\'s discussions. Be sure to include unsubscribe instructions if you change the default values. You can include custom links and values using the following variables:<br />
@@ -249,10 +249,10 @@ function _mandrill_groups_add_field_instances() {
     field_create_instance($postscript_field_instance);
   }
   // Create instance of group reference field on discussion entity.
-  if (!field_info_instance('node', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'mandrill_groups_discussion')) {
+  if (!field_info_instance('node', MANDRILL_GROUPS_OG_REFERENCE_FIELD, MANDRILL_GROUPS_DISCUSSION_NODE)) {
     $group_ref_instance = array(
       'entity_type' => 'node',
-      'bundle' => 'mandrill_groups_discussion',
+      'bundle' => MANDRILL_GROUPS_DISCUSSION_NODE,
       'field_name' => MANDRILL_GROUPS_OG_REFERENCE_FIELD,
       'label' => t('Discussion Group'),
       'required' => TRUE,
@@ -276,7 +276,7 @@ function _mandrill_groups_add_field_instances() {
       ),
     );
     field_create_instance($group_ref_instance);
-    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'node', 'mandrill_groups_discussion');
+    og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'node', MANDRILL_GROUPS_DISCUSSION_NODE);
   }
   // Create instance of group reference field on user entity.
   if (!field_info_instance('user', MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'user')) {
@@ -323,7 +323,7 @@ function _mandrill_groups_add_field_instances() {
     field_create_instance($email_frequency_field_instance);
   }
   // Update display field formatter for the OG group field on our Mandrill Group content type.
-  $instance = field_info_instance('node', OG_GROUP_FIELD, 'mandrill_groups_group');
+  $instance = field_info_instance('node', OG_GROUP_FIELD, MANDRILL_GROUPS_GROUP_NODE);
   $instance['display']['default']['settings']['field_name'] = MANDRILL_GROUPS_OG_REFERENCE_FIELD;
   field_update_instance($instance);
 }
@@ -338,35 +338,35 @@ function _mandrill_groups_add_permissions() {
   // create/edit/delete content permissions.
   $role_permissions = array(
     // Mandrill Discussion permissions.
-    'create mandrill_groups_discussion content',
-    'delete any mandrill_groups_discussion content',
-    'delete own mandrill_groups_discussion content',
-    'edit any mandrill_groups_discussion content',
-    'edit own mandrill_groups_discussion content',
+    'create ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+    'delete any ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+    'delete own ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+    'edit any ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+    'edit own ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
   );
 
   $og_role_permissions = array(
     // Member permissions.
     'member' => array(
       // Mandrill Discussion permissions.
-      'create mandrill_groups_discussion content',
-      'delete own mandrill_groups_discussion content',
-      'update own mandrill_groups_discussion content',
+      'create ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+      'delete own  ' . MANDRILL_GROUPS_DISCUSSION_NODE . '  content',
+      'update own  ' . MANDRILL_GROUPS_DISCUSSION_NODE . '  content',
     ),
     // Admin member permissions.
     'administrator member' => array(
       // Mandrill Discussion permissions.
-      'create mandrill_groups_discussion content',
-      'delete any mandrill_groups_discussion content',
-      'delete own mandrill_groups_discussion content',
-      'update any mandrill_groups_discussion content',
-      'update own mandrill_groups_discussion content',
+      'create ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+      'delete any ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+      'delete own ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+      'update any ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
+      'update own ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content',
     ),
   );
 
   // Get roles associated with each node type we define.
-  $group_roles = og_roles('node', 'mandrill_groups_group');
-  $discussion_roles = og_roles('node', 'mandrill_groups_discussion');
+  $group_roles = og_roles('node', MANDRILL_GROUPS_GROUP_NODE);
+  $discussion_roles = og_roles('node', MANDRILL_GROUPS_DISCUSSION_NODE);
 
   // Set og_role_permission table permissions based on rids for each
   // group_bundle.

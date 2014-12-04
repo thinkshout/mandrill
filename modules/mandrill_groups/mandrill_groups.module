@@ -11,6 +11,8 @@ define('MANDRILL_GROUPS_EMAIL_FIELD', 'mandrill_groups_email');
 define('MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD', 'mandrill_groups_email_frequency');
 define('MANDRILL_GROUPS_MEMBERSHIP_TYPE', 'mandrill_groups_membership_type');
 define('MANDRILL_GROUPS_POSTSCRIPT_FIELD', 'mandrill_groups_postscript');
+define('MANDRILL_GROUPS_GROUP_NODE', 'mandrill_groups_group');
+define('MANDRILL_GROUPS_DISCUSSION_NODE', 'mandrill_groups_discussion');
 
 /**
  * Implements hook_menu().
@@ -123,7 +125,7 @@ function mandrill_groups_node_discussions($group) {
 
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
-    ->entityCondition('bundle', 'mandrill_groups_discussion')
+    ->entityCondition('bundle', MANDRILL_GROUPS_DISCUSSION_NODE)
     ->propertyCondition('status', NODE_PUBLISHED)
     // @todo this appears to break because OG sabbotages the query in
     // og_query_og_membership_alter
@@ -133,7 +135,7 @@ function mandrill_groups_node_discussions($group) {
 
   // Add link to create discussion if the user has permission to.
   $discussions = array();
-  if (og_user_access('node', $group->nid, 'create mandrill_groups_discussion content')) {
+  if (og_user_access('node', $group->nid, 'create ' . MANDRILL_GROUPS_DISCUSSION_NODE . ' content')) {
     // Include group nid in URL to be used in setting default value on Mandrill
     // Discussion node form.
     $discussions['add_discussion'] = array(
@@ -162,7 +164,7 @@ function mandrill_groups_node_discussions($group) {
 function mandrill_groups_node_info() {
   // Define content types.
   return array(
-    'mandrill_groups_group' => array(
+    MANDRILL_GROUPS_GROUP_NODE => array(
       'name' => t('Mandrill Group'),
       'base' => 'mandrill_groups',
       'description' => t('Users subscribe to a Mandrill Group to be notified of all new Mandrill Discussions within that group.'),
@@ -170,7 +172,7 @@ function mandrill_groups_node_info() {
       // 'Locked' protects the machine name of this bundle from alteration.
       'locked' => TRUE,
     ),
-    'mandrill_groups_discussion' => array(
+    MANDRILL_GROUPS_DISCUSSION_NODE => array(
       'name' => t('Mandrill Discussion'),
       'base' => 'mandrill_groups',
       'description' => t('Discussion thread that is part of a Mandrill Group. Users may opt in or out of individual Mandrill Discussions.'),
@@ -192,7 +194,7 @@ function mandrill_groups_node_info() {
  */
 function mandrill_groups_form($node, $form_state) {
   $form = node_content_form($node, $form_state);
-  if ($node->type == 'mandrill_groups_group') {
+  if ($node->type == MANDRILL_GROUPS_GROUP_NODE) {
     if (isset($node->nid)) {
       $node_wrapper = entity_metadata_wrapper('node', $node);
       list($default_name, $default_domain) = explode('@', $node_wrapper->mandrill_groups_email->value());
@@ -426,7 +428,7 @@ function mandrill_groups_process_message($message) {
     'name' => $user->name,
     'date' => 'now',
     'status' => COMMENT_PUBLISHED,
-    'node_type' => 'comment_node_mandrill_groups_discussion',
+    'node_type' => 'comment_node_' . MANDRILL_GROUPS_DISCUSSION_NODE,
   );
   $comment = entity_create('comment', $values);
   $wrapper = entity_metadata_wrapper('comment', $comment);
@@ -448,7 +450,7 @@ function mandrill_groups_process_message($message) {
 function mandrill_groups_load_by_mail($email = NULL) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node')
-    ->propertyCondition('type', 'mandrill_groups_group', '=');
+    ->propertyCondition('type', MANDRILL_GROUPS_GROUP_NODE, '=');
   if ($email) {
     $query->fieldCondition('mandrill_groups_email', 'value', $email);
   }
@@ -468,7 +470,7 @@ function mandrill_groups_load_by_mail($email = NULL) {
  */
 function mandrill_groups_create_discussion($subject, $group, $user) {
   $values = array(
-    'type' => 'mandrill_groups_discussion',
+    'type' => MANDRILL_GROUPS_DISCUSSION_NODE,
     'uid' => $user->uid,
     'title' => $subject,
   );
@@ -483,7 +485,7 @@ function mandrill_groups_create_discussion($subject, $group, $user) {
  * Implements hook_comment_insert().
  */
 function mandrill_groups_comment_insert($comment) {
-  if ($comment->node_type != 'comment_node_mandrill_groups_discussion') {
+  if ($comment->node_type != 'comment_node_' . MANDRILL_GROUPS_DISCUSSION_NODE) {
     return;
   }
   // Load posting user:
@@ -510,7 +512,7 @@ function mandrill_groups_comment_insert($comment) {
     '@settings_link' => $GLOBALS['base_url'] . '/user',
   ));
   $message = array(
-    'id' => 'mandrill_groups_discussion',
+    'id' => MANDRILL_GROUPS_DISCUSSION_NODE,
     'to' => implode(',', $addresses),
     'subject' => $node->title . ' [#MGD' . $node->nid . ']',
     'body' => array($content[0]['#markup'], $postscript),
@@ -543,7 +545,7 @@ function mandrill_groups_mail($key, &$message, $params) {
  */
 function mandrill_groups_preprocess_comment(&$variables) {
   $node_type = $variables['node']->type;
-  if ($node_type == 'mandrill_groups_discussion') {
+  if ($node_type == MANDRILL_GROUPS_DISCUSSION_NODE) {
     $subject_enabled = variable_get('comment_subject_field_' . $node_type, 0);
 
     if (!$subject_enabled) {
