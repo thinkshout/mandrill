@@ -484,6 +484,7 @@ function mandrill_groups_comment_insert($comment) {
   // Load parent group.
   $node = node_load($comment->nid);
   $node_wrapper = entity_metadata_wrapper('node', $node);
+  $node_wrapper->save();
   // Load active members.
   $members = $node_wrapper->mandrill_groups_og_ref->members__1->value();
   // @todo Check subscription data.
