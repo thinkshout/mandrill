@@ -76,6 +76,9 @@ class MandrillMailSystem implements MailSystemInterface {
     // Mandrill needs the from address to be configured separately.
     // Note that only Reply-To and X-* headers are allowed.
     $headers = isset($message['headers']) ? $message['headers'] : array();
+    if (isset($message['params']['mandrill_header_overrides'])) {
+      $headers = $message['params']['mandrill_header_overrides'] + $headers;
+    }
     if (!empty($message['from']) && empty($headers['Reply-To'])) {
       $headers['Reply-To'] = $message['from'];
     }
