@@ -56,7 +56,6 @@ function _mandrill_groups_add_text_format() {
   }
 }
 
-
 /**
  * Implements hook_enable().
  */
@@ -133,7 +132,8 @@ function _mandrill_groups_config_content_types() {
  * membership type in case OG is being used in other ways on the site.
  */
 function _mandrill_groups_create_membership_type() {
-  // Not using og_membership_type_create() due to https://www.drupal.org/node/1783162
+  // Not using og_membership_type_create() due to:
+  // https://www.drupal.org/node/1783162
   $values = array(
     'name' => MANDRILL_GROUPS_MEMBERSHIP_TYPE,
     'description' => 'Mandrill Groups Membership',
@@ -312,7 +312,8 @@ function _mandrill_groups_add_field_instances() {
     field_create_instance($group_ref_instance);
     og_create_field(MANDRILL_GROUPS_OG_REFERENCE_FIELD, 'user', 'user');
   }
-  // Create instance of email frequency field on Mandrill Groups OG membership type.
+  // Create instance of email frequency field on Mandrill Groups OG membership
+  // type.
   if (!field_info_instance('og_membership', MANDRILL_GROUPS_EMAIL_FREQUENCY_FIELD, MANDRILL_GROUPS_MEMBERSHIP_TYPE)) {
     $email_frequency_field_instance = array(
       'entity_type' => 'og_membership',
@@ -327,7 +328,8 @@ function _mandrill_groups_add_field_instances() {
     );
     field_create_instance($email_frequency_field_instance);
   }
-  // Update display field formatter for the OG group field on our Mandrill Group content type.
+  // Update display field formatter for the OG group field on our Mandrill Group
+  // content type.
   $instance = field_info_instance('node', OG_GROUP_FIELD, MANDRILL_GROUPS_GROUP_NODE);
   $instance['display']['default']['settings']['field_name'] = MANDRILL_GROUPS_OG_REFERENCE_FIELD;
   field_update_instance($instance);
