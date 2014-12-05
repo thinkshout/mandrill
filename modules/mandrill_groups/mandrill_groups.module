@@ -260,6 +260,7 @@ function mandrill_groups_form($node, $form_state) {
       '#default_value' => isset($default_domain) ? $default_domain : '',
       '#required' => TRUE,
     );
+    
   }
   return $form;
 }
