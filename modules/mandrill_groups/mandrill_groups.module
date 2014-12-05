@@ -13,6 +13,7 @@ define('MANDRILL_GROUPS_MEMBERSHIP_TYPE', 'mandrill_groups_membership_type');
 define('MANDRILL_GROUPS_POSTSCRIPT_FIELD', 'mandrill_groups_postscript');
 define('MANDRILL_GROUPS_GROUP_NODE', 'mandrill_groups_group');
 define('MANDRILL_GROUPS_DISCUSSION_NODE', 'mandrill_groups_discussion');
+define('MANDRILL_GROUPS_MESSAGE_ID_FIELD', 'field_message_id');
 
 /**
  * Implements hook_menu().
@@ -433,7 +434,8 @@ function mandrill_groups_process_message($message) {
     return FALSE;
   }
   // Load existing discussion, or create a new one:
-  $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group, $user);
+  $discussion_id = (int) $discussion_tag;
+  $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($message['subject'], $group, $user);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
   // Verify the discussion matches the group attached to this email address:
   if ($group->nid != $discussion_wrapper->{MANDRILL_GROUPS_OG_REFERENCE_FIELD}->raw()) {
@@ -459,6 +461,7 @@ function mandrill_groups_process_message($message) {
     'date' => 'now',
     'status' => COMMENT_PUBLISHED,
     'node_type' => 'comment_node_' . MANDRILL_GROUPS_DISCUSSION_NODE,
+    'mandrill_groups_original_msg_id' => isset($message['headers']['Message-Id']) ? $message['headers']['Message-Id'] : NULL,
   );
   $comment = entity_create('comment', $values);
   $wrapper = entity_metadata_wrapper('comment', $comment);
@@ -523,6 +526,17 @@ function mandrill_groups_comment_insert($comment) {
   // Load parent group.
   $node = node_load($comment->nid);
   $node_wrapper = entity_metadata_wrapper('node', $node);
+  // We want to set the reply-to header to match a previous message sent from
+  // this system for threading purposes.
+  $reply_to_id = $node_wrapper->{MANDRILL_GROUPS_MESSAGE_ID_FIELD}->value();
+  // If this is the first message, and no ID is available, we set the reply-to
+  // to be the initializing email message ID for the benefit of the person who
+  // created this email.
+  if (empty($reply_to_id) && ($comment->mandrill_groups_original_msg_id)) {
+    $reply_to_id = $comment->mandrill_groups_original_msg_id;
+  }
+  $comment->mandrill_groups_message_id = '<' . date('YmdHis') . '.' . $comment->cid . '.' . $comment->nid . '@' . $_SERVER['HTTP_HOST'] . '>';
+  $node_wrapper->{MANDRILL_GROUPS_MESSAGE_ID_FIELD}->set($comment->mandrill_groups_message_id);
   $node_wrapper->save();
   // Load active members.
   $members = $node_wrapper->mandrill_groups_og_ref->members__1->value();
@@ -542,7 +556,14 @@ function mandrill_groups_comment_insert($comment) {
     'mandrill_overrides' => array(
       'preserve_recipients' => FALSE,
     ),
+    'mandrill_header_overrides' => array(
+      'Message-Id' => $comment->mandrill_groups_message_id,
+    ),
   );
+  if (!empty($reply_to_id)) {
+    $message['mandrill_header_overrides']['In-Reply-To'] = $reply_to_id;
+  }
+  entity_save('comment', $comment);
   mandrill_groups_send_email($addresses, $message, $node);
 }
 
