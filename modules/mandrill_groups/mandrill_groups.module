@@ -13,7 +13,7 @@ define('MANDRILL_GROUPS_MEMBERSHIP_TYPE', 'mandrill_groups_membership_type');
 define('MANDRILL_GROUPS_POSTSCRIPT_FIELD', 'mandrill_groups_postscript');
 define('MANDRILL_GROUPS_GROUP_NODE', 'mandrill_groups_group');
 define('MANDRILL_GROUPS_DISCUSSION_NODE', 'mandrill_groups_discussion');
-define('MANDRILL_GROUPS_MESSAGE_ID_FIELD', 'field_message_id');
+define('MANDRILL_GROUPS_MESSAGE_ID_FIELD', 'mandrill_groups_last_message_id');
 
 /**
  * Implements hook_menu().
@@ -347,6 +347,8 @@ function mandrill_groups_webhook_validate() {
  * FORM ID: mandrill_groups_discussion_node_form.
  */
 function mandrill_groups_form_mandrill_groups_discussion_node_form_alter(&$form, &$form_state, $form_id) {
+  // Disable the last message ID field: it is populated automatically.
+  $form['mandrill_groups_last_message_id']['#disabled'] = TRUE;
   // Set default value of "Group Membership" field if we have the Group to
   // relate the new discussion to in the URL.
   $params = drupal_get_query_parameters();

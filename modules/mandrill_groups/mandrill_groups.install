@@ -195,6 +195,11 @@ function _mandrill_groups_create_fields() {
       'type' => 'text_long',
       'locked' => FALSE,
     ),
+    MANDRILL_GROUPS_MESSAGE_ID_FIELD => array(
+      'field_name' => MANDRILL_GROUPS_MESSAGE_ID_FIELD,
+      'type' => 'text',
+      'locked' => TRUE,
+    ),
   );
   // If the fields don't already exist, create them.
   foreach ($automatic_fields as $field_name => $field_def) {
@@ -219,6 +224,23 @@ function _mandrill_groups_add_field_instances() {
       'label' => t('Mandrill Groups Email'),
     );
     field_create_instance($email_field_instance);
+  }
+  if (!field_info_instance('node', MANDRILL_GROUPS_MESSAGE_ID_FIELD, MANDRILL_GROUPS_GROUP_NODE)) {
+    $message_id_field_instance = array(
+      'entity_type' => 'node',
+      'bundle' => MANDRILL_GROUPS_DISCUSSION_NODE,
+      'field_name' => MANDRILL_GROUPS_MESSAGE_ID_FIELD,
+      'label' => t('Last Message ID'),
+      'display' => array(
+        'default' => array(
+          'type' => 'hidden',
+        ),
+      ),
+      'widget' => array(
+        'weight' => '20',
+      ),
+    );
+    field_create_instance($message_id_field_instance);
   }
   if (!field_info_instance('node', MANDRILL_GROUPS_POSTSCRIPT_FIELD, MANDRILL_GROUPS_GROUP_NODE)) {
     $postscript_field_instance = array(
