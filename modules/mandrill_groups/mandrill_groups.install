@@ -257,7 +257,7 @@ function _mandrill_groups_add_field_instances() {
 @settings_link : A link to this user\'s membership settings page.',
       'default_value' => array(
         array(
-          'value' => '----------------------- <br/>
+          'value' => '<br/><br/>----------------------- <br/>
 | You received this message because you are a member of the group <i>@group_name</i> at <i>@site_name</i>. <br/>
 | To unsubscribe from this group and stop receiving emails from it, reply with the subject line <i>unsubscribe</i>. <br/>
 | To post to this group, send email to @group_email. <br/>
