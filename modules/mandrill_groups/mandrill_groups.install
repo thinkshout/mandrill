@@ -18,6 +18,8 @@ function mandrill_groups_install() {
   _mandrill_groups_create_fields();
   // Add fields to our new node types.
   _mandrill_groups_add_field_instances();
+  // Add database columns for comment properties.
+  _mandrill_groups_add_comment_properties();
   // Add permissions for OG node types.
   _mandrill_groups_add_permissions();
   // Add "mandrill_groups_html" text format specific to this module.
@@ -87,6 +89,9 @@ function mandrill_groups_uninstall() {
   foreach ($mandrill_groups_content_types as $content_type) {
     node_type_delete($content_type);
   }
+  // Drop "reply-to" field from comment table.
+  db_drop_field('comment', 'mandrill_groups_message_id');
+  db_drop_field('comment', 'mandrill_groups_original_msg_id');
 }
 
 /**
@@ -326,6 +331,33 @@ function _mandrill_groups_add_field_instances() {
   $instance = field_info_instance('node', OG_GROUP_FIELD, MANDRILL_GROUPS_GROUP_NODE);
   $instance['display']['default']['settings']['field_name'] = MANDRILL_GROUPS_OG_REFERENCE_FIELD;
   field_update_instance($instance);
+}
+
+/**
+ * Add a column for reply-to information to the comment table.
+ *
+ * The reply-to information allows us to get the correct threading behavior
+ * in folks' inboxes. In other words, we can tell an outgoing message which
+ * message it is in reply to.
+ */
+function _mandrill_groups_add_comment_properties() {
+  // Add "Message-ID" string fields to the comment table.
+  $source_message_id = array(
+    'description' => 'Email header Message-ID property for the source email.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+  db_add_field('comment', 'mandrill_groups_original_msg_id', $source_message_id);
+  $message_id = array(
+    'description' => 'Email header Message-ID property for the outgoing email.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+  db_add_field('comment', 'mandrill_groups_message_id', $message_id);
 }
 
 /**

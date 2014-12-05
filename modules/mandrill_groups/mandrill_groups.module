@@ -173,6 +173,45 @@ function mandrill_groups_node_info() {
     ),
   );
 }
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function mandrill_groups_entity_property_info_alter(&$info) {
+  $info['comment']['properties']['mandrill_groups_message_id'] = array(
+    'label' => t('Outgoing Message-ID'),
+    'description' => t('The email Message-ID header value for a Mandrill Groups comment.'),
+    'type' => 'text',
+    'schema field' => 'mandrill_groups_message_id',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+  $info['comment']['properties']['mandrill_groups_original_msg_id'] = array(
+    'label' => t('Original Message-ID'),
+    'description' => t('The email Message-ID header value from an email-generated comment.'),
+    'type' => 'text',
+    'schema field' => 'mandrill_groups_original_msg_id',
+    'setter callback' => 'entity_property_verbatim_set',
+  );
+}
+
+/**
+ * Implements hook_schema_alter().
+ */
+function mandrill_groups_schema_alter(&$schema) {
+  $schema['comment']['fields']['mandrill_groups_message_id'] = array(
+    'description' => 'The email header Message-ID value of the comment.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+  $schema['comment']['fields']['mandrill_groups_original_msg_id'] = array(
+    'description' => 'The email Message-ID header value from an email-generated comment.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+    'default' => NULL,
+  );
+}
 
 /**
  * Implements hook_form().
