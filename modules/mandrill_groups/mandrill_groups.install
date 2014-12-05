@@ -104,8 +104,8 @@ function _mandrill_groups_config_content_types() {
   $publishing_defaults = array(
     'status',
   );
-  variable_set('node_options_' . MANDRILL_GROUPS_GROUP_NODE , $publishing_defaults);
-  variable_set('node_options_' . MANDRILL_GROUPS_DISCUSSION_NODE , $publishing_defaults);
+  variable_set('node_options_' . MANDRILL_GROUPS_GROUP_NODE, $publishing_defaults);
+  variable_set('node_options_' . MANDRILL_GROUPS_DISCUSSION_NODE, $publishing_defaults);
   // Commenting off for Groups, on for discussions..
   variable_set('comment_' . MANDRILL_GROUPS_GROUP_NODE, COMMENT_NODE_CLOSED);
   variable_set('comment_' . MANDRILL_GROUPS_DISCUSSION_NODE, COMMENT_NODE_OPEN);
