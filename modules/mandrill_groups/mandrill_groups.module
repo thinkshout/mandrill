@@ -399,7 +399,10 @@ function mandrill_groups_process_message($message) {
       ));
     return FALSE;
   }
-  $group = mandrill_groups_load_by_mail($message['email']);
+  list($email_username, $email_domain) = explode('@', $message['email']);
+  list($email_username, $discussion_tag) = explode('+MGD', $email_username);
+  $from_email = $email_username . '@' . $email_domain;
+  $group = mandrill_groups_load_by_mail($from_email);
   if (empty($group)) {
     watchdog('mandrill_groups', 'Message from %email denied: no group with the email address %groupemail exists.',
       array(
@@ -429,10 +432,6 @@ function mandrill_groups_process_message($message) {
       ));
     return FALSE;
   }
-  // Parse the subject line to extract a discussion ID, if present:
-  list($subject, $discussion_tag) = explode('[#MGD', $message['subject']);
-  $subject = trim($subject);
-  $discussion_id = (int) trim($discussion_tag, '] ');
   // Load existing discussion, or create a new one:
   $discussion = $discussion_id ? node_load($discussion_id) : mandrill_groups_create_discussion($subject, $group, $user);
   $discussion_wrapper = entity_metadata_wrapper('node', $discussion);
@@ -452,7 +451,7 @@ function mandrill_groups_process_message($message) {
     'format' => 'mandrill_groups_html',
   );
   $values = array(
-    'subject' => $subject,
+    'subject' => $message['subject'],
     'uid' => $user->uid,
     'nid' => $discussion->nid,
     'mail' => $message['from_email'],
@@ -537,7 +536,7 @@ function mandrill_groups_comment_insert($comment) {
   $content = field_view_field('comment', $comment, 'comment_body');
   $message = array(
     'id' => MANDRILL_GROUPS_DISCUSSION_NODE,
-    'subject' => $node->title . ' [#MGD' . $node->nid . ']',
+    'subject' => $node->title,
     'body' => array($content[0]['#markup']),
     'mandrill_from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
     'mandrill_overrides' => array(
@@ -566,7 +565,8 @@ function mandrill_groups_send_email($addresses, $message, $discussion) {
   $message['body'][] = $postscript;
   // Mandrill automatically puts the "From" into "Reply To" and replaces the
   // "From" with the official system email address.
-  $from = $discussion_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value();
+  list($from_user, $from_domain) = explode('@', $discussion_wrapper->mandrill_groups_og_ref->mandrill_groups_email->value());
+  $from = $from_user . '+MGD' . $discussion_wrapper->getIdentifier() . '@' . $from_domain;
   // Send Email.
   drupal_mail('mandrill_groups', 'discussion', implode(',', $addresses), 'und', $message, $from);
 }
