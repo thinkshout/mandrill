@@ -1,7 +1,7 @@
 name = Mandrill
 description = "Allow for site emails to be sent through Mandrill."
 core = 7.x
-package = MailChimp
+package = Mandrill
 
 configure = admin/config/services/mandrill
 

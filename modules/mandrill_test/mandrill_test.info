@@ -1,7 +1,7 @@
 name = Mandrill Test
 description = "Used to test Mandrill API hooks."
 core = 7.x
-package = MailChimp
+package = Mandrill
 
 dependencies[] = mandrill
 

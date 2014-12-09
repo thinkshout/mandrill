@@ -267,7 +267,7 @@ function mandrill_sender_plain($message) {
 }
 
 /**
- * Return Mandrill API object for communication with the mailchimp server.
+ * Return Mandrill API object for communication with the mandrill server.
  *
  * @param bool $reset
  *   Pass in TRUE to reset the statically cached object.
