@@ -87,29 +87,32 @@ function mandrill_template_map_load_entities($name = NULL) {
  * @return entity
  *   Mandrill template map.
  */
-function mandrill_template_map_load_by_mailsystem($mailsystem) {
+function mandrill_template_map_load_by_mailsystem($module_key, $module) {
   // Append the default-system condition as a fallback.
-  $params = array($mailsystem, 'default-system');
+  $params = array($module_key, $module, 'default-system');
   $query = new EntityFieldQuery();
   $query_result = $query
     ->entityCondition('entity_type', 'mandrill_template_map')
     ->propertyCondition('mailsystem_key', $params, 'IN')
     ->execute();
-
+  $module_match = FALSE;
   if (!empty($query_result['mandrill_template_map'])) {
     $template_maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
     if (count($template_maps) > 1) {
       foreach ($template_maps as $template_map) {
-        if ($template_map->mailsystem_key == $mailsystem) {
-          return $template_map;
+        switch ($template_map->mailsystem_key) {
+          case $module_key:
+            return $template_map;
+
+          case $module:
+            $module_match = $template_map;
+            break;
+
         }
       }
     }
-    else {
-      return reset($template_maps);
-    }
+    return $module_match ? $module_match : reset($template_maps);
   }
-
   return NULL;
 }
 
@@ -150,7 +153,7 @@ function mandrill_template_map_usage() {
  * mandrill_send_function parameter as needed.
  */
 function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
-  $template_map = mandrill_template_map_load_by_mailsystem($message['id']);
+  $template_map = mandrill_template_map_load_by_mailsystem($message['id'], $message['module']);
   if ($template_map) {
     $mandrill_params['function'] = 'mandrill_template_sender';
     $mandrill_params['args'] = array(

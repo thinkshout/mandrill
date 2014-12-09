@@ -287,13 +287,14 @@ function mandrill_test_form_submit($form, &$form_state) {
   $params['include_attachment'] = $form_state['values']['include_attachment'];
   $mailsystem = mailsystem_get();
   // Check for empty mailsystem config for Mandrill:
-  if (empty($mailsystem['mandrill_test'])) {
+  $primary_config = empty($mailsystem['mandrill_test']) ? 'mandrill' : 'mandrill_test';
+  if (empty($mailsystem[$primary_config])) {
     drupal_set_message(t('Automatically setting Mandrill tests to go through Mandrill API: MandrillMailSystem was not previously configured in Mail System.'));
     mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
   }
   // Check for wrong mailsystem config for Mandrill, if not empty, and issue a
   // warning:
-  elseif ($mailsystem['mandrill_test'] != 'MandrillMailSystem') {
+  elseif ($mailsystem[$primary_config] != 'MandrillMailSystem') {
     drupal_set_message(
       t('Mail System is configured to send Mandrill Test messages through %system, not Mandrill. To send tests through Mandrill, go to !link and change the setting.',
         array(
