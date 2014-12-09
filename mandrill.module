@@ -3,11 +3,6 @@
 /**
  * @file
  * Enables Drupal to send email directly through Mandrill.
- *
- * Overriding mail handling in Drupal to make Mandrill the default
- * transport layer, requires to change the mail_system variable's
- * default value array('default-system' => 'DefaultMailSystem').
- * This module uses array('default-system' => 'MailChimpMandrillMailSystem').
  */
 
 
