@@ -76,8 +76,8 @@ class MandrillMailSystem implements MailSystemInterface {
     // Mandrill needs the from address to be configured separately.
     // Note that only Reply-To and X-* headers are allowed.
     $headers = isset($message['headers']) ? $message['headers'] : array();
-    if (isset($message['params']['mandrill_header_overrides'])) {
-      $headers = $message['params']['mandrill_header_overrides'] + $headers;
+    if (isset($message['params']['mandrill']['header'])) {
+      $headers = $message['params']['mandrill']['header'] + $headers;
     }
     if (!empty($message['from']) && empty($headers['Reply-To'])) {
       $headers['Reply-To'] = $message['from'];
@@ -131,13 +131,13 @@ class MandrillMailSystem implements MailSystemInterface {
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
 
     $from = mandrill_from();
-    $overrides = isset($message['params']['mandrill_overrides']) ? $message['params']['mandrill_overrides'] : array();
+    $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
     $mandrill_message = $overrides + array(
       'html' => $message['body'],
       'text' => $plain_text,
       'subject' => $message['subject'],
       'from_email' => $from['email'],
-      'from_name' => isset($message['params']['mandrill_from_name']) ? $message['params']['mandrill_from_name'] : $from['name'],
+      'from_name' => isset($message['params']['mandrill']['from_name']) ? $message['params']['mandrill']['from_name'] : $from['name'],
       'to' => $to,
       'headers' => $headers,
       'track_opens' => variable_get('mandrill_track_opens', TRUE),

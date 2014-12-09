@@ -555,16 +555,18 @@ function mandrill_groups_comment_insert($comment) {
     'id' => MANDRILL_GROUPS_DISCUSSION_NODE,
     'subject' => $node->title,
     'body' => array($content[0]['#markup']),
-    'mandrill_from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
-    'mandrill_overrides' => array(
-      'preserve_recipients' => FALSE,
-    ),
-    'mandrill_header_overrides' => array(
-      'Message-Id' => $comment->mandrill_groups_message_id,
+    'mandrill' => array(
+      'header' => array(
+        'Message-Id' => $comment->mandrill_groups_message_id,
+      ),
+      'from_name' => $author->name . ' via ' . variable_get('site_name', 'Drupal Site'),
+      'overrides' => array(
+        'preserve_recipients' => FALSE,
+      ),
     ),
   );
   if (!empty($reply_to_id)) {
-    $message['mandrill_header_overrides']['In-Reply-To'] = $reply_to_id;
+    $message['mandrill']['header']['In-Reply-To'] = $reply_to_id;
   }
   entity_save('comment', $comment);
   mandrill_groups_send_email($addresses, $message, $node);
