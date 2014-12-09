@@ -365,8 +365,9 @@ function mandrill_get_templates() {
   // Only show the template settings if the mandrill api can be called.
   $templates = NULL;
   try {
-    $mailer = mandrill_get_api_object();
-    $templates = $mailer->templates->getList();
+    if ($mandrill = mandrill_get_api_object()) {
+      $templates = $mailer->templates->getList();
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -381,8 +382,9 @@ function mandrill_get_templates() {
 function mandrill_get_subaccounts() {
   $subaccounts = array();
   try {
-    $mandrill = mandrill_get_api_object();
-    $subaccounts = $mandrill->subaccounts->getList();
+    if ($mandrill = mandrill_get_api_object()) {
+      $subaccounts = $mandrill->subaccounts->getList();
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -398,8 +400,9 @@ function mandrill_get_subaccounts() {
 function mandrill_get_webhooks() {
   $webhooks = array();
   try {
-    $mandrill = mandrill_get_api_object();
-    $webhooks = $mandrill->webhooks->getList();
+    if ($mandrill = mandrill_get_api_object()) {
+      $webhooks = $mandrill->webhooks->getList();
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -436,8 +439,9 @@ function mandrill_get_inbound_domains() {
 function mandrill_get_inbound_routes($domain) {
   $routes = array();
   try {
-    $mandrill = mandrill_get_api_object();
-    $routes = $mandrill->inbound->routes($domain);
+    if ($mandrill = mandrill_get_api_object()) {
+      $routes = $mandrill->inbound->routes($domain);
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -453,8 +457,9 @@ function mandrill_get_inbound_routes($domain) {
 function mandrill_add_inbound_domain($domain) {
   $result = NULL;
   try {
-    $mandrill = mandrill_get_api_object();
-    $result = $mandrill->inbound->addDomain($domain);
+    if ($mandrill = mandrill_get_api_object()) {
+      $result = $mandrill->inbound->addDomain($domain);
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -470,8 +475,9 @@ function mandrill_add_inbound_domain($domain) {
 function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
   $result = NULL;
   try {
-    $mandrill = mandrill_get_api_object();
-    $result = $mandrill->webhooks->add($GLOBALS['base_url'] . '/' . $path, $description, $events);
+    if ($mandrill = mandrill_get_api_object()) {
+      $result = $mandrill->webhooks->add($GLOBALS['base_url'] . '/' . $path, $description, $events);
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -487,8 +493,9 @@ function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
 function mandrill_delete_inbound_domain($domain) {
   $result = NULL;
   try {
-    $mandrill = mandrill_get_api_object();
-    $result = $mandrill->inbound->deleteDomain($domain);
+    if ($mandrill = mandrill_get_api_object()) {
+      $result = $mandrill->inbound->deleteDomain($domain);
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
@@ -504,8 +511,9 @@ function mandrill_delete_inbound_domain($domain) {
 function mandrill_add_inbound_route($domain, $pattern, $url) {
   $route = NULL;
   try {
-    $mandrill = mandrill_get_api_object();
-    $route = $mandrill->inbound->addRoute($domain, $pattern, $url);
+    if ($mandrill = mandrill_get_api_object()) {
+      $route = $mandrill->inbound->addRoute($domain, $pattern, $url);
+    }
   }
   catch (Mandrill_Error $e) {
     drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
