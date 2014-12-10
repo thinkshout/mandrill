@@ -35,7 +35,7 @@ function mandrill_groups_menu() {
     'title' => 'Mandrill Inbound',
     'description' => 'Inbound email via Mandrill',
     'page callback' => 'mandrill_groups_process_webhook',
-    'access callback' => TRUE,
+    'access callback' => array('mandrill_groups_webhook_access'),
     'type' => MENU_CALLBACK,
   );
   $items['node/%node/discussions'] = array(
@@ -300,14 +300,6 @@ function mandrill_groups_apply_form_settings($form, &$form_state) {
  * Webhook processing for mandrill_groups.
  */
 function mandrill_groups_process_webhook() {
-  if (!isset($_POST)) {
-    return "Mandrill Groups Webhook Endpoint.";
-  }
-  // Validate any submissions with $_POST variables to confirm they are from
-  // Mandrill.
-  elseif (!mandrill_groups_webhook_validate()) {
-    return 'Invalid signature.';
-  }
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
     // Process events:
@@ -321,7 +313,11 @@ function mandrill_groups_process_webhook() {
  * 
  * See http://help.mandrill.com/entries/23704122-Authenticating-webhook-requests
  */
-function mandrill_groups_webhook_validate() {
+function mandrill_groups_webhook_access() {
+  if (!isset($_POST) || !isset($_GET['domain'])) {
+    return FALSE;
+  }
+
   $url = $GLOBALS['base_url'] . '/mandrill/webhook/groups?domain=' . $_GET['domain'];
   $key = NULL;
   $webhooks = mandrill_get_webhooks();
