@@ -14,6 +14,7 @@ define('MANDRILL_GROUPS_POSTSCRIPT_FIELD', 'mandrill_groups_postscript');
 define('MANDRILL_GROUPS_GROUP_NODE', 'mandrill_groups_group');
 define('MANDRILL_GROUPS_DISCUSSION_NODE', 'mandrill_groups_discussion');
 define('MANDRILL_GROUPS_MESSAGE_ID_FIELD', 'mandrill_groups_last_message_id');
+define('MANDRILL_GROUPS_WEBHOOK_ENDPOINT', 'mandrill/webhook/groups');
 
 /**
  * Implements hook_menu().
@@ -31,7 +32,7 @@ function mandrill_groups_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
-  $items['mandrill/webhook/groups'] = array(
+  $items[MANDRILL_GROUPS_WEBHOOK_ENDPOINT] = array(
     'title' => 'Mandrill Inbound',
     'description' => 'Inbound email via Mandrill',
     'page callback' => 'mandrill_groups_process_webhook',

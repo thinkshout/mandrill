@@ -39,7 +39,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
       $routes = mandrill_get_inbound_routes($domain['domain']);
       $route_ok = FALSE;
       foreach ($routes as $route) {
-        if ($route['url'] == url("mandrill/webhook/groups", array(
+        if ($route['url'] == url(MANDRILL_GROUPS_WEBHOOK_ENDPOINT, array(
             'absolute' => TRUE,
             'query' => array('domain' => $domain['domain']),
           ))) {
@@ -52,7 +52,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
       else {
         $domain_status = t('Mandrill Groups route not configured. Add the following route to this domain in your <a href="https://mandrillapp.com/inbound">Mandrill inbound configuration</a>: %url',
           array(
-            '%url' => url("mandrill/webhook/groups", array(
+            '%url' => url(MANDRILL_GROUPS_WEBHOOK_ENDPOINT, array(
               'absolute' => TRUE,
               'query' => array(
                 'domain' => $domain['domain'],
@@ -145,7 +145,7 @@ function mandrill_groups_settings_form_submit($form, &$form_state) {
   $result = mandrill_add_inbound_domain($domain);
   // Only add the route if successful.
   if (isset($result['domain'])) {
-    $url = url("mandrill/webhook/groups", array('absolute' => TRUE, 'query' => array('domain' => $domain)));
+    $url = url(MANDRILL_GROUPS_WEBHOOK_ENDPOINT, array('absolute' => TRUE, 'query' => array('domain' => $domain)));
     mandrill_add_inbound_route($domain, '*', $url);
   }
 }
