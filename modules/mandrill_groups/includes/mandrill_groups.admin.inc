@@ -122,6 +122,7 @@ function mandrill_groups_settings_form($form, &$form_state) {
     '#title' => t('Add Mandrill Domain'),
     '#description' => t("Don't see the domain you want in the above table? Add it here and click 'Save configuration.' The Mandrill Groups route for this site will be automatically added to the new domain, but you'll have to configure the MX record to route to Mandrill through your DNS service."),
     '#attributes' => array('placeholder' => t('example.yoursite.com')),
+    '#required' => TRUE,
   );
 
   // Add submit handler that adds domain and route if present.
