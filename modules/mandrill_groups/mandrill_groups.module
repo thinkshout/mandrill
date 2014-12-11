@@ -325,28 +325,28 @@ function mandrill_groups_webhook_access() {
     return TRUE;
   }
 
-  if (!isset($_POST) || !isset($_GET['domain'])) {
+  if (!isset($_POST)) {
     return FALSE;
   }
 
-  $url = $GLOBALS['base_url'] . '/mandrill/webhook/groups?domain=' . $_GET['domain'];
-  $key = NULL;
+  $url = $GLOBALS['base_url'] . $_SERVER['REQUEST_URI'];
+  $auth_key = NULL;
   $webhooks = mandrill_get_webhooks();
   foreach ($webhooks as $webhook) {
     if ($webhook['url'] == $url) {
-      $key = $webhook['auth_key'];
+      $auth_key = $webhook['auth_key'];
       break;
     }
   }
-  if (!$key) {
+  if (!$auth_key) {
     return FALSE;
   }
   ksort($_POST);
   foreach ($_POST as $arg => $val) {
     $url .= $arg . $val;
   }
-  $key = base64_encode(hash_hmac('sha1', $url, $key, TRUE));
-  return $key == $_SERVER['HTTP_X_MANDRILL_SIGNATURE'];
+  $signature = base64_encode(hash_hmac('sha1', $url, $auth_key, TRUE));
+  return $signature == $_SERVER['HTTP_X_MANDRILL_SIGNATURE'];
 }
 
 /**
