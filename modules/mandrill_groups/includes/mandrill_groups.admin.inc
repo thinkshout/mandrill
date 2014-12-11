@@ -141,15 +141,12 @@ function mandrill_groups_settings_form($form, &$form_state) {
  */
 function mandrill_groups_settings_form_submit($form, &$form_state) {
   // Add a new domain if one was provided on the form.
-  $domain = $form_state['input']['add_domain'];
-  if ($domain) {
-    mandrill_add_inbound_domain($domain);
-    mandrill_add_inbound_route($domain, '*', url("mandrill/webhook/inbound",
-      array(
-        'absolute' => TRUE,
-        'query' => array('domain' => $domain),
-      )
-    ));
+  $domain = $form_state['values']['add_domain'];
+  $result = mandrill_add_inbound_domain($domain);
+  // Only add the route if successful.
+  if (isset($result['domain'])) {
+    $url = url("mandrill/webhook/groups", array('absolute' => TRUE, 'query' => array('domain' => $domain)));
+    mandrill_add_inbound_route($domain, '*', $url);
   }
 }
 
