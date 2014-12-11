@@ -300,6 +300,11 @@ function mandrill_groups_apply_form_settings($form, &$form_state) {
  * Webhook processing for mandrill_groups.
  */
 function mandrill_groups_process_webhook() {
+  // When the route is being verified, just return an empty string.
+  if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
+    return "";
+  }
+
   $events = drupal_json_decode($_POST['mandrill_events']);
   foreach ($events as $event) {
     // Process events:
@@ -314,6 +319,12 @@ function mandrill_groups_process_webhook() {
  * See http://help.mandrill.com/entries/23704122-Authenticating-webhook-requests
  */
 function mandrill_groups_webhook_access() {
+  // Mandrill verifies new inbound routes with a HEAD request.
+  // @see http://help.mandrill.com/entries/22024856-Why-can-t-my-webhook-or-inbound-route-URL-be-verified-.
+  if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
+    return TRUE;
+  }
+
   if (!isset($_POST) || !isset($_GET['domain'])) {
     return FALSE;
   }
