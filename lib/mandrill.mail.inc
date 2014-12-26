@@ -109,14 +109,25 @@ class MandrillMailSystem implements MailSystemInterface {
     // array as well.
     if (isset($message['params']['attachments']) && !empty($message['params']['attachments'])) {
       foreach ($message['params']['attachments'] as $attachment) {
-        $attachment_path = drupal_realpath($attachment['uri']);
-        if (is_file($attachment_path)) {
-          $struct = $this->getAttachmentStruct($attachment_path);
-          // Allow for customised filenames.
-          if (!empty($attachment['filename'])) {
-            $struct['name'] = $attachment['filename'];
+        if (isset($attachment['uri'])) {
+          $attachment_path = drupal_realpath($attachment['uri']);
+          if (is_file($attachment_path)) {
+            $struct = $this->getAttachmentStruct($attachment_path);
+            // Allow for customised filenames.
+            if (!empty($attachment['filename'])) {
+              $struct['name'] = $attachment['filename'];
+            }
+            $attachments[] = $struct;
           }
-          $attachments[] = $struct;
+        }
+        // Support attachments that are directly included without a file in the
+        // filesystem.
+        elseif (isset($attachment['filecontent'])) {
+          $attachments[] = array(
+            'type' => $attachment['filemime'],
+            'name' => $attachment['filename'],
+            'content' => chunk_split(base64_encode($attachment['filecontent']), 76, "\n"),
+          );
         }
       }
       // Remove the file objects from $message['params']['attachments'].
