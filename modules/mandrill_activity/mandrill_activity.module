@@ -70,7 +70,7 @@ function mandrill_activity_menu() {
  * Access callback for activity menu items.
  */
 function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_entity) {
-  if ($mandrill_activity_entity->enabled && user_access('access Mandrill activity')) {
+  if ($mandrill_activity_entity->enabled && user_access('access mandrill activity')) {
     return TRUE;
   }
   return FALSE;
@@ -186,7 +186,7 @@ function mandrill_activity_permission() {
   $return = array();
 
   $return['access mandrill activity'] = array(
-    'title' => t('Access Mandrill activity'),
+    'title' => t('Access Mandrill Activity'),
     'description' => t('View own Mandrill activity history.'),
   );
   $return['administer mandrill activity'] = array(
