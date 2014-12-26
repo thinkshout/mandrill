@@ -142,7 +142,7 @@ function mandrill_reports_dashboard_page() {
     t('Total Clicks'),
   );
   foreach ($data['urls'] as $url) {
-    $percent = number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
+    $percent = $url['sent'] == 0 ? 0 : number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
     $rows[] = array(
       l($url['url'], $url['url']),
       $url['sent'],
