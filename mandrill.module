@@ -360,7 +360,7 @@ function mandrill_get_templates() {
   // Only show the template settings if the mandrill api can be called.
   $templates = NULL;
   try {
-    if ($mandrill = mandrill_get_api_object()) {
+    if ($mailer = mandrill_get_api_object()) {
       $templates = $mailer->templates->getList();
     }
   }
