@@ -12,3 +12,4 @@ files[] = lib/mandrill.mail.inc
 files[] = lib/mandrill.inc
 files[] = tests/includes/mandrill_test.inc
 files[] = tests/mandrill.test
+files[] = tests/mandrill_hooks.test
