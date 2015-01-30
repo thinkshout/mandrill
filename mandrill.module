@@ -365,7 +365,7 @@ function mandrill_get_templates() {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
   return $templates;
@@ -382,7 +382,7 @@ function mandrill_get_subaccounts() {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -400,7 +400,7 @@ function mandrill_get_webhooks() {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -421,7 +421,7 @@ function mandrill_get_inbound_domains() {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -439,7 +439,7 @@ function mandrill_get_inbound_routes($domain) {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -457,7 +457,7 @@ function mandrill_add_inbound_domain($domain) {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -475,7 +475,7 @@ function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -493,7 +493,7 @@ function mandrill_delete_inbound_domain($domain) {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
@@ -511,7 +511,7 @@ function mandrill_add_inbound_route($domain, $pattern, $url) {
     }
   }
   catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => check_plain($e->getMessage()))), 'error');
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
     watchdog_exception('mandrill', $e);
   }
 
