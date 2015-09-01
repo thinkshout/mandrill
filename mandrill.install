@@ -12,6 +12,10 @@
 function mandrill_uninstall() {
 
   // Delete other variables:
+  /*
+   * TODO: This config is uneditable. Probably old code created by module upgrader.
+   * https://www.drupal.org/node/2120571
+   * 
   \Drupal::config('mandrill.settings')->clear('mandrill_analytics_campaign')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_analytics_domains')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();
@@ -25,9 +29,10 @@ function mandrill_uninstall() {
   \Drupal::config('mandrill.settings')->clear('mandrill_track_opens')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_url_strip_qs')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_process_async')->save();
-
+*/
   // Tell mailsystem to remove mandrill and restore to defaults:
-  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
+  // Undefined mailsystem_clear
+//  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
   \Drupal::logger('mandrill')->notice('Mandrill has been uninstalled.', []);
 }
 
