@@ -1,9 +1,5 @@
 <?php
-
-/**
- * @file
- * Implements Mandrill as a Drupal MailSystemInterface
- */
+namespace Drupal\mandrill;
 
 /**
  * Modify the drupal mail system to use Mandrill when sending emails.

@@ -1,10 +1,15 @@
 <?php
-/**
- * @file
- * Test class and methods for the Mandrill module.
- */
+namespace Drupal\mandrill\Tests;
 
-class MandrillTestCase extends DrupalWebTestCase {
+/**
+ * Test core Mandrill functionality.
+ * 
+ * @group mandrill
+ */
+class MandrillTestCase extends \Drupal\simpletest\WebTestBase {
+
+  protected $profile = 'standard';
+
   /**
    * Returns info displayed in the test interface.
    *
@@ -13,11 +18,11 @@ class MandrillTestCase extends DrupalWebTestCase {
    */
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
-    return array(
+    return [
       'name' => 'Mandrill Tests',
       'description' => 'Test core Mandrill functionality.',
       'group' => 'Mandrill',
-    );
+    ];
   }
 
   /**
@@ -31,11 +36,11 @@ class MandrillTestCase extends DrupalWebTestCase {
     $prof = drupal_get_profile();
     $this->profile = $prof;
     // Enable modules required for the test.
-    $enabled_modules = array(
+    $enabled_modules = [
       'libraries',
       'mandrill',
       'entity',
-    );
+    ];
     parent::setUp($enabled_modules);
     \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
     \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
@@ -61,9 +66,7 @@ class MandrillTestCase extends DrupalWebTestCase {
   public function testSendMessage() {
     $mail_system = new MandrillMailSystem();
 
-    $to = 'Recipient One <recipient.one@example.com>,'
-      . 'Recipient Two <recipient.two@example.com>,'
-      . 'Recipient Three <recipient.three@example.com>';
+    $to = 'Recipient One <recipient.one@example.com>,' . 'Recipient Two <recipient.two@example.com>,' . 'Recipient Three <recipient.three@example.com>';
 
     $message = $this->getMessageTestData();
     $message['to'] = $to;
@@ -137,15 +140,16 @@ class MandrillTestCase extends DrupalWebTestCase {
    * Gets message data used in tests.
    */
   protected function getMessageTestData() {
-    $message = array(
+    $message = [
       'id' => 1,
       'module' => NULL,
       'body' => '<p>Mail content</p>',
       'subject' => 'Mail Subject',
       'from_email' => 'sender@example.com',
       'from_name' => 'Test Sender',
-    );
+    ];
 
     return $message;
   }
+
 }

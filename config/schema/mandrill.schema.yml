@@ -1,0 +1,36 @@
+mandrill.settings:
+  type: mapping
+  label: Settings
+  mapping:
+    mandrill_subaccount:
+      type: boolean
+    mandrill_filter_format:
+      type: string
+    mandrill_track_opens:
+      type: boolean
+    mandrill_track_clicks:
+      type: boolean
+    mandrill_url_strip_qs:
+      type: boolean
+    mandrill_analytics_domains:
+      type: 'NULL'
+    mandrill_analytics_campaign:
+      type: string
+    mandrill_batch_log_queued:
+      type: boolean
+    mandrill_queue_worker_timeout:
+      type: integer
+    mandrill_log_defaulted_sends:
+      type: boolean
+    mandrill_api_key:
+      type: string
+    mandrill_api_timeout:
+      type: integer
+    mandrill_api_classname:
+      type: string
+    mandrill_mail_key_blacklist:
+      type: string
+    mandrill_process_async:
+      type: boolean
+    mandrill_test_mailsend_result:
+      type: 'NULL'

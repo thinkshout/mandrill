@@ -1,10 +1,15 @@
 <?php
-/**
- * @file
- * Test class and methods for the Mandrill Reports module.
- */
+namespace Drupal\mandrill\Tests;
 
-class MandrillReportsTestCase extends DrupalWebTestCase {
+/**
+ * Tests Mandrill Reports functionality.
+ * 
+ * @group mandrill
+ */
+class MandrillReportsTestCase extends \Drupal\simpletest\WebTestBase {
+
+  protected $profile = 'standard';
+
   /**
    * Returns info displayed in the test interface.
    *
@@ -13,11 +18,11 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
    */
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
-    return array(
+    return [
       'name' => 'Mandrill Reports Tests',
       'description' => 'Tests Mandrill Reports functionality.',
       'group' => 'Mandrill',
-    );
+    ];
   }
 
   /**
@@ -31,12 +36,12 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
     $prof = drupal_get_profile();
     $this->profile = $prof;
     // Enable modules required for the test.
-    $enabled_modules = array(
+    $enabled_modules = [
       'libraries',
       'mandrill',
       'mandrill_reports',
       'entity',
-    );
+    ];
     parent::setUp($enabled_modules);
     \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
     \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
@@ -67,4 +72,5 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
     $this->assertTrue(!empty($reports_data['senders']), 'Tested senders report data exists.');
     $this->assertTrue(!empty($reports_data['urls']), 'Tested URLs report data exists.');
   }
+
 }

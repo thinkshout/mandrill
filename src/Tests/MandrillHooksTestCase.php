@@ -1,10 +1,15 @@
 <?php
-/**
- * @file
- * Test class and methods for the Mandrill Test module.
- */
+namespace Drupal\mandrill\Tests;
 
-class MandrillHooksTestCase extends DrupalWebTestCase {
+/**
+ * Tests Mandrill hook functionality.
+ * 
+ * @group mandrill
+ */
+class MandrillHooksTestCase extends \Drupal\simpletest\WebTestBase {
+
+  protected $profile = 'standard';
+
   /**
    * Returns info displayed in the test interface.
    *
@@ -13,11 +18,11 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    */
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
-    return array(
+    return [
       'name' => 'Mandrill Hooks Tests',
       'description' => 'Tests Mandrill hook functionality.',
       'group' => 'Mandrill',
-    );
+    ];
   }
 
   /**
@@ -31,12 +36,12 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
     $prof = drupal_get_profile();
     $this->profile = $prof;
     // Enable modules required for the test.
-    $enabled_modules = array(
+    $enabled_modules = [
       'libraries',
       'mandrill',
       'mandrill_test',
       'entity',
-    );
+    ];
     parent::setUp($enabled_modules);
     \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
     \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
@@ -64,11 +69,11 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
      */
     $message = $this->getMessageTestData();
 
-    $mandrill_params = array(
+    $mandrill_params = [
       'message' => $message,
       'function' => 'mandrill_sender_plain',
-      'args' => array(),
-    );
+      'args' => [],
+    ];
 
     /**
      * Perform alterations on the message.
@@ -89,11 +94,11 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    * Tests implementing hook_mandrill_valid_attachment_types_alter().
    */
   public function testValidAttachmentTypesAlterHook() {
-    $types = array(
+    $types = [
       'image/png',
       'image/jpeg',
       'image/gif',
-    );
+    ];
 
     /**
      * Perform alterations on the attachment types array.
@@ -128,15 +133,16 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    * Gets message data used in tests.
    */
   protected function getMessageTestData() {
-    $message = array(
+    $message = [
       'id' => 1,
       'module' => NULL,
       'body' => '<p>Mail content</p>',
       'subject' => 'Mail Subject',
       'from_email' => 'sender@example.com',
       'from_name' => 'Test Sender',
-    );
+    ];
 
     return $message;
   }
+
 }

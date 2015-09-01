@@ -24,15 +24,20 @@ function mandrill_variable_group_info() {
 function mandrill_variable_info($options) {
   $variables = array();
 
-  $variables['mandrill_api_key'] = array(
-    'title' => t('Mandrill API Key', array(), $options),
-    'description' => t('Create or grab your API key from the !link.',
-      array('!link' => l(t('Mandrill settings'), 'https://mandrillapp.com/settings/index')),
-      $options),
-    'type' => 'string',
-    'group' => 'mandrill',
-    'default' => variable_get('site_mail'),
-  );
+  // @FIXME
+// // @FIXME
+// // This looks like another module's variable. You'll need to rewrite this call
+// // to ensure that it uses the correct configuration object.
+// $variables['mandrill_api_key'] = array(
+//     'title' => t('Mandrill API Key', array(), $options),
+//     'description' => t('Create or grab your API key from the !link.',
+//       array('!link' => \Drupal::l(t('Mandrill settings'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/settings/index'))),
+//       $options),
+//     'type' => 'string',
+//     'group' => 'mandrill',
+//     'default' => variable_get('site_mail'),
+//   );
+
   $variables['mandrill_from'] = array(
     'title' => t('From address', array(), $options),
     'description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is.', array(), $options),

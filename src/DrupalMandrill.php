@@ -1,9 +1,5 @@
 <?php
-
-/**
- * @file
- * Wrapper class around the Mandrill API.
- */
+namespace Drupal\mandrill;
 
 /**
  * Class DrupalMandrill.
