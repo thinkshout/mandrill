@@ -75,7 +75,7 @@ $key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
       // @FIXME
 // l() expects a Url object, created from a route name or external URI.
 // drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
-        array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
+        //array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
 
     }
 
