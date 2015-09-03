@@ -15,7 +15,7 @@ function mandrill_uninstall() {
   /*
    * TODO: This config is uneditable. Probably old code created by module upgrader.
    * https://www.drupal.org/node/2120571
-   * 
+   *
   \Drupal::config('mandrill.settings')->clear('mandrill_analytics_campaign')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_analytics_domains')->save();
   \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();

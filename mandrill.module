@@ -289,7 +289,9 @@ function mandrill_get_api_object($reset = FALSE) {
     // mailsystem, in order to use alternate Mandrill classes. The bundled tests
     // use this approach to extend the Mandrill class with a test server.
     $classname = \Drupal::config('mandrill.settings')->get('mandrill_api_classname');
-    $api = new $classname($api_key, $api_timeout);
+
+    //@fixme not found
+    //$api = new $classname($api_key, $api_timeout);
   }
 
   return $api;

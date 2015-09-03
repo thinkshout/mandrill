@@ -18,10 +18,10 @@
  */
 function mandrill_admin_settings($form, &$form_state) {
   // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-$key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
+  // Could not extract the default value because it is either indeterminate, or
+  // not scalar. You'll need to provide a default value in
+  // config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
+  $key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
   $form['mandrill_api_key'] = array(
     '#title' => t('Mandrill API Key'),
     '#type' => 'textfield',
@@ -261,8 +261,6 @@ function mandrill_test_form($form, &$form_state) {
 // @see https://www.drupal.org/node/2067859
 // drupal_set_title(t('Send test email'));
 
-
-  // @FIXME
 // // @FIXME
 // // This looks like another module's variable. You'll need to rewrite this call
 // // to ensure that it uses the correct configuration object.
