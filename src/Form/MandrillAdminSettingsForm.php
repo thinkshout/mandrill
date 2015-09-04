@@ -31,10 +31,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     $mailsystem_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
     $systemlog_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
 
-    // @FIXME
-    // Could not extract the default value because it is either indeterminate, or
-    // not scalar. You'll need to provide a default value in
-    // config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
     $key = $config->get('mandrill_api_key');
     $form['mandrill_api_key'] = array(
       '#title' => t('Mandrill API Key'),
@@ -53,7 +49,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
 
     if ($key && $library['installed']) {
       //@fixme
- //     $mailsystem_config_keys = mailsystem_get();
+      //$mailsystem_config_keys = mailsystem_get();
       $mailsystem_config_keys = array();
       $in_use = FALSE;
       $usage_rows = array();
@@ -85,8 +81,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
              )),
          );
       }
-      //elseif (!$form_state->rebuild) {
-      elseif(false) {
+      elseif (!$form_state->get('rebuild')) {
         drupal_set_message(t(
             'PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, '
           . 'you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or '

@@ -4,9 +4,6 @@
  * @file
  * Enables Drupal to send email directly through Mandrill.
  */
-namespace Drupal\mandrill;
-
-use DrupalMandrill;
 
 define('MANDRILL_QUEUE', 'mandrill_queue');
 define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
