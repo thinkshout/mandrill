@@ -137,7 +137,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $options = array('' => t('-- Select --'));
       foreach ($formats as $v => $format) {
         $options[$v] = $format->get(name);
-        print 'stop';
       }
       $form['email_options']['mandrill_filter_format'] = array(
         '#type' => 'select',
