@@ -24,6 +24,11 @@ class MandrillMailSystem implements MailSystemInterface {
     if (is_array($message['body'])) {
       $message['body'] = implode("\n\n", $message['body']);
     }
+    // Apply input format to body.
+    $format = variable_get('mandrill_filter_format', '');
+    if (!empty($format)) {
+      $message['body'] = check_markup($message['body'], $format);
+    }
     return $message;
   }
 
@@ -61,12 +66,6 @@ class MandrillMailSystem implements MailSystemInterface {
           );
         }
       }
-    }
-
-    // Apply input format to body.
-    $format = variable_get('mandrill_filter_format', '');
-    if (!empty($format)) {
-      $message['body'] = check_markup($message['body'], $format);
     }
 
     // Extract an array of recipients.
