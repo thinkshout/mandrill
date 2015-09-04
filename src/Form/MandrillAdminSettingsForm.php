@@ -28,6 +28,8 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('mandrill.settings');
+    $mailsystem_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
+    $systemlog_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
 
     // @FIXME
     // Could not extract the default value because it is either indeterminate, or
@@ -50,6 +52,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     }
 
     if ($key && $library['installed']) {
+      //@fixme
  //     $mailsystem_config_keys = mailsystem_get();
       $mailsystem_config_keys = array();
       $in_use = FALSE;
@@ -72,24 +75,23 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
           ),
           '#rows' => $usage_rows,
         );
-        // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $form['mandrill_status'] = array(
-//         '#type' => 'markup',
-//         '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or configure additional systems to use Mandrill, use !link.<br /><br />!table',
-//           array(
-//             '!link' => l(t('Mail System'), 'admin/config/system/mailsystem'),
-//             '!table' => drupal_render($usage_array),
-//           )),
-//       );
-
+        $form['mandrill_status'] = array(
+           '#type' => 'markup',
+           '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or '
+                        . 'configure additional systems to use Mandrill, use !link.<br /><br />!table',
+             array(
+               '!link' => \Drupal::l(t('Mail System'), $mailsystem_path),
+               '!table' => \Drupal::service('renderer')->render($usage_array),
+             )),
+         );
       }
       //elseif (!$form_state->rebuild) {
       elseif(false) {
-        // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// drupal_set_message(t('PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or you will only be able to send Test Emails through Mandrill.',
-        //array('!link' => l(t('Mail System'), 'admin/config/system/mailsystem'))), 'warning');
+        drupal_set_message(t(
+            'PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, '
+          . 'you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or '
+          . 'you will only be able to send Test Emails through Mandrill.',
+        array('!link' => \Drupal::l(t('Mail System'), $mailsystem_path))), 'warning');
 
       }
 
@@ -103,7 +105,9 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $form['email_options']['mandrill_from'] = array(
         '#title' => t('From address'),
         '#type' => 'textfield',
-        '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is. This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that address moved to the Reply-To field.'),
+        '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is. '
+                       . 'This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that '
+                       . 'address moved to the Reply-To field.'),
         '#default_value' => $from['email'],
       );
       $form['email_options']['mandrill_from_name'] = array(
@@ -136,7 +140,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $formats = filter_formats();
       $options = array('' => t('-- Select --'));
       foreach ($formats as $v => $format) {
-        $options[$v] = $format->get(name);
+        $options[$v] = $format->get('name');
       }
       $form['email_options']['mandrill_filter_format'] = array(
         '#type' => 'select',
@@ -174,9 +178,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
         '#default_value' => mandrill_mail_key_blacklist(),
       );
-      // @FIXME
-      $mailsystem_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
-      $systemlog_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
       $form['send_options']['mandrill_log_defaulted_sends'] = array(
        '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
        '#type' => 'checkbox',
@@ -253,7 +254,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       '#button_type' => 'primary',
     );
     return parent::buildForm($form, $form_state);
-    //return $form;
   }
 
   /**
@@ -269,22 +269,22 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
     $this->config('mandrill.settings')
       ->set('mandrill_api_key', $form_state->getValue('mandrill_api_key'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_from'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_from_name'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_subaccount'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_filter_format'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_track_opens'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_track_clicks'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_url_strip_qs'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_mail_key_blacklist'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_log_defaulted_sends'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_analytics_domains'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_analytics_campaign'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_process_async'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_batch_log_queued'))
-      ->set('mandrill_api_key', $form_state->getValue('mandrill_queue_worker_timeout'))
+      ->set('mandrill_from', $form_state->getValue('mandrill_from'))
+      ->set('mandrill_from_name', $form_state->getValue('mandrill_from_name'))
+      ->set('mandrill_subaccount', $form_state->getValue('mandrill_subaccount'))
+      ->set('mandrill_filter_format', $form_state->getValue('mandrill_filter_format'))
+      ->set('mandrill_track_clicks', $form_state->getValue('mandrill_track_clicks'))
+      ->set('mandrill_url_strip_qs', $form_state->getValue('mandrill_url_strip_qs'))
+      ->set('mandrill_mail_key_blacklist', $form_state->getValue('mandrill_mail_key_blacklist'))
+      ->set('mandrill_log_defaulted_sends', $form_state->getValue('mandrill_log_defaulted_sends'))
+      ->set('mandrill_analytics_domains', $form_state->getValue('mandrill_analytics_domains'))
+      ->set('mandrill_analytics_campaign', $form_state->getValue('mandrill_analytics_campaign'))
+      ->set('mandrill_process_async', $form_state->getValue('mandrill_process_async'))
+      ->set('mandrill_batch_log_queued', $form_state->getValue('mandrill_batch_log_queued'))
+      ->set('mandrill_queue_worker_timeout', $form_state->getValue('mandrill_queue_worker_timeout'))
       ->save();
 
     parent::submitForm($form, $form_state);
