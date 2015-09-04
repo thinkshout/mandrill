@@ -185,12 +185,14 @@ function mandrill_mailsend($message, $function, $args = array()) {
               $to = isset($result['email']) ? $result['email'] : 'recipient';
               $status = isset($result['status']) ? $result['status'] : 'message';
               $error_message = isset($result['message']) ? $result['message'] : 'no message';
-              watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message',
+              $debug = print_r($result, TRUE);
+              watchdog('mandrill', 'Failed sending email from %from to %to. @status: @message <pre>@debug</pre>',
                 array(
                   '%from' => $message['from_email'],
                   '%to' => $to,
                   '@status' => $status,
                   '@message' => $error_message,
+                  '@debug' => $debug,
                 ),
                 WATCHDOG_ERROR
               );
