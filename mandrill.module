@@ -465,13 +465,49 @@ function mandrill_add_inbound_domain($domain) {
 }
 
 /**
- * Create a new inbound domain.
+ * Create a new webhook.
  */
 function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
   $result = NULL;
   try {
     if ($mandrill = mandrill_get_api_object()) {
       $result = $mandrill->webhooks->add($GLOBALS['base_url'] . '/' . $path, $description, $events);
+    }
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $result;
+}
+
+/**
+ * Update an existing webhook.
+ */
+function mandrill_update_webhook($id, $path, $events, $description = 'Drupal Webhook') {
+  $result = NULL;
+  try {
+    if ($mandrill = mandrill_get_api_object()) {
+      $result = $mandrill->webhooks->update($id, $GLOBALS['base_url'] . '/' . $path, $description, $events);
+    }
+  }
+  catch (Mandrill_Error $e) {
+    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+    watchdog_exception('mandrill', $e);
+  }
+
+  return $result;
+}
+
+/**
+ * Delete an existing webhook.
+ */
+function mandrill_delete_webhook($webhook_id) {
+  $result = NULL;
+  try {
+    if ($mandrill = mandrill_get_api_object()) {
+      $result = $mandrill->webhooks->delete($webhook_id);
     }
   }
   catch (Mandrill_Error $e) {
