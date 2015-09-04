@@ -571,22 +571,9 @@ function mandrill_process_async() {
  *   )
  */
 function mandrill_from() {
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $default_from = variable_get('site_mail', ini_get('sendmail_from'));
+  $email = \Drupal::config('mandrill.settings')->get('mandrill_from');
+  $name = \Drupal::config('mandrill.settings')->get('mandrill_from_name');
 
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-$email = \Drupal::config('mandrill.settings')->get('mandrill_from');
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-$name = \Drupal::config('mandrill.settings')->get('mandrill_from_name');
   return array(
     'email' => $email,
     'name' => $name,

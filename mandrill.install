@@ -1,10 +1,20 @@
 <?php
-
-
 /**
  * @file
- * Install, update and uninstall functions for the mandrill module.
+ * Install, update, and uninstall functions for the mandrill module.
  */
+
+/**
+ * Implements hook_install().
+ */
+function modulename_install() {
+
+  // Set default values for config which require dynamic values.
+  \Drupal::configFactory()->getEditable('mandrill.settings')
+    ->set('mandrill_from', \Drupal::config('system.site')->get('mail'))
+    ->set('mandrill_from_name', \Drupal::config('system.site')->get('site_name'))
+    ->save();
+}
 
 /**
  * Implements hook_uninstall().
