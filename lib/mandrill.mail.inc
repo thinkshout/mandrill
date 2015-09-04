@@ -109,8 +109,14 @@ class MandrillMailSystem implements MailSystemInterface {
     // array as well.
     if (isset($message['params']['attachments']) && !empty($message['params']['attachments'])) {
       foreach ($message['params']['attachments'] as $attachment) {
-        if (isset($attachment['uri'])) {
-          $attachment_path = drupal_realpath($attachment['uri']);
+       if (isset($attachment['uri']) || isset($attachment['filepath'])) {
+         if (isset($attachment['uri'])) {
+           $attachment_path = $attachment['uri'];
+         }
+         else {
+           $attachment_path = $attachment['filepath'];
+         }
+         $attachment_path = drupal_realpath($attachment_path);
           if (is_file($attachment_path)) {
             $struct = $this->getAttachmentStruct($attachment_path);
             // Allow for customised filenames.
