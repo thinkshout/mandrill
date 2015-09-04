@@ -1,4 +1,3 @@
-# Drupal 8 book.links.task.yml snippet
 mandrill.settings:
   route_name: mandrill.settings
   title: 'Settings'

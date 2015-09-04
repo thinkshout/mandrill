@@ -5,6 +5,9 @@ by the folks behind MailChimp. Learn more about Mandrill and how to sign up at
 [their website](http://mandrill.com). (Or don't, but then this module isn't
 terribly useful...)
 
+## D8 VERSION STATUS
+The Drupal 8 version of this module does not yet function.
+
 ## REQUIREMENTS
 
 * mailsystem module (https://drupal.org/project/mailsystem)
