@@ -39,15 +39,14 @@ function mandrill_uninstall() {
 
   // Tell mailsystem to remove mandrill and restore to defaults:
   // Undefined mailsystem_clear
-//  mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
+  //mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
   \Drupal::logger('mandrill')->notice('Mandrill has been uninstalled.', []);
 }
-
 /**
  * Implements hook_enable().
  */
 function mandrill_enable() {
-  mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
+  //mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
 }
 
 /**

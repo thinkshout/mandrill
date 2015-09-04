@@ -4,7 +4,9 @@
  * @file
  * Enables Drupal to send email directly through Mandrill.
  */
+namespace Drupal\mandrill;
 
+use DrupalMandrill;
 
 define('MANDRILL_QUEUE', 'mandrill_queue');
 define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
@@ -19,39 +21,6 @@ function mandrill_help($path, $arg) {
       $output = t('Allow for site emails to be sent through Mandrill.');
   }
   return $output;
-}
-
-/**
- * Implements hook_menu().
- */
-function mandrill_menu() {
-  $items = array();
-  $items['admin/config/services/mandrill'] = array(
-    'title' => 'Mandrill',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('mandrill_admin_settings'),
-    'access arguments' => array('administer mandrill'),
-    'description' => 'Send emails through the Mandrill transactional email service.',
-    'file' => 'mandrill.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/config/services/mandrill/settings'] = array(
-    'title' => 'Settings',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0,
-  );
-  $items['admin/config/services/mandrill/test'] = array(
-    'title' => 'Send test email',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('mandrill_test_form'),
-    'access callback' => 'mandrill_test_access',
-    'description' => 'Send a test email using the Mandrill API.',
-    'file' => 'mandrill.admin.inc',
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 1,
-  );
-
-  return $items;
 }
 
 /**
@@ -83,13 +52,10 @@ function mandrill_libraries_info() {
  *   True if current user has access to send test messages
  */
 function mandrill_test_access() {
-  $a = \Drupal::currentUser()->hasPermission('administer mandrill');
-  // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-$b = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
-  return $a & !empty($b);
+  $has_permission = \Drupal::currentUser()->hasPermission('administer mandrill');
+  $key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
+
+  return $has_permission & !empty($key);
 }
 
 /**
@@ -122,6 +88,7 @@ function mandrill_cron_queue_info() {
  * @see mandrill_cron_queue_info()
  */
 function mandrill_queue_worker_mailsend($data) {
+
   // Send the message stored in the queue item.
   mandrill_mailsend(
     $data['message'],
@@ -182,11 +149,7 @@ function mandrill_mailsend($message, $function, $args = array()) {
           case "error":
           case "invalid":
           case "rejected":
-            // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-if (!\Drupal::config('mandrill.settings')->get('mandrill_test_mode')) {
+            if (!\Drupal::config('mandrill.settings')->get('mandrill_test_mode')) {
               $to = isset($result['email']) ? $result['email'] : 'recipient';
               $status = isset($result['status']) ? $result['status'] : 'message';
               $error_message = isset($result['message']) ? $result['message'] : 'no message';
@@ -216,8 +179,10 @@ if (!\Drupal::config('mandrill.settings')->get('mandrill_test_mode')) {
           '%name' => $response['name'],
           '%message' => $response['message'],
         ));
+
       return FALSE;
     }
+
     return TRUE;
   }
   catch (Mandrill_Error $e) {
@@ -268,12 +233,12 @@ function mandrill_get_api_object($reset = FALSE) {
   $api =& drupal_static(__FUNCTION__, NULL);
 
   if ($api === NULL || $reset === TRUE) {
-
     $library = libraries_load('mandrill');
     if (!$library['installed']) {
       $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
       \Drupal::logger('mandrill')->error($msg, []);
       drupal_set_message($msg, 'error');
+
       return NULL;
     }
 
@@ -282,6 +247,7 @@ function mandrill_get_api_object($reset = FALSE) {
     if (empty($api_key)) {
       $msg = t('Failed to load Mandrill API Key. Please check your Mandrill settings.');
       drupal_set_message($msg, 'error');
+
       return FALSE;
     }
 
@@ -290,7 +256,6 @@ function mandrill_get_api_object($reset = FALSE) {
     // use this approach to extend the Mandrill class with a test server.
     $classname = \Drupal::config('mandrill.settings')->get('mandrill_api_classname');
 
-    //@fixme not found
     //$api = new $classname($api_key, $api_timeout);
   }
 
