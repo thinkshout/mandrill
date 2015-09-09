@@ -607,18 +607,35 @@ function mandrill_process_async() {
 /**
  * Returns an array containing the from information for a Mandrill message.
  *
+ * @param string $from
+ *   (Optional) An optional string representing a specific e-mail address from
+ *   which a message should be sent. This will be merged in with defaults. It
+ *   can be of the form "Name <email@example.com>"
+ *
  * @return array
  *   array(
  *     'email' => 'admin@example.com',
  *     'name' => 'My Site',
  *   )
  */
-function mandrill_from() {
+function mandrill_from($from = '') {
+  $default = array();
+  $provided = array();
+
+  // Parse out the default "from" details.
   $default_from = variable_get('site_mail', ini_get('sendmail_from'));
-  $email = variable_get('mandrill_from', $default_from);
-  $name = variable_get('mandrill_from_name', variable_get('site_name'));
-  return array(
-    'email' => $email,
-    'name' => $name,
-  );
+  $default['email'] = variable_get('mandrill_from', $default_from);
+  $default['name'] = variable_get('mandrill_from_name', variable_get('site_name'));
+
+  // If a "from" string was explicitly provided, parse out the details.
+  if (preg_match_all('/(?:"?([^"]*)"?\s)?(?:<?(.+@[^>]+)>?)/', $from, $matches)) {
+    if (isset($matches[1][0]) && !empty($matches[1][0])) {
+      $provided['name'] = trim($matches[1][0]);
+    }
+    if (isset($matches[2][0]) && !empty($matches[2][0])) {
+      $provided['email'] = $matches[2][0];
+    }
+  }
+
+  return array_merge($default, $provided);
 }

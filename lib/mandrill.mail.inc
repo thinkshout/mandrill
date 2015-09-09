@@ -146,7 +146,7 @@ class MandrillMailSystem implements MailSystemInterface {
     // Get metadata.
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
 
-    $from = mandrill_from();
+    $from = mandrill_from($message['from']);
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
     $mandrill_message = $overrides + array(
       'html' => $message['body'],
