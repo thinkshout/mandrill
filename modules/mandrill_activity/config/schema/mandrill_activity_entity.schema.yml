@@ -1,0 +1,12 @@
+mandrill_activity.mandrill_activity_entity.*:
+  type: config_entity
+  label: 'Mandrill activity entity config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string
