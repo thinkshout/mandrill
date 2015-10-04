@@ -1,12 +1,11 @@
 <?php
-namespace Drupal\mandrill\Tests;
+namespace Drupal\mandrill;
 
 /**
  * Test core Mandrill functionality.
- *
+ * 
  * @group mandrill
  */
-
 class MandrillTestCase extends \Drupal\simpletest\WebTestBase {
 
   protected $profile = 'standard';

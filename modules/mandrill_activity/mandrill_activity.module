@@ -41,7 +41,7 @@ function mandrill_activity_entity_info() {
  * Access callback for mandrill_activity_entity.
  */
 function mandrill_activity_entity_access() {
-  return user_access('administer mandrill activity');
+  return \Drupal::currentUser()->hasPermission('administer mandrill activity');
 }
 
 /**
@@ -70,7 +70,7 @@ function mandrill_activity_menu() {
  * Access callback for activity menu items.
  */
 function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_entity) {
-  if ($mandrill_activity_entity->enabled && user_access('access mandrill activity')) {
+  if ($mandrill_activity_entity->enabled && \Drupal::currentUser()->hasPermission('access mandrill activity')) {
     return TRUE;
   }
   return FALSE;

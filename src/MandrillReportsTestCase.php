@@ -1,13 +1,12 @@
 <?php
-namespace Drupal\mandrill\Tests;
+namespace Drupal\mandrill;
 
 /**
- * Tests Mandrill Activity functionality.
- *
+ * Tests Mandrill Reports functionality.
+ * 
  * @group mandrill
  */
-
-class MandrillActivityTestCase extends \Drupal\simpletest\WebTestBase {
+class MandrillReportsTestCase extends \Drupal\simpletest\WebTestBase {
 
   protected $profile = 'standard';
 
@@ -20,8 +19,8 @@ class MandrillActivityTestCase extends \Drupal\simpletest\WebTestBase {
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
     return [
-      'name' => 'Mandrill Activity Tests',
-      'description' => 'Tests Mandrill Activity functionality.',
+      'name' => 'Mandrill Reports Tests',
+      'description' => 'Tests Mandrill Reports functionality.',
       'group' => 'Mandrill',
     ];
   }
@@ -40,7 +39,7 @@ class MandrillActivityTestCase extends \Drupal\simpletest\WebTestBase {
     $enabled_modules = [
       'libraries',
       'mandrill',
-      'mandrill_activity',
+      'mandrill_reports',
       'entity',
     ];
     parent::setUp($enabled_modules);
@@ -61,20 +60,17 @@ class MandrillActivityTestCase extends \Drupal\simpletest\WebTestBase {
   }
 
   /**
-   * Tests getting an array of message activity for a given email address.
+   * Tests getting Mandrill reports data.
    */
-  public function testGetActivity() {
-    $email = 'recipient@example.com';
+  public function testGetReportsData() {
+    $reports_data = mandrill_reports_data();
 
-    $activity = mandrill_activity_get_activity($email);
-
-    $this->assertTrue(!empty($activity), 'Tested retrieving activity.');
-
-    if (!empty($activity) && is_array($activity)) {
-      foreach ($activity as $message) {
-        $this->assertEqual($message['email'], $email, 'Tested valid message: ' . $message['subject']);
-      }
-    }
+    $this->assertTrue(!empty($reports_data), 'Tested retrieving reports data.');
+    $this->assertTrue(!empty($reports_data['user']), 'Tested user report data exists.');
+    $this->assertTrue(!empty($reports_data['tags']), 'Tested tags report data exists.');
+    $this->assertTrue(!empty($reports_data['all_time_series']), 'Tested all time series report data exists.');
+    $this->assertTrue(!empty($reports_data['senders']), 'Tested senders report data exists.');
+    $this->assertTrue(!empty($reports_data['urls']), 'Tested URLs report data exists.');
   }
 
 }

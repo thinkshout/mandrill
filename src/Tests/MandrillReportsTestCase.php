@@ -3,9 +3,10 @@ namespace Drupal\mandrill\Tests;
 
 /**
  * Tests Mandrill Reports functionality.
- * 
+ *
  * @group mandrill
  */
+
 class MandrillReportsTestCase extends \Drupal\simpletest\WebTestBase {
 
   protected $profile = 'standard';

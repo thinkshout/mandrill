@@ -1,25 +1,6 @@
 <?php
 namespace Drupal\mandrill;
 
-use Mandrill;
-use Mandrill_Templates;
-Use Mandrill_Exports;
-use Mandrill_Users;
-use Mandrill_Rejects;
-use Mandrill_Inbound;
-use Mandrill_Tags;
-use Mandrill_Messages;
-use Mandrill_Whitelists;
-use Mandrill_Ips;
-use Mandrill_Internal;
-use Mandrill_Subaccounts;
-use Mandrill_Urls;
-use Mandrill_Webhooks;
-use Mandrill_Senders;
-use Mandrill_Metadata;
-use Mandrill_Error;
-use Mandrill_HttpError;
-
 /**
  * Class DrupalMandrill.
  */
