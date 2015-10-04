@@ -56,19 +56,6 @@ function mandrill_test_access() {
 }
 
 /**
- * Implements hook_permission().
- */
-function mandrill_permission() {
-  return array(
-    'administer mandrill' => array(
-      'title' => t('Administer Mandrill'),
-      'description' => t('Perform administration tasks for the Mandrill email service.'),
-      "restrict access" => TRUE,
-    ),
-  );
-}
-
-/**
  * Implements hook_cron_queue_info().
  */
 function mandrill_cron_queue_info() {

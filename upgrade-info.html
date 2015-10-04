@@ -78,70 +78,41 @@ aside {
   </head>
   <body>
       <details open="true" class="group">
-      <summary>Entity API</summary>
+      <summary>Configuration</summary>
           <details class="error">
-      <summary><code>entity_create()</code> is now a method of <code>EntityInterface</code>.</summary>
+      <summary><code>variable_del()</code> has been removed.</summary>
 
       
             <h5>Documentation</h5>
       <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/2266845"><code>entity_create()</code> replaced by <code>EntityInterface::create()</code></a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2183531">The Variable API has been removed</a></li>
               </ul>
       
             <h5>Files Affected</h5>
       <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 170</li>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 173</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_reports/src/MandrillReportsTestCase.php, line 55</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_reports/src/MandrillReportsTestCase.php, line 56</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/src/MandrillActivityTestCase.php, line 55</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/src/MandrillActivityTestCase.php, line 56</li>
             </ul>
-                  <aside>Flagged by _function_call:entity_create</aside>    </details>
+                  <aside>Flagged by _function_call:variable_del</aside>    </details>
     <details class="error">
-      <summary><code>entity_get_info()</code> is now a method of the EntityManager service.</summary>
+      <summary><code>variable_set()</code> has been removed.</summary>
 
       
             <h5>Documentation</h5>
       <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/1929006"><code>entity_get_info()</code> is deprecated</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2183531">The Variable API has been removed</a></li>
               </ul>
       
             <h5>Files Affected</h5>
       <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 52</li>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 80</li>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 213</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_reports/src/MandrillReportsTestCase.php, line 43</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_reports/src/MandrillReportsTestCase.php, line 44</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/src/MandrillActivityTestCase.php, line 43</li>
+              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/src/MandrillActivityTestCase.php, line 44</li>
             </ul>
-                  <aside>Flagged by _function_call:entity_get_info</aside>    </details>
-    <details class="error">
-      <summary><code>entity_load()</code> has been removed.</summary>
-
-      
-            <h5>Documentation</h5>
-      <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/2266845">Entities are now classed objects implementing <code>EntityInterface</code></a></li>
-              </ul>
-      
-            <h5>Files Affected</h5>
-      <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 145</li>
-            </ul>
-                  <aside>Flagged by _function_call:entity_load</aside>    </details>
-
-    </details>
-      <details open="true" class="group">
-      <summary>Form API</summary>
-          <details class="error">
-      <summary><code>form_set_error()</code> is now a method of <code>FormStateInterface</code>.</summary>
-
-      
-            <h5>Documentation</h5>
-      <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/2121003">Form functions moved into <code>FormStateInterface</code></a></li>
-              </ul>
-      
-            <h5>Files Affected</h5>
-      <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 153</li>
-            </ul>
-                  <aside>Flagged by _function_call:form_set_error</aside>    </details>
+                  <aside>Flagged by _function_call:variable_set</aside>    </details>
 
     </details>
       <details open="true" class="group">
@@ -259,36 +230,7 @@ aside {
     </details>
       <details open="true" class="group">
       <summary>System</summary>
-          <details class="error">
-      <summary><code>l()</code> has been removed.</summary>
-
-      
-            <h5>Documentation</h5>
-      <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/2346779"><code>l()</code> replaced by URL generation API</a></li>
-              </ul>
-      
-            <h5>Files Affected</h5>
-      <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.admin.inc, line 157</li>
-            </ul>
-                  <aside>Flagged by _function_call:l</aside>    </details>
-    <details class="error">
-      <summary><code>user_access()</code> is now <code>AccountInterface::hasPermission()</code>.</summary>
-
-      
-            <h5>Documentation</h5>
-      <ul>
-                <li><a target="_blank" href="https://www.drupal.org/node/2049309"><code>user_access()</code> got converted to a method on the user/account interface</a></li>
-              </ul>
-      
-            <h5>Files Affected</h5>
-      <ul>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.module, line 44</li>
-              <li>/var/www/html/d8/modules/mandrill/modules/mandrill_activity/mandrill_activity.module, line 73</li>
-            </ul>
-                  <aside>Flagged by _function_call:user_access</aside>    </details>
-    <details class="warning">
+          <details class="warning">
       <summary>Static permissions are now defined in <code>MODULE.permissions.yml</code>.</summary>
 
       
