@@ -1,4 +1,6 @@
 <?php
+namespace Drupal\mandrill_reports;
+
 /**
  * @file
  * Test class and methods for the Mandrill Reports module.
@@ -38,23 +40,8 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
       'entity',
     );
     parent::setUp($enabled_modules);
-<<<<<<< Updated upstream
-    \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
-    \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
-=======
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// variable_set('mandrill_api_classname', 'DrupalMandrillTest');
-
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
-
->>>>>>> Stashed changes
+    variable_set('mandrill_api_classname', 'DrupalMandrillTest');
+    variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
   }
 
   /**
@@ -65,23 +52,8 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
   protected function tearDown() {
     parent::tearDown();
 
-<<<<<<< Updated upstream
-    \Drupal::config('mandrill.settings')->clear('mandrill_api_classname')->save();
-    \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();
-=======
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// variable_del('mandrill_api_classname');
-
-    // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// variable_del('mandrill_api_key');
-
->>>>>>> Stashed changes
+    variable_del('mandrill_api_classname');
+    variable_del('mandrill_api_key');
   }
 
   /**

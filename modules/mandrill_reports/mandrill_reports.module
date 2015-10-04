@@ -50,7 +50,7 @@ function mandrill_reports_permission() {
  *   Associative array containing report data.
  */
 function mandrill_reports_data() {
-  if ($cache = cache_get('mandrill_report_data')) {
+  if ($cache = \Drupal::cache()->get('mandrill_report_data')) {
     return $cache->data;
   }
 
@@ -83,10 +83,10 @@ function mandrill_reports_data() {
         $data['senders'][$sender['address']]['time_series'] = $api->senders->timeSeries($sender['address']);
       }
       catch (Mandrill_Error $e) {
-        watchdog('mandrill', 'An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
+        \Drupal::logger('mandrill')->error('An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
           '%address' => $sender['address'],
           '%message' => $e->getMessage(),
-        ), WATCHDOG_ERROR);
+        ));
       }
     }
 
@@ -100,7 +100,7 @@ function mandrill_reports_data() {
         $data['urls'][$url['url']]['time_series'] = $api->urls->timeSeries($url['url']);
       }
     }
-    cache_set('mandrill_report_data', $data, 'cache', CACHE_TEMPORARY);
+    \Drupal::cache('cache')->set('mandrill_report_data', $data, CACHE_TEMPORARY);
   }
   else {
     drupal_set_message(t('Please enter a Mandrill API key to use reports.'));
@@ -142,12 +142,24 @@ function mandrill_reports_dashboard_page() {
     t('Total Clicks'),
   );
   foreach ($data['urls'] as $url) {
+<<<<<<< Updated upstream
     $percent = $url['sent'] == 0 ? 0 : number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
     $rows[] = array(
       l($url['url'], $url['url']),
       $url['sent'],
       $url['unique_clicks'] . "({$percent}%)",
       $url['clicks']);
+=======
+    $percent = number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $rows[] = array(
+//       l($url['url'], $url['url']),
+//       $url['sent'],
+//       $url['unique_clicks'] . "({$percent}%)",
+//       $url['clicks']);
+
+>>>>>>> Stashed changes
   }
 
   $path = drupal_get_path('module', 'mandrill_reports');
@@ -169,8 +181,8 @@ function mandrill_reports_dashboard_page() {
       '#markup' => t(
         'The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your !dashboard. !cache to ensure the data is current.',
         array(
-          '!dashboard' => l(t('Mandrill Dashboard'), 'https://mandrillapp.com/'),
-          '!cache' => l(t('Clear your cache'), 'admin/config/development/performance'),
+          '!dashboard' => \Drupal::l(t('Mandrill Dashboard'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/')),
+          '!cache' => \Drupal::l(t('Clear your cache'), \Drupal\Core\Url::fromRoute('system.performance_settings')),
         )
       ),
     ),
