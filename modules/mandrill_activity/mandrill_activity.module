@@ -78,11 +78,7 @@ function mandrill_activity_menu() {
  * Access callback for activity menu items.
  */
 function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_entity) {
-<<<<<<< Updated upstream
-  if ($mandrill_activity_entity->enabled && \Drupal::currentUser()->hasPermission('access mandrill activity')) {
-=======
   if ($mandrill_activity_entity->enabled && \Drupal::currentUser()->hasPermission('access Mandrill activity')) {
->>>>>>> Stashed changes
     return TRUE;
   }
   return FALSE;
