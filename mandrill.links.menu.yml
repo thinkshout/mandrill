@@ -1,0 +1,5 @@
+mandrill.settings:
+  route_name: mandrill.settings
+  title: 'Mandrill'
+  parent: system.admin_config_services
+cd

@@ -5,7 +5,6 @@
  *
  * https://www.drupal.org/node/2117411
  */
-
 namespace Drupal\mandrill\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
