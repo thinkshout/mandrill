@@ -15,24 +15,17 @@ The Drupal 8 version of this module does not yet function.
 
 ## INSTALLATION
 * You need to have a Mandrill API Key.
-* The Mandrill library must be downloaded into your libraries folder. It's
-  available at https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.zip
-  or by using the included example drush make file.
-  Proper libraries structure:
-    - libraries/
-      - mandrill/
-        - docs/
-        - src/
-          - Mandrill.php
-          - Mandrill/
-        - LICENSE
-        - composer.json
-
-## INSTALLATION NOTES
-
-* If you are upgrading from one of many previous versions, You may find an extra
-  Mail System class in the Mailsystem configuration called "Mandrill module
-  class". It's harmless, but feel free to delete it.
+* Add "modules/*/*/composer.json" to the "include" of "merge-plugin" in the "extra" section of the root composer.json.
+  It should look something like this:
+  "extra": {
+      "merge-plugin": {
+        "include": [
+          "core/composer.json",
+          "modules/*/*/composer.json"
+        ]
+      }
+    },
+* Run "composer update" in the root folder.
 
 ## CONFIGURATION
 

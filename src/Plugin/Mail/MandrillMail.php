@@ -1,10 +1,23 @@
 <?php
+/**
+ * @file
+ * Contains \Drupal\mandrill\MandrillMail.
+ */
+
 namespace Drupal\mandrill;
+
+use \Drupal\Core\Mail\MailInterface;
 
 /**
  * Modify the drupal mail system to use Mandrill when sending emails.
+ *
+ * @Mail(
+ *   id = "mandrill_mail",
+ *   label = @Translation("Mandrill mailer"),
+ *   description = @Translation("Sends the message through Mandrill.")
+ * )
  */
-class MandrillMailSystem implements MailSystemInterface {
+class MandrillMail implements MailInterface {
 
   /**
    * Concatenate and wrap the email body for either plain-text or HTML emails.

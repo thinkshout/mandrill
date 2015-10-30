@@ -14,6 +14,7 @@ function modulename_install() {
     ->set('mandrill_from', \Drupal::config('system.site')->get('mail'))
     ->set('mandrill_from_name', \Drupal::config('system.site')->get('site_name'))
     ->save();
+  mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
 }
 
 /**
@@ -46,7 +47,7 @@ function mandrill_uninstall() {
  * Implements hook_enable().
  */
 function mandrill_enable() {
-  //mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
+  //
 }
 
 /**

@@ -1,4 +1,3 @@
-# https://www.drupal.org/node/2118147
 mandrill.settings:
   path: 'admin/config/services/mandrill'
   defaults:

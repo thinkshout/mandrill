@@ -97,7 +97,7 @@ function mandrill_mail($key, &$message, $params) {
 
 /**
  * Abstracts sending of messages, allowing queueing option.
- * 
+ *
  * @param array $message
  *   A message array formatted for Mandrill's sending API, plus 2 additional
  *   indexes for the send_function and an array of $args, if needed by the send
@@ -183,12 +183,12 @@ function mandrill_mailsend($message, $function, $args = array()) {
 
 /**
  * The actual function that calls the API send message.
- * 
+ *
  * This is the default function used by mandrill_mailsend().
- * 
+ *
  * @param array $message
  *   Associative array containing message data.
- * 
+ *
  * @return array
  *   Results of sending the message.
  *
@@ -217,7 +217,7 @@ function mandrill_get_api_object($reset = FALSE) {
   $api =& drupal_static(__FUNCTION__, NULL);
 
   if ($api === NULL || $reset === TRUE) {
-    $library = libraries_load('mandrill');
+   // $library = libraries_load('mandrill');
     if (!$library['installed']) {
       $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
       \Drupal::logger('mandrill')->error($msg, []);
@@ -479,7 +479,7 @@ function mandrill_mail_key_blacklist() {
  *   a comma delimited list of email addresses in 1 of 2 forms:
  *   user@domain.com
  *   any number of names <user@domain.com>
- * 
+ *
  * @return array
  *   array of email addresses
  */

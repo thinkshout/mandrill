@@ -1,5 +1,5 @@
 mandrill.settings:
   route_name: mandrill.settings
-  title: 'Mandrill'
+  title: Mandrill
+  description: Send emails through the Mandrill transactional email service.
   parent: system.admin_config_services
-cd

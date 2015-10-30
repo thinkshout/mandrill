@@ -9,11 +9,30 @@ namespace Drupal\mandrill\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Path\PathValidatorInterface;
+use Drupal\Core\Url;
 
 /**
  * Implements an Mandrill Admin Settings form.
  */
 class MandrillAdminSettingsForm extends ConfigFormBase {
+
+  /**
+   * Constructor.
+   */
+  public function __construct(PathValidatorInterface $path_validator) {
+    $this->pathValidator = $path_validator;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('path.validator')
+    );
+  }
 
   /**
    * {@inheritdoc}.
@@ -27,26 +46,22 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('mandrill.settings');
-    $mailsystem_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
-    $systemlog_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
 
     $key = $config->get('mandrill_api_key');
     $form['mandrill_api_key'] = array(
       '#title' => t('Mandrill API Key'),
       '#type' => 'textfield',
-      '#description' => t('Create or grab your API key from the !link.',
-        array('!link' => \Drupal::l(t('Mandrill settings'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/settings/index')))),
+      '#description' => t('Create or grab your API key from the !link.', array('!link' => $this->l(t('Mandrill settings'), Url::fromUri('https://mandrillapp.com/settings/index')))),
       '#default_value' => $key,
     );
 
-    $library = libraries_detect('mandrill');
-
-    if (!$library['installed']) {
-      drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'),
-        'warning');
+    if (!class_exists('Mandrill')) {
+      drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'), 'warning');
     }
-
-    if ($key && $library['installed']) {
+    else if ($key) {
+      $mailsystem_path = $this->pathValidator->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
+      $systemlog_path = $this->pathValidator->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
+      //$mandrill = new \Mandrill('test');
       //@fixme
       //$mailsystem_config_keys = mailsystem_get();
       $mailsystem_config_keys = array();
@@ -263,7 +278,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $this->config('mandrill.settings')
       ->set('mandrill_api_key', $form_state->getValue('mandrill_api_key'))
       ->set('mandrill_from', $form_state->getValue('mandrill_from'))
@@ -280,8 +294,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       ->set('mandrill_batch_log_queued', $form_state->getValue('mandrill_batch_log_queued'))
       ->set('mandrill_queue_worker_timeout', $form_state->getValue('mandrill_queue_worker_timeout'))
       ->save();
-
-    parent::submitForm($form, $form_state);
   }
   /**
    * {@inheritdoc}.
