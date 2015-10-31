@@ -204,49 +204,6 @@ function mandrill_sender_plain($message) {
 }
 
 /**
- * Return Mandrill API object for communication with the mandrill server.
- *
- * @param bool $reset
- *   Pass in TRUE to reset the statically cached object.
- *
- * @return Mandrill|bool
- *   Mandrill Object upon success
- *   FALSE if variable_get('mandrill_api_key') is unset
- */
-function mandrill_get_api_object($reset = FALSE) {
-  $api =& drupal_static(__FUNCTION__, NULL);
-
-  if ($api === NULL || $reset === TRUE) {
-   // $library = libraries_load('mandrill');
-    if (!$library['installed']) {
-      $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
-      \Drupal::logger('mandrill')->error($msg, []);
-      drupal_set_message($msg, 'error');
-
-      return NULL;
-    }
-
-    $api_key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
-    $api_timeout = \Drupal::config('mandrill.settings')->get('mandrill_api_timeout');
-    if (empty($api_key)) {
-      $msg = t('Failed to load Mandrill API Key. Please check your Mandrill settings.');
-      drupal_set_message($msg, 'error');
-
-      return FALSE;
-    }
-
-    // We allow the class name to be overridden, following the example of core's
-    // mailsystem, in order to use alternate Mandrill classes. The bundled tests
-    // use this approach to extend the Mandrill class with a test server.
-    $classname = \Drupal::config('mandrill.settings')->get('mandrill_api_classname');
-
-    //$api = new $classname($api_key, $api_timeout);
-  }
-
-  return $api;
-}
-
-/**
  * Display the names of the modules that are using Mailsystem.
  *
  * This is consistent with with Mailsystem's display. In the future, if
@@ -313,24 +270,6 @@ function mandrill_get_templates() {
     watchdog_exception('mandrill', $e);
   }
   return $templates;
-}
-
-/**
- * Get a list of subaccounts.
- */
-function mandrill_get_subaccounts() {
-  $subaccounts = array();
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $subaccounts = $mandrill->subaccounts->getList();
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $subaccounts;
 }
 
 /**

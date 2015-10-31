@@ -1,3 +1,4 @@
 services:
-  mandrill.mandrill:
-    class: Mandrill
+  mandrill.service:
+    class: Drupal\mandrill\MandrillService
+    arguments: ['@config.factory', '@logger.factory']
