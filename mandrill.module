@@ -5,6 +5,7 @@
  * Enables Drupal to send email directly through Mandrill.
  */
 
+define('MANDRILL_TEST_API_KEY', 'undefined');
 define('MANDRILL_QUEUE', 'mandrill_queue');
 define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
 
@@ -18,28 +19,6 @@ function mandrill_help($path, $arg) {
       $output = t('Allow for site emails to be sent through Mandrill.');
   }
   return $output;
-}
-
-/**
- * Implements hook_libraries_info().
- */
-function mandrill_libraries_info() {
-  $libraries['mandrill'] = array(
-    'name' => 'Mandrill API',
-    'vendor url' => 'https://mandrillapp.com/api/docs',
-    'download url' => 'https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.tar.gz',
-    'path' => 'src',
-    'version arguments' => array(
-      'file' => 'composer.json',
-      // Version 1.0.52
-      'pattern' => '/\"version": \"((\d+)\.(\d+)\.(\d+))\",/',
-    ),
-    'files' => array(
-      'php' => array('Mandrill.php'),
-    ),
-  );
-
-  return $libraries;
 }
 
 /**
@@ -72,7 +51,6 @@ function mandrill_cron_queue_info() {
  * @see mandrill_cron_queue_info()
  */
 function mandrill_queue_worker_mailsend($data) {
-
   // Send the message stored in the queue item.
   mandrill_mailsend(
     $data['message'],
@@ -98,87 +76,10 @@ function mandrill_mail($key, &$message, $params) {
 /**
  * Abstracts sending of messages, allowing queueing option.
  *
- * @param array $message
- *   A message array formatted for Mandrill's sending API, plus 2 additional
- *   indexes for the send_function and an array of $args, if needed by the send
- *   function.
- * @param string $function
- *   The name of the function to use to send the message.
- * @param array $args
- *   Array of arguments to pass to the function provided by $function.
- *
- * @return bool
- *   TRUE if no exception thrown
+ * @DEPRECATED
  */
 function mandrill_mailsend($message, $function, $args = array()) {
-  try {
-    if (!function_exists($function)) {
-      \Drupal::logger('mandrill')->error('Error sending email from %from to %to. Function %function not found.', array(
-          '%from' => $message['from_email'],
-          '%to' => $message['to'],
-          '%function' => $function,
-        ));
-      return FALSE;
-    }
-
-    $params = array($message) + $args;
-    $response = call_user_func_array($function, $params);
-
-    if (!isset($response['status'])) {
-      foreach ($response as $result) {
-        // Allow other modules to react based on a send result.
-        \Drupal::moduleHandler()->invokeAll('mandrill_mailsend_result', [$result]);
-
-        switch ($result['status']) {
-          case "error":
-          case "invalid":
-          case "rejected":
-            if (!\Drupal::config('mandrill.settings')->get('mandrill_test_mode')) {
-              $to = isset($result['email']) ? $result['email'] : 'recipient';
-              $status = isset($result['status']) ? $result['status'] : 'message';
-              $error_message = isset($result['message']) ? $result['message'] : 'no message';
-              \Drupal::logger('mandrill')->error('Failed sending email from %from to %to. @status: @message', array(
-                  '%from' => $message['from_email'],
-                  '%to' => $to,
-                  '@status' => $status,
-                  '@message' => $error_message,
-                ));
-            }
-            return FALSE;
-
-          case "queued":
-            \Drupal::logger('mandrill')->info('Email from %from to %to queued by Mandrill App.', array(
-                '%from' => $message['from_email'],
-                '%to' => $result['email'],
-              ));
-            break;
-
-        }
-      }
-    }
-    else {
-      \Drupal::logger('mandrill')->warning('Mail send failed with status %status: code %code, %name, %message', array(
-          '%status' => $response['status'],
-          '%code' => $response['code'],
-          '%name' => $response['name'],
-          '%message' => $response['message'],
-        ));
-
-      return FALSE;
-    }
-
-    return TRUE;
-  }
-  catch (Mandrill_Error $e) {
-    \Drupal::logger('mandrill')->error('Error sending email from %from to %to. @code: @message', array(
-        '%from' => $message['from_email'],
-        '%to' => $message['to'],
-        '@code' => $e->getCode(),
-        '@message' => $e->getMessage(),
-      ));
-
-    return FALSE;
-  }
+  throw new \Exception('Use send() method on MandrillService instead.');
 }
 
 /**
@@ -193,14 +94,11 @@ function mandrill_mailsend($message, $function, $args = array()) {
  *   Results of sending the message.
  *
  * @throws Mandrill_Error
+ *
  */
 function mandrill_sender_plain($message) {
-  if ($mailer = mandrill_get_api_object()) {
-    return $mailer->messages->send($message);
-  }
-  else {
-    throw new Mandrill_Error('Missing API key.');
-  }
+  $api = \Drupal::service('mandrill.api');
+  return $api->send($message);
 }
 
 /**
@@ -256,6 +154,8 @@ function mandrill_get_module_key_names() {
  *
  * @return array
  *   An of available templates with complete data or NULL if none are available.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_get_templates() {
   // Only show the template settings if the mandrill api can be called.
@@ -274,6 +174,8 @@ function mandrill_get_templates() {
 
 /**
  * Get a list of webhooks.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_get_webhooks() {
   $webhooks = array();
@@ -292,6 +194,8 @@ function mandrill_get_webhooks() {
 
 /**
  * Get a list of inbound email domains.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_get_inbound_domains() {
   $domains = array();
@@ -313,6 +217,8 @@ function mandrill_get_inbound_domains() {
 
 /**
  * Get a list of inbound email routes for a domain.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_get_inbound_routes($domain) {
   $routes = array();
@@ -331,6 +237,8 @@ function mandrill_get_inbound_routes($domain) {
 
 /**
  * Create a new inbound domain.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_add_inbound_domain($domain) {
   $result = NULL;
@@ -349,6 +257,8 @@ function mandrill_add_inbound_domain($domain) {
 
 /**
  * Create a new inbound domain.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
   $result = NULL;
@@ -367,6 +277,8 @@ function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
 
 /**
  * Delete an inbound domain.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_delete_inbound_domain($domain) {
   $result = NULL;
@@ -385,6 +297,8 @@ function mandrill_delete_inbound_domain($domain) {
 
 /**
  * Create a new inbound route for a domain.
+ *
+ * @TODO: Move this to MandrillAPI class.
  */
 function mandrill_add_inbound_route($domain, $pattern, $url) {
   $route = NULL;
@@ -404,66 +318,35 @@ function mandrill_add_inbound_route($domain, $pattern, $url) {
 /**
  * Helper to return a comma delimited list of mail keys to not log content for.
  *
- * @return string
- *   a comma delimited list of mail keys
+ * @DEPRECATED
  */
 function mandrill_mail_key_blacklist() {
-  return \Drupal::config('mandrill.settings')->get('mandrill_mail_key_blacklist');
-}
-
-/**
- * Helper to generate an array of recipients.
- *
- * @param mixed $to
- *   a comma delimited list of email addresses in 1 of 2 forms:
- *   user@domain.com
- *   any number of names <user@domain.com>
- *
- * @return array
- *   array of email addresses
- */
-function mandrill_get_to($to) {
-  $recipients = array();
-  $to_array = explode(',', $to);
-  foreach ($to_array as $email) {
-    if (preg_match(MANDRILL_EMAIL_REGEX, $email, $matches)) {
-      $recipients[] = array(
-        'email' => $matches[2],
-        'name' => $matches[1],
-      );
-    }
-    else {
-      $recipients[] = array('email' => $email);
-    }
-  }
-  return $recipients;
+  throw new \Exception('Read the value directly of the "mandrill.settings" configuration by key "mandrill_mail_key_blacklist"');
+  // return \Drupal::config('mandrill.settings')->get('mandrill_mail_key_blacklist');
 }
 
 /**
  * Determine if mail should be processed asynchronously.
  *
- * @return bool
- *   True if asyncronous processing is enabled
+ * @DEPRECATED
  */
 function mandrill_process_async() {
-  return \Drupal::config('mandrill.settings')->get('mandrill_process_async');
+  throw new \Exception('Read the value directly of the "mandrill.settings" configuration by key "mandrill_process_async"');
+  //return \Drupal::config('mandrill.settings')->get('mandrill_process_async');
 }
 
 /**
  * Returns an array containing the from information for a Mandrill message.
  *
- * @return array
- *   array(
- *     'email' => 'admin@example.com',
- *     'name' => 'My Site',
- *   )
+ * @DEPRECATED
  */
 function mandrill_from() {
-  $email = \Drupal::config('mandrill.settings')->get('mandrill_from');
+  throw new \Exception('Read the values directly of the "mandrill.settings" configuration by key "from_email" and "from_name"');
+  /*$email = \Drupal::config('mandrill.settings')->get('mandrill_from');
   $name = \Drupal::config('mandrill.settings')->get('mandrill_from_name');
 
   return array(
     'email' => $email,
     'name' => $name,
-  );
+  );*/
 }

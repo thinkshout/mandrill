@@ -1,7 +1,13 @@
 mandrill.settings:
-  type: mapping
-  label: Settings
+  type: config_object
+  label: 'Mandrill settings'
   mapping:
+    from_name:
+      type: string
+      label: 'Sender name'
+    from_email:
+      type: string
+      label: 'Sender email'
     mandrill_subaccount:
       type: boolean
     mandrill_filter_format:
@@ -12,8 +18,11 @@ mandrill.settings:
       type: boolean
     mandrill_url_strip_qs:
       type: boolean
-    mandrill_analytics_domains:
-      type: 'NULL'
+    #mandrill_analytics_domains:
+    #  type: sequence
+    #  sequence:
+    #    type: string
+    #    label: 'Domain'
     mandrill_analytics_campaign:
       type: string
     mandrill_batch_log_queued:
@@ -32,5 +41,8 @@ mandrill.settings:
       type: string
     mandrill_process_async:
       type: boolean
-    mandrill_test_mailsend_result:
-      type: 'NULL'
+    #mandrill_test_mailsend_result:
+    #  type: sequence
+    #    sequence:
+    #      type: string
+    #      label: 'Result'

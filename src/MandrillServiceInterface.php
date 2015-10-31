@@ -13,5 +13,7 @@ namespace Drupal\mandrill;
  */
 interface MandrillServiceInterface {
   public function isLibraryInstalled();
-  public function getSubAccounts();
+  public function getMailSystems();
+  public function getReceivers($receiver);
+  public function send($message, $function, array $args = array());
 }

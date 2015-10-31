@@ -1,12 +1,15 @@
 <?php
 /**
  * @file
- * Contains \Drupal\mandrill\MandrillMail.
+ * Contains \Drupal\mandrill\Plugin\Mail\MandrillMail.
  */
 
-namespace Drupal\mandrill;
+namespace Drupal\mandrill\Plugin\Mail;
 
-use \Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Url;
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Mail\MailFormatHelper;
 
 /**
  * Modify the drupal mail system to use Mandrill when sending emails.
@@ -18,6 +21,17 @@ use \Drupal\Core\Mail\MailInterface;
  * )
  */
 class MandrillMail implements MailInterface {
+
+  /**
+   * Constructor.
+   */
+  public function __construct() {
+    $this->config = \Drupal::service('config.factory')->get('mandrill.settings');
+    $this->mandrill = \Drupal::service('mandrill.service');
+    $this->log = \Drupal::service('logger.factory')->get('mandrill');
+    $this->mimeTypeGuesser = \Drupal::service('file.mime_type.guesser');
+  }
+
 
   /**
    * Concatenate and wrap the email body for either plain-text or HTML emails.
@@ -50,39 +64,29 @@ class MandrillMail implements MailInterface {
   public function mail(array $message) {
     // Optionally log mail keys not using Mandrill already. Helpful in
     // configuring Mandrill.
-    if (\Drupal::config('mandrill.settings')->get('mandrill_log_defaulted_sends')) {
-      $systems = mailsystem_get();
+    if ($this->config->get('mandrill_log_defaulted_sends')) {
       $registered = FALSE;
-      foreach ($systems as $key => $system) {
+      foreach ($this->mandrill->getMailSystems() as $key => $system) {
         if ($message['id'] == $key) {
           $registered = TRUE;
         }
-        if (!$registered) {
-          // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// watchdog(
-//             'mandrill',
-//             "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
-//             array(
-//               '%module' => $message['module'],
-//               '%key' => $message['key'],
-//               '!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
-//             ),
-//             WATCHDOG_INFO
-//           );
-
-        }
+      }
+      if (!$registered) {
+        $this->log->notice("Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
+          [
+            '%module' => $message['module'],
+            '%key' => $message['id'],
+            '!mailsystem' => \Drupal::l(t('Mail System'), Url::fromRoute('mailsystem.settings')),
+          ]
+        );
       }
     }
 
     // Apply input format to body.
-    $format = \Drupal::config('mandrill.settings')->get('mandrill_filter_format');
+    $format = $this->config->get('mandrill_filter_format');
     if (!empty($format)) {
       $message['body'] = check_markup($message['body'], $format);
     }
-
-    // Extract an array of recipients.
-    $to = mandrill_get_to($message['to']);
 
     // Prepare headers, defaulting the reply-to to the from address since
     // Mandrill needs the from address to be configured separately.
@@ -106,10 +110,10 @@ class MandrillMail implements MailInterface {
     }
 
     // Determine if content should be available for this message.
-    $blacklisted_keys = explode(',', mandrill_mail_key_blacklist());
+    $blacklisted_keys = explode(',', $this->config->get('mandrill_mail_key_blacklist'));
     $view_content = TRUE;
     foreach ($blacklisted_keys as $key) {
-      if ($message['id'] == \Drupal\Component\Utility\Unicode::strtolower(trim($key))) {
+      if ($message['id'] == Unicode::strtolower(trim($key))) {
         $view_content = FALSE;
         break;
       }
@@ -147,19 +151,23 @@ class MandrillMail implements MailInterface {
       unset($message['params']['attachments']);
     }
 
+    // Extract an array of recipients.
+    $to = $this->mandrill->getReceivers($message['to']);
+
     // Account for the plaintext parameter provided by the mimemail module.
-    $plain_text = empty($message['params']['plaintext']) ? drupal_html_to_text($message['body']) : $message['params']['plaintext'];
+    $plain_text = empty($message['params']['plaintext']) ? MailFormatHelper::htmlToText($message['body']) : $message['params']['plaintext'];
 
     // Get metadata.
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
 
-    $from = mandrill_from();
+    $from = array(
+      'email' => $this->config->get('from_email'),
+      'name' => $this->config->get('from_name'),
+    );
+
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
-    // @FIXME
-// Could not extract the default value because it is either indeterminate, or
-// not scalar. You'll need to provide a default value in
-// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
-$mandrill_message = $overrides + array(
+
+    $mandrill_message = $overrides + array(
       'html' => $message['body'],
       'text' => $plain_text,
       'subject' => $message['subject'],
@@ -167,23 +175,25 @@ $mandrill_message = $overrides + array(
       'from_name' => isset($message['params']['mandrill']['from_name']) ? $message['params']['mandrill']['from_name'] : $from['name'],
       'to' => $to,
       'headers' => $headers,
-      'track_opens' => \Drupal::config('mandrill.settings')->get('mandrill_track_opens'),
-      'track_clicks' => \Drupal::config('mandrill.settings')->get('mandrill_track_clicks'),
-      // We're handling this with drupal_html_to_text().
+      'track_opens' => $this->config->get('mandrill_track_opens'),
+      'track_clicks' => $this->config->get('mandrill_track_clicks'),
+      // We're handling this with htmlToText.
       'auto_text' => FALSE,
-      'url_strip_qs' => \Drupal::config('mandrill.settings')->get('mandrill_url_strip_qs'),
+      'url_strip_qs' => $this->config->get('mandrill_url_strip_qs'),
       'bcc_address' => isset($message['bcc_email']) ? $message['bcc_email'] : NULL,
       'tags' => array($message['id']),
-      'google_analytics_domains' => (\Drupal::config('mandrill.settings')->get('mandrill_analytics_domains')) ? explode(',', \Drupal::config('mandrill.settings')->get('mandrill_analytics_domains')) : array(),
-      'google_analytics_campaign' => \Drupal::config('mandrill.settings')->get('mandrill_analytics_campaign'),
+      'google_analytics_domains' => ($this->config->get('mandrill_analytics_domains')) ? explode(',', $this->config->get('mandrill_analytics_domains')) : array(),
+      'google_analytics_campaign' => $this->config->get('mandrill_analytics_campaign'),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
       'metadata' => $metadata,
     );
-    $subaccount = \Drupal::config('mandrill.settings')->get('mandrill_subaccount');
+
+    $subaccount = $this->config->get('mandrill_subaccount');
     if ($subaccount) {
       $mandrill_message['subaccount'] = $subaccount;
     }
+
     // Allow other modules to alter the Mandrill message, and sender/args.
     $mandrill_params = array(
       'message' => $mandrill_message,
@@ -194,19 +204,19 @@ $mandrill_message = $overrides + array(
 
     // Queue for processing during cron or send immediately.
     $status = NULL;
-    if (mandrill_process_async()) {
-      $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
+    if ($this->config->get('mandrill_process_async')) {
+      $queue = \Drupal::Queue(MANDRILL_QUEUE, TRUE);
       $queue->createItem($mandrill_params);
-      if (\Drupal::config('mandrill.settings')->get('mandrill_batch_log_queued')) {
-        \Drupal::logger('mandrill')->notice('Message from %from to %to queued for delivery.', array(
-            '%from' => $from['email'],
-            '%to' => $to[0]['email'],
-          ));
+      if ($this->config->get('mandrill_batch_log_queued')) {
+        $this->log->notice('Message from %from to %to queued for delivery.', array(
+          '%from' => $from['email'],
+          '%to' => $to[0]['email'],
+        ));
       }
       return TRUE;
     }
     else {
-      return mandrill_mailsend($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
+      return $this->mandrill->send($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
     }
   }
 
@@ -219,13 +229,13 @@ $mandrill_message = $overrides + array(
    * @return array
    *   Attachment structure.
    *
-   * @throws Exception
+   * @throws \Exception
    */
   public function getAttachmentStruct($path) {
     $struct = array();
 
     if (!@is_file($path)) {
-      throw new Exception($path . ' is not a valid file.');
+      throw new \Exception($path . ' is not a valid file.');
     }
 
     $filename = basename($path);
@@ -233,9 +243,9 @@ $mandrill_message = $overrides + array(
     $file_buffer = file_get_contents($path);
     $file_buffer = chunk_split(base64_encode($file_buffer), 76, "\n");
 
-    $mime_type = file_get_mimetype($path);
+    $mime_type = $this->mimeTypeGuesser->guess($path);
     if (!$this->isValidContentType($mime_type)) {
-      throw new Exception($mime_type . ' is not a valid content type.');
+      throw new \Exception($mime_type . ' is not a valid content type.');
     }
 
     $struct['type'] = $mime_type;
