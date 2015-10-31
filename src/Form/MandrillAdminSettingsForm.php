@@ -268,7 +268,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#type' => 'textfield',
         '#size' => '12',
         '#description' => t('Number of seconds to spend processing messages during cron. Zero or negative values are not allowed.'),
-        '#required' => TRUE,
+        //'#required' => TRUE,
         '#element_validate' => array('element_validate_integer_positive'),
         '#default_value' => $config->get('mandrill_queue_worker_timeout'),
         '#states' => array(
