@@ -102,6 +102,15 @@ function mandrill_sender_plain($message) {
 }
 
 /**
+ * Return Mandrill API object for communication with the mandrill server.
+ *
+ * @DEPRECATED
+ */
+function mandrill_get_api_object($reset = FALSE) {
+  throw new \Exception('This method has moved to the API service class, and is private. Use one of the abstracts for whatever call you require.');
+}
+
+/**
  * Display the names of the modules that are using Mailsystem.
  *
  * This is consistent with with Mailsystem's display. In the future, if
@@ -170,6 +179,15 @@ function mandrill_get_templates() {
     watchdog_exception('mandrill', $e);
   }
   return $templates;
+}
+
+/**
+ * Get a list of subaccounts.
+ *
+ * @DEPRECATED
+ */
+function mandrill_get_subaccounts() {
+  throw new \Exception('Use the getSubAccounts() method on the API service class instead');
 }
 
 /**
@@ -323,6 +341,15 @@ function mandrill_add_inbound_route($domain, $pattern, $url) {
 function mandrill_mail_key_blacklist() {
   throw new \Exception('Read the value directly of the "mandrill.settings" configuration by key "mandrill_mail_key_blacklist"');
   // return \Drupal::config('mandrill.settings')->get('mandrill_mail_key_blacklist');
+}
+
+/**
+ * Helper to generate an array of recipients.
+ *
+ * @DEPRECATED
+ */
+function mandrill_get_to($to) {
+  throw new \Exception('Use the getReceivers() method on the MandrillService service class instead.');
 }
 
 /**
