@@ -15,18 +15,7 @@ The Drupal 8 version of this module does not yet function.
 
 ## INSTALLATION
 * You need to have a Mandrill API Key.
-* The Mandrill library must be downloaded into your libraries folder. It's
-  available at https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.zip
-  or by using the included example drush make file.
-  Proper libraries structure:
-    - libraries/
-      - mandrill/
-        - docs/
-        - src/
-          - Mandrill.php
-          - Mandrill/
-        - LICENSE
-        - composer.json
+* Set up Composer Manager to manage the Mandrill library: https://www.drupal.org/node/2405811
 
 ## INSTALLATION NOTES
 
