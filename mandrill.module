@@ -182,25 +182,22 @@ function mandrill_mailsend($message, $function, $args = array()) {
 }
 
 /**
- * The actual function that calls the API send message.
- * 
+ * Calls the API send message.
+ *
  * This is the default function used by mandrill_mailsend().
- * 
+ *
  * @param array $message
  *   Associative array containing message data.
- * 
+ *
  * @return array
  *   Results of sending the message.
  *
  * @throws Mandrill_Error
+ *
  */
 function mandrill_sender_plain($message) {
-  if ($mailer = mandrill_get_api_object()) {
-    return $mailer->messages->send($message);
-  }
-  else {
-    throw new Mandrill_Error('Missing API key.');
-  }
+  $api = \Drupal::service('mandrill.api');
+  return $api->send($message);
 }
 
 /**
@@ -214,36 +211,7 @@ function mandrill_sender_plain($message) {
  *   FALSE if variable_get('mandrill_api_key') is unset
  */
 function mandrill_get_api_object($reset = FALSE) {
-  $api =& drupal_static(__FUNCTION__, NULL);
-
-  if ($api === NULL || $reset === TRUE) {
-    $library = libraries_load('mandrill');
-    if (!$library['installed']) {
-      $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
-      \Drupal::logger('mandrill')->error($msg, []);
-      drupal_set_message($msg, 'error');
-
-      return NULL;
-    }
-
-    $api_key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
-    $api_timeout = \Drupal::config('mandrill.settings')->get('mandrill_api_timeout');
-    if (empty($api_key)) {
-      $msg = t('Failed to load Mandrill API Key. Please check your Mandrill settings.');
-      drupal_set_message($msg, 'error');
-
-      return FALSE;
-    }
-
-    // We allow the class name to be overridden, following the example of core's
-    // mailsystem, in order to use alternate Mandrill classes. The bundled tests
-    // use this approach to extend the Mandrill class with a test server.
-    $classname = \Drupal::config('mandrill.settings')->get('mandrill_api_classname');
-
-    //$api = new $classname($api_key, $api_timeout);
-  }
-
-  return $api;
+  throw new \Exception('This method has moved to the API service class, and is private. Use one of the abstracts for whatever call you require.');
 }
 
 /**
@@ -319,18 +287,7 @@ function mandrill_get_templates() {
  * Get a list of subaccounts.
  */
 function mandrill_get_subaccounts() {
-  $subaccounts = array();
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $subaccounts = $mandrill->subaccounts->getList();
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $subaccounts;
+  throw new \Exception('Use the getSubAccounts() method on the API service class instead');
 }
 
 /**

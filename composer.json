@@ -2,6 +2,6 @@
   "name": "drupal/mandrill",
   "type": "drupal-module",
   "require": {
-    "mandrill/mandrill": "1.0.*"
+    "mandrill/mandrill": "1.0.55"
   }
 }

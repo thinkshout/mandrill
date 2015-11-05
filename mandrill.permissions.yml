@@ -1,4 +1,4 @@
-'administer mandrill':
-  title: 'Administer Mandrill'
-  description: 'Perform administration tasks for the Mandrill email service.'
-  'restrict access': true
+administer mandrill:
+  title: Administer Mandrill
+  description: Perform administration tasks for the Mandrill email service.
+  restrict access: true

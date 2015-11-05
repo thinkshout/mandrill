@@ -6,127 +6,142 @@
  * https://www.drupal.org/node/2117411
  */
 namespace Drupal\mandrill\Form;
-
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Path\PathValidatorInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\mailsystem\MailsystemManager;
+use Drupal\mandrill\MandrillServiceInterface;
+use Drupal\mandrill\MandrillAPIInterface;
 /**
  * Implements an Mandrill Admin Settings form.
  */
 class MandrillAdminSettingsForm extends ConfigFormBase {
-
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\mailsystem\MailsystemManager $mail_manager
+   * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   * @param \Drupal\mandrill\MandrillServiceInterface $mandrill
+   * @param \Drupal\mandrill\Form\MandrillAPIInterface $mandrill_api
+   */
+  public function __construct(MailsystemManager $mail_manager, PathValidatorInterface $path_validator, RendererInterface $renderer, MandrillServiceInterface $mandrill, MandrillAPIInterface $mandrill_api) {
+    $this->mailManager = $mail_manager;
+    $this->pathValidator = $path_validator;
+    $this->renderer = $renderer;
+    $this->mandrill = $mandrill;
+    $this->mandrillAPI = $mandrill_api;
+  }
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('plugin.manager.mail'),
+      $container->get('path.validator'),
+      $container->get('renderer'),
+      $container->get('mandrill.service'),
+      $container->get('mandrill.api')
+    );
+  }
   /**
    * {@inheritdoc}.
    */
   public function getFormId() {
     return 'mandrill_admin_settings';
   }
-
   /**
    * {@inheritdoc}.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('mandrill.settings');
-    $mailsystem_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/config/system/mailsystem'));
-    $systemlog_path = \Drupal::service('path.validator')->getUrlIfValid($form_state->getValue('admin/reports/dblog'));
-
     $key = $config->get('mandrill_api_key');
     $form['mandrill_api_key'] = array(
       '#title' => t('Mandrill API Key'),
       '#type' => 'textfield',
-      '#description' => t('Create or grab your API key from the !link.',
-        array('!link' => \Drupal::l(t('Mandrill settings'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/settings/index')))),
+      '#description' => t('Create or grab your API key from the !link.', array('!link' => $this->l(t('Mandrill settings'), Url::fromUri('https://mandrillapp.com/settings/index')))),
       '#default_value' => $key,
     );
-
-    $library = libraries_detect('mandrill');
-
-    if (!$library['installed']) {
-      drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'),
-        'warning');
+    if (!$this->mandrill->isLibraryInstalled()) {
+      drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'), 'warning');
     }
-
-    if ($key && $library['installed']) {
-      //@fixme
-      //$mailsystem_config_keys = mailsystem_get();
-      $mailsystem_config_keys = array();
-      $in_use = FALSE;
-      $usage_rows = array();
-      foreach ($mailsystem_config_keys as $key => $sys) {
-        if ($sys === 'MandrillMailSystem' && $key != 'mandrill_test') {
-          $in_use = TRUE;
-          $usage_rows[] = array(
-            $key,
-            $sys,
-          );
+    else if ($key) {
+      $mailSystemPath = Url::fromRoute('mailsystem.settings');
+      $usage = [];
+      foreach ($this->mandrill->getMailSystems() as $system) {
+        if ($this->mailConfigurationUsesMandrilMail($system)) {
+          $system['sender'] = $this->getPluginLabel($system['sender']);
+          $system['formatter'] = $this->getPluginLabel($system['formatter']);
+          $usage[] = $system;
         }
       }
-      if ($in_use) {
+      if (!empty($usage)) {
         $usage_array = array(
           '#theme' => 'table',
           '#header' => array(
-            t('Module Key'),
-            t('Mail System'),
+            t('Key'),
+            t('Sender'),
+            t('Formatter'),
           ),
-          '#rows' => $usage_rows,
+          '#rows' => $usage,
         );
         $form['mandrill_status'] = array(
-           '#type' => 'markup',
-           '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or '
-                        . 'configure additional systems to use Mandrill, use !link.<br /><br />!table',
-             array(
-               '!link' => \Drupal::l(t('Mail System'), $mailsystem_path),
-               '!table' => \Drupal::service('renderer')->render($usage_array),
-             )),
-         );
+          '#type' => 'markup',
+          '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or '
+            . 'configure additional systems to use Mandrill, use !link.<br /><br />!table',
+            array(
+              '!link' => $this->l(t('Mail System'), $mailSystemPath),
+              '!table' => $this->renderer->render($usage_array),
+            )),
+        );
       }
       elseif (!$form_state->get('rebuild')) {
         drupal_set_message(t(
-            'PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, '
+          'PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, '
           . 'you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or '
           . 'you will only be able to send Test Emails through Mandrill.',
-        array('!link' => \Drupal::l(t('Mail System'), $mailsystem_path))), 'warning');
-
+          array('!link' => $this->l(t('Mail System'), $mailSystemPath))), 'warning');
       }
-
       $form['email_options'] = array(
         '#type' => 'fieldset',
         '#collapsible' => TRUE,
         '#title' => t('Email options'),
       );
-
-      $from = mandrill_from();
       $form['email_options']['mandrill_from'] = array(
         '#title' => t('From address'),
         '#type' => 'textfield',
         '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is. '
-                       . 'This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that '
-                       . 'address moved to the Reply-To field.'),
-        '#default_value' => $from['email'],
+          . 'This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that '
+          . 'address moved to the Reply-To field.'),
+        '#default_value' => $config->get('from_email'),
       );
       $form['email_options']['mandrill_from_name'] = array(
         '#type' => 'textfield',
         '#title' => t('From name'),
-        '#default_value' => $from['name'],
+        '#default_value' => $config->get('from_name'),
         '#description' => t('Optionally enter a from name to be used.'),
       );
-      $subaccounts = mandrill_get_subaccounts();
-      $sub_acct_options = array('' => '-- Select --');
-      if (count($subaccounts)) {
-        foreach ($subaccounts as $acct) {
-          if ($acct['status'] == 'active') {
-            $sub_acct_options[$acct['id']] = $acct['name'] . ' (' . $acct['reputation'] . ')';
+      $subAccounts = $this->mandrillAPI->getSubAccounts();
+      $subAccountsOptions = array();
+      if (!empty($subAccounts)) {
+        foreach ($subAccounts as $account) {
+          if ($account['status'] == 'active') {
+            $subAccountsOptions[$account['id']] = $account['name'] . ' (' . $account['reputation'] . ')';
           }
         }
       }
       elseif ($config->get('mandrill_subaccount')) {
         $config->set('mandrill_subaccount', FALSE)->save();
       }
-      if (count($sub_acct_options) > 1) {
+      if (!empty($subAccountsOptions)) {
+        array_unshift($subAccountsOptions, array('_none' => '-- Select --'));
         $form['email_options']['mandrill_subaccount'] = array(
           '#type' => 'select',
           '#title' => t('Subaccount'),
-          '#options' => $sub_acct_options,
+          '#options' => $subAccountsOptions,
           '#default_value' => $config->get('mandrill_subaccount'),
           '#description' => t('Choose a subaccount to send through.'),
         );
@@ -170,20 +185,18 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#title' => t('Content logging blacklist'),
         '#type' => 'textarea',
         '#description' => t('Comma delimited list of Drupal mail keys to exclude content logging for. CAUTION: Removing the default password reset key may expose a security risk.'),
-        '#default_value' => mandrill_mail_key_blacklist(),
+        '#default_value' => $config->get('mandrill_mail_key_blacklist'),
       );
       $form['send_options']['mandrill_log_defaulted_sends'] = array(
-       '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
-       '#type' => 'checkbox',
-       '#description' => t('If you select Mandrill as the site-wide default email sender in !mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the !systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
-         array(
-           '!mailsystem' => \Drupal::l(t('Mail System'), $mailsystem_path),
-           '!systemlog' => \Drupal::l(t('system log'), $systemlog_path),
-         )),
-       '#default_value' => $config->get('mandrill_log_defaulted_sends'),
-     );
-
-
+        '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
+        '#type' => 'checkbox',
+        '#description' => t('If you select Mandrill as the site-wide default email sender in !mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the !systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
+          array(
+            '!mailsystem' => $this->l(t('Mail System'), $mailSystemPath),
+            '!systemlog' => $this->l(t('system log'), Url::fromRoute('dblog.overview')),
+          )),
+        '#default_value' => $config->get('mandrill_log_defaulted_sends'),
+      );
       $form['analytics'] = array(
         '#type' => 'fieldset',
         '#collapsible' => TRUE,
@@ -213,7 +226,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#title' => t('Queue outgoing messages'),
         '#type' => 'checkbox',
         '#description' => t('When set, emails will not be immediately sent. Instead, they will be placed in a queue and sent when cron is triggered.'),
-        '#default_value' => mandrill_process_async(),
+        '#default_value' => $config->get('mandrill_process_async'),
       );
       $form['asynchronous_options']['mandrill_batch_log_queued'] = array(
         '#title' => t('Log queued emails in watchdog'),
@@ -231,8 +244,8 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#type' => 'textfield',
         '#size' => '12',
         '#description' => t('Number of seconds to spend processing messages during cron. Zero or negative values are not allowed.'),
-        '#required' => TRUE,
-        '#element_validate' => array('element_validate_integer_positive'),
+        //'#required' => TRUE,
+        //'#element_validate' => array('element_validate_integer_positive'),
         '#default_value' => $config->get('mandrill_queue_worker_timeout'),
         '#states' => array(
           'invisible' => array(
@@ -249,27 +262,47 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     );
     return parent::buildForm($form, $form_state);
   }
-
   /**
-   * {@inheritdoc}
+   * Check if a mail configuration has sender or formatter set to Mandrill.
+   *
+   * @param array $configuration
+   *   Must have keys sender and formatter set.
+   *
+   * @return bool
+   *   TRUE if configuration uses, FALSE otherwise.
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    //if (strlen($form_state->getValue('phone_number')) < 3) {
-      //$form_state->setErrorByName('phone_number', $this->t('The phone number is too short. Please enter a full phone number.'));
-   // }
+  private function mailConfigurationUsesMandrilMail(array $configuration) {
+    // The sender and formatter is required keys.
+    if (!isset($configuration['sender']) || !isset($configuration['formatter'])) {
+      return FALSE;
+    }
+    if ($configuration['sender'] === 'mandrill_mail' || $configuration['formatter'] === 'mandrill_mail') {
+      return TRUE;
+    }
+    return FALSE;
   }
-
+  /**
+   * Get the label for a mail plugin.
+   *
+   * @param $plugin_id
+   *
+   * @return string
+   */
+  private function getPluginLabel($plugin_id) {
+    $definition = $this->mailManager->getDefinition($plugin_id);
+    return isset($definition['label']) ? $definition['label'] : $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+  }
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $this->config('mandrill.settings')
       ->set('mandrill_api_key', $form_state->getValue('mandrill_api_key'))
-      ->set('mandrill_from', $form_state->getValue('mandrill_from'))
-      ->set('mandrill_from_name', $form_state->getValue('mandrill_from_name'))
+      ->set('from_email', $form_state->getValue('mandrill_from'))
+      ->set('from_name', $form_state->getValue('mandrill_from_name'))
       ->set('mandrill_subaccount', $form_state->getValue('mandrill_subaccount'))
       ->set('mandrill_filter_format', $form_state->getValue('mandrill_filter_format'))
+      ->set('mandrill_track_opens', $form_state->getValue('mandrill_track_opens'))
       ->set('mandrill_track_clicks', $form_state->getValue('mandrill_track_clicks'))
       ->set('mandrill_url_strip_qs', $form_state->getValue('mandrill_url_strip_qs'))
       ->set('mandrill_mail_key_blacklist', $form_state->getValue('mandrill_mail_key_blacklist'))
@@ -280,8 +313,6 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       ->set('mandrill_batch_log_queued', $form_state->getValue('mandrill_batch_log_queued'))
       ->set('mandrill_queue_worker_timeout', $form_state->getValue('mandrill_queue_worker_timeout'))
       ->save();
-
-    parent::submitForm($form, $form_state);
   }
   /**
    * {@inheritdoc}.
