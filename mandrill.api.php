@@ -11,7 +11,7 @@
  * Allows other modules to alter the Mandrill message and sender arguments.
  *
  * @array $mandrill_params
- *   The mandril message array
+ *   The Mandrill message array
  * @see MandrillMailSystem::mail()
  *
  * @array $message

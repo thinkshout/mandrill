@@ -7,7 +7,7 @@ namespace Drupal\mandrill;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 /**
- * Serivce class to integrate with Twitter.
+ * Service class.
  */
 class MandrillService implements MandrillServiceInterface {
   /**
