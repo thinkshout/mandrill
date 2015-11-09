@@ -6,6 +6,38 @@
  */
 
 /**
+ * Implements hook_entity_insert().
+ */
+function mandrill_template_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+
+  if ($entity->getEntityTypeId() !== 'node' || ($entity->getEntityTypeId() === 'node' && $entity->bundle() !== 'article')) {
+    return;
+  }
+
+  $mailManager = \Drupal::service('plugin.manager.mail');
+
+  $module = 'mandrill_template';
+  $key = 'node_insert';
+  $to = \Drupal::currentUser()->getEmail();
+  $params['message'] = $entity->get('body')->value;
+  $params['node_title'] = $entity->label();
+  $langcode = \Drupal::currentUser()->getPreferredLangcode();
+  $send = true;
+
+  $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+  if ($result['result'] !== true) {
+    $message = t('There was a problem sending your email notification to @email for creating node @id.', array('@email' => $to, '@id' => $entity->id()));
+    drupal_set_message($message, 'error');
+    \Drupal::logger('mandrill_template')->error($message);
+    return;
+  }
+
+  $message = t('An email notification has been sent to @email for creating node @id.', array('@email' => $to, '@id' => $entity->id()));
+  drupal_set_message($message);
+  \Drupal::logger('mandrill_template')->notice($message);
+}
+
+/**
  * Implements hook_entity_info().
  */
 function mandrill_template_entity_info() {

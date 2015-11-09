@@ -1,6 +1,8 @@
 <?php
 namespace Drupal\mandrill;
 
+use Mandrill;
+
 /**
  * Class DrupalMandrill.
  */
@@ -24,7 +26,7 @@ class DrupalMandrill extends Mandrill {
 
     $this->root = rtrim($this->root, '/') . '/';
 
-    $this->templates = new Mandrill_Templates($this);
+    $this->templates = new Mandrill_Template($this);
     $this->exports = new Mandrill_Exports($this);
     $this->users = new Mandrill_Users($this);
     $this->rejects = new Mandrill_Rejects($this);

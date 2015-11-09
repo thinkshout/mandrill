@@ -1,0 +1,5 @@
+mandrill_template.admin:
+  route_name: mandrill_template.admin
+  title: 'Mandrill Template Admin'
+  weight: -10
+  base_route: mandrill_template.admin
