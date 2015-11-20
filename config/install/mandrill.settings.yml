@@ -3,7 +3,6 @@ mandrill_filter_format: ''
 mandrill_track_opens: true
 mandrill_track_clicks: true
 mandrill_url_strip_qs: false
-mandrill_analytics_domains: null
 mandrill_analytics_campaign: ''
 mandrill_batch_log_queued: true
 mandrill_queue_worker_timeout: 15

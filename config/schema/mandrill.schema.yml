@@ -18,11 +18,6 @@ mandrill.settings:
       type: boolean
     mandrill_url_strip_qs:
       type: boolean
-    #mandrill_analytics_domains:
-    #  type: sequence
-    #  sequence:
-    #    type: string
-    #    label: 'Domain'
     mandrill_analytics_campaign:
       type: string
     mandrill_batch_log_queued:
