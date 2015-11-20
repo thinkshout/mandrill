@@ -36,21 +36,12 @@ function mandrill_uninstall() {
   $config->clear('mandrill_track_opens')->save();
   $config->clear('mandrill_url_strip_qs')->save();
   $config->clear('mandrill_process_async')->save();
-
-  // Tell mailsystem to remove mandrill and restore to defaults:
-  // Undefined mailsystem_clear
-  //mailsystem_clear(array('mandrill_test' => 'MandrillMailSystem'));
-  \Drupal::logger('mandrill')->notice('Mandrill has been uninstalled.', []);
-}
-/**
- * Implements hook_enable().
- */
-function mandrill_enable() {
-  //mailsystem_set(array('mandrill_test' => 'MandrillMailSystem'));
 }
 
 /**
  * Implements hook_requirements().
+ *
+ * @TODO Update this
  */
 function mandrill_requirements($phase) {
   $requirements = array();

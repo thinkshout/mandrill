@@ -41,8 +41,3 @@ mandrill.settings:
       type: string
     mandrill_process_async:
       type: boolean
-    #mandrill_test_mailsend_result:
-    #  type: sequence
-    #    sequence:
-    #      type: string
-    #      label: 'Result'

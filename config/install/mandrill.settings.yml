@@ -13,4 +13,3 @@ mandrill_api_timeout: 60
 mandrill_api_classname: Mandrill
 mandrill_mail_key_blacklist: user_password_reset
 mandrill_process_async: false
-mandrill_test_mailsend_result: null

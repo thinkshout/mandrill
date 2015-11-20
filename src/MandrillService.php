@@ -3,9 +3,12 @@
  * @file
  * Contains \Drupal\mandrill\MandrillService.
  */
+
 namespace Drupal\mandrill;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+
 /**
  * Service class.
  */
