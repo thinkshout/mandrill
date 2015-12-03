@@ -72,7 +72,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $mailSystemPath = Url::fromRoute('mailsystem.settings');
       $usage = [];
       foreach ($this->mandrill->getMailSystems() as $system) {
-        if ($this->mailConfigurationUsesMandrilMail($system)) {
+        if ($this->mailConfigurationUsesMandrillMail($system)) {
           $system['sender'] = $this->getPluginLabel($system['sender']);
           $system['formatter'] = $this->getPluginLabel($system['formatter']);
           $usage[] = $system;
@@ -271,7 +271,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    * @return bool
    *   TRUE if configuration uses, FALSE otherwise.
    */
-  private function mailConfigurationUsesMandrilMail(array $configuration) {
+  private function mailConfigurationUsesMandrillMail(array $configuration) {
     // The sender and formatter is required keys.
     if (!isset($configuration['sender']) || !isset($configuration['formatter'])) {
       return FALSE;
