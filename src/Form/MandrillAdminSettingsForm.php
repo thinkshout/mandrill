@@ -5,7 +5,10 @@
  *
  * https://www.drupal.org/node/2117411
  */
+
 namespace Drupal\mandrill\Form;
+
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,6 +18,7 @@ use Drupal\Core\Render\RendererInterface;
 use Drupal\mailsystem\MailsystemManager;
 use Drupal\mandrill\MandrillServiceInterface;
 use Drupal\mandrill\MandrillAPIInterface;
+
 /**
  * Implements an Mandrill Admin Settings form.
  */
@@ -35,6 +39,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     $this->mandrill = $mandrill;
     $this->mandrillAPI = $mandrill_api;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -47,12 +52,14 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $container->get('mandrill.api')
     );
   }
+
   /**
    * {@inheritdoc}.
    */
   public function getFormId() {
     return 'mandrill_admin_settings';
   }
+
   /**
    * {@inheritdoc}.
    */
@@ -262,6 +269,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     );
     return parent::buildForm($form, $form_state);
   }
+
   /**
    * Check if a mail configuration has sender or formatter set to Mandrill.
    *
@@ -281,6 +289,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     }
     return FALSE;
   }
+
   /**
    * Get the label for a mail plugin.
    *
@@ -292,11 +301,12 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     $definition = $this->mailManager->getDefinition($plugin_id);
     return isset($definition['label']) ? $definition['label'] : $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
   }
+
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('mandrill.settings')
+    \Drupal::configFactory()->getEditable('mandrill.settings')
       ->set('mandrill_api_key', $form_state->getValue('mandrill_api_key'))
       ->set('from_email', $form_state->getValue('mandrill_from'))
       ->set('from_name', $form_state->getValue('mandrill_from_name'))
@@ -314,6 +324,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       ->set('mandrill_queue_worker_timeout', $form_state->getValue('mandrill_queue_worker_timeout'))
       ->save();
   }
+
   /**
    * {@inheritdoc}.
    */

@@ -23,9 +23,10 @@ class MandrillAPI implements MandrillAPIInterface {
    */
   public function __construct(MandrillServiceInterface $mandrill_service, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
     $this->mandrillService = $mandrill_service;
-    $this->config = $config_factory->get('mandrill.settings');
+    $this->config = $config_factory->getEditable('mandrill.settings');
     $this->log = $logger_factory->get('mandrill');
   }
+
   /**
    * Get a list of sub accounts from Mandrill.
    *
@@ -43,6 +44,7 @@ class MandrillAPI implements MandrillAPIInterface {
     }
     return $accounts;
   }
+
   /**
    * The function that calls the API send message.
    *
@@ -63,6 +65,7 @@ class MandrillAPI implements MandrillAPIInterface {
       throw new \Exception('Could not load Mandrill API.');
     }
   }
+
   /**
    * Return Mandrill API object for communication with the mandrill server.
    *
@@ -82,6 +85,8 @@ class MandrillAPI implements MandrillAPIInterface {
         drupal_set_message($msg, 'error');
         return NULL;
       }
+
+      // @TODO: mandrill_api_key is undefined when tests are run
       $api_key = $this->config->get('mandrill_api_key');
       $api_timeout = $this->config->get('mandrill_api_timeout');
       if (empty($api_key)) {

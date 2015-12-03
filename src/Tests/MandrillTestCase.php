@@ -47,6 +47,7 @@ class MandrillTestCase extends WebTestBase {
     $response = $mailSystem->mail($message);
     $this->assertTrue($response, 'Tested sending message to multiple recipients.');
   }
+
   /**
    * Tests sending a message to an invalid recipient.
    */
@@ -57,6 +58,7 @@ class MandrillTestCase extends WebTestBase {
     $response = $mailSystem->mail($message);
     $this->assertFalse($response, 'Tested sending message to an invalid recipient.');
   }
+
   /**
    * Tests sending a message to no recipients.
    */
@@ -67,6 +69,7 @@ class MandrillTestCase extends WebTestBase {
     $response = $mailSystem->mail($message);
     $this->assertFalse($response, 'Tested sending message to no recipients.');
   }
+
   /**
    * Gets getting a list of templates for a given label.
    *
@@ -81,6 +84,7 @@ class MandrillTestCase extends WebTestBase {
   }
   }
   }
+
   /**
    * Tests getting a list of subaccounts.
    */
