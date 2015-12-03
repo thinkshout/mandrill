@@ -290,7 +290,12 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    */
   private function getPluginLabel($plugin_id) {
     $definition = $this->mailManager->getDefinition($plugin_id);
-    $plugin_label = isset($definition['label']) ? $definition['label'] : $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+    if (isset($definition['label'])) {
+      $plugin_label = $definition['label'];
+    }
+    else {
+      $plugin_label = $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+    }
     return $plugin_label;
   }
   /**
