@@ -40,14 +40,15 @@ class DefaultController extends ControllerBase {
     ];
     foreach ($data['urls'] as $url) {
       $percent = number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
-      // @FIXME
-      // l() expects a Url object, created from a route name or external URI.
-      // $rows[] = array(
-      //       l($url['url'], $url['url']),
-      //       $url['sent'],
-      //       $url['unique_clicks'] . "({$percent}%)",
-      //       $url['clicks']);
 
+      $url_object = Url::fromUri($url['url']);
+      $link = l(t($url['url']), $url_object);
+
+      $rows[] = array(
+             $link,
+             $url['sent'],
+             $url['unique_clicks'] . "({$percent}%)",
+             $url['clicks']);
     }
 
     $path = drupal_get_path('module', 'mandrill_reports');
