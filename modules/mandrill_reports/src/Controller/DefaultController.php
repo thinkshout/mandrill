@@ -45,10 +45,10 @@ class DefaultController extends ControllerBase {
       $link = l(t($url['url']), $url_object);
 
       $rows[] = array(
-             $link,
-             $url['sent'],
-             $url['unique_clicks'] . "({$percent}%)",
-             $url['clicks']);
+        $link,
+        $url['sent'],
+        $url['unique_clicks'] . "({$percent}%)",
+        $url['clicks']);
     }
 
     $path = drupal_get_path('module', 'mandrill_reports');
