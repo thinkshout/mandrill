@@ -37,9 +37,9 @@ class MandrillTestCase extends DrupalWebTestCase {
       'entity',
     );
     parent::setUp($enabled_modules);
-    variable_set('mandrill_api_classname', 'DrupalMandrillTest');
-    variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
-    variable_set('mandrill_test_mode', TRUE);
+    \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
+    \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
+    \Drupal::config('mandrill.settings')->set('mandrill_test_mode', TRUE)->save();
   }
 
   /**
@@ -50,9 +50,9 @@ class MandrillTestCase extends DrupalWebTestCase {
   protected function tearDown() {
     parent::tearDown();
 
-    variable_del('mandrill_api_classname');
-    variable_del('mandrill_api_key');
-    variable_del('mandrill_test_mode');
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_classname')->save();
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();
+    \Drupal::config('mandrill.settings')->clear('mandrill_test_mode')->save();
   }
 
   /**
@@ -139,6 +139,7 @@ class MandrillTestCase extends DrupalWebTestCase {
   protected function getMessageTestData() {
     $message = array(
       'id' => 1,
+      'module' => NULL,
       'body' => '<p>Mail content</p>',
       'subject' => 'Mail Subject',
       'from_email' => 'sender@example.com',

@@ -1,0 +1,8 @@
+name: 'Mandrill Activity'
+description: 'View activity for an email address associated with any entity.'
+package: Mandrill
+core: 8.x
+dependencies:
+  - mandrill
+  - entity
+type: module

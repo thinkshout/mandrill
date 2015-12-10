@@ -11,7 +11,7 @@
  * Allows other modules to alter the Mandrill message and sender arguments.
  *
  * @array $mandrill_params
- *   The mandril message array
+ *   The Mandrill message array
  * @see MandrillMailSystem::mail()
  *
  * @array $message
@@ -45,6 +45,6 @@ function hook_mandrill_mailsend_result($result) {
   if ($result['status'] == 'rejected') {
     // Delete user.
     $user = user_load_by_mail($result['email']);
-    user_delete($user->uid);
+    $user->uid->delete();
   }
 }

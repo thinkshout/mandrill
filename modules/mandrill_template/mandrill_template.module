@@ -44,9 +44,10 @@ function mandrill_template_entity_info() {
  *   True if current user has acces to template maps, else false
  */
 function mandrill_template_map_access() {
-  $a = user_access('configure mandrill templates');
-  $b = variable_get('mandrill_api_key');
-  return $a & !empty($b);
+  $has_permission = \Drupal::currentUser()->hasPermission('configure mandrill templates');
+  $key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
+
+  return $has_permission & !empty($key);
 }
 
 /**

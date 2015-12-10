@@ -1,0 +1,5 @@
+mandrill.settings:
+  route_name: mandrill.settings
+  title: Settings
+  parent_id: mandrill.settings
+  weight: 8

@@ -49,7 +49,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
 
   // Prep the entity type list before creating the form item:
   $entity_types = array('' => t('-- Select --'));
-  foreach (entity_get_info() as $entity_type => $info) {
+  foreach (\Drupal::entityManager()->getDefinitions() as $entity_type => $info) {
     // Ignore Mandrill entity types.
     if (strpos($entity_type, 'mandrill') === FALSE) {
       $entity_types[$entity_type] = $info['label'];
@@ -77,7 +77,7 @@ function mandrill_activity_entity_form($form, &$form_state, MandrillActivityEnti
   if ($form_entity_type) {
     // Prep the bundle list before creating the form item:
     $bundles = array('' => t('-- Select --'));
-    $info  = entity_get_info($form_entity_type);
+    $info  = \Drupal::entityManager()->getDefinition($form_entity_type);
     foreach ($info['bundles'] as $key => $bundle) {
       $bundles[$key] = $bundle['label'];
     }
@@ -142,7 +142,7 @@ function mandrill_activity_mapping_form_callback($form, &$form_state) {
  * Validation callback for mandrill_activity_entity_form().
  */
 function mandrill_activity_entity_form_validate($form, &$form_state) {
-  $extant_mc_entities = entity_load('mandrill_activity_entity');
+  $extant_mc_entities = \Drupal::entityManager()->getStorage('mandrill_activity_entity');
   $form_id = $form_state['mandrill_activity_entity']->mandrill_activity_entity_id;
   $form_bundle = $form_state['values']['bundle'];
   $form_entity_id = $form_state['values']['entity_type'];
@@ -150,13 +150,16 @@ function mandrill_activity_entity_form_validate($form, &$form_state) {
     if ($form_bundle == $extant_ent->bundle &&
         $form_entity_id == $extant_ent->entity_type &&
         $form_id != $extant_ent->mandrill_activity_entity_id) {
-      form_set_error(
-        'bundle',
-        t('A Mandrill Activity Entity already exists for this Bundle. Either select a different Bundle or edit the !link for this bundle.',
-          array(
-            '!link' => l(t('existing Mandrill Activity Entity'), "admin/config/services/mandrill/activity/manage/{$extant_ent->name}"),
-          )
-        ));
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// form_set_error(
+//         'bundle',
+//         t('A Mandrill Activity Entity already exists for this Bundle. Either select a different Bundle or edit the !link for this bundle.',
+//           array(
+//             '!link' => l(t('existing Mandrill Activity Entity'), "admin/config/services/mandrill/activity/manage/{$extant_ent->name}"),
+//           )
+//         ));
+
     }
   }
 }
@@ -167,10 +170,10 @@ function mandrill_activity_entity_form_validate($form, &$form_state) {
 function mandrill_activity_entity_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   if ($form_state['op'] == 'add' || $form_state['op'] == 'clone') {
-    $dummy = entity_create($form_state['values']['entity_type'], array('type' => $form_state['values']['bundle']));
+    $dummy = \Drupal::entityManager()->getStorage($form_state['values']['entity_type'])->create(array('type' => $form_state['values']['bundle']));
     $uri = entity_uri($form_state['values']['entity_type'], $dummy);
     $values['entity_path'] = $uri['path'];
-    $activity_entity = entity_create('mandrill_activity_entity', $values);
+    $activity_entity = \Drupal::entityManager()->getStorage('mandrill_activity_entity')->create($values);
   }
   else {
     $activity_entity = $form_state['mandrill_activity_entity'];
@@ -210,7 +213,7 @@ function mandrill_activity_email_fieldmap_options($entity_type, $entity_bundle =
 
   foreach ($properties as $key => $property) {
     $type = isset($property['type']) ? entity_property_extract_innermost_type($property['type']) : 'text';
-    $is_entity = ($type == 'entity') || (bool) entity_get_info($type);
+    $is_entity = ($type == 'entity') || (bool) \Drupal::entityManager()->getDefinition($type);
     // Leave entities out of this.
     if (!$is_entity) {
       if (isset($property['field']) && $property['field'] && !empty($property['property info'])) {

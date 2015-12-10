@@ -38,8 +38,8 @@ class MandrillActivityTestCase extends DrupalWebTestCase {
       'entity',
     );
     parent::setUp($enabled_modules);
-    variable_set('mandrill_api_classname', 'DrupalMandrillTest');
-    variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
+    \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
+    \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
   }
 
   /**
@@ -49,9 +49,8 @@ class MandrillActivityTestCase extends DrupalWebTestCase {
    */
   protected function tearDown() {
     parent::tearDown();
-
-    variable_del('mandrill_api_classname');
-    variable_del('mandrill_api_key');
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_classname')->save();
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();
   }
 
   /**

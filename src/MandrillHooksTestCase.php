@@ -1,10 +1,15 @@
 <?php
-/**
- * @file
- * Test class and methods for the Mandrill Test module.
- */
+namespace Drupal\mandrill;
 
-class MandrillHooksTestCase extends DrupalWebTestCase {
+/**
+ * Tests Mandrill hook functionality.
+ * 
+ * @group mandrill
+ */
+class MandrillHooksTestCase extends \Drupal\simpletest\WebTestBase {
+
+  protected $profile = 'standard';
+
   /**
    * Returns info displayed in the test interface.
    *
@@ -13,11 +18,11 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    */
   public static function getInfo() {
     // Note: getInfo() strings are not translated with t().
-    return array(
+    return [
       'name' => 'Mandrill Hooks Tests',
       'description' => 'Tests Mandrill hook functionality.',
       'group' => 'Mandrill',
-    );
+    ];
   }
 
   /**
@@ -31,15 +36,15 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
     $prof = drupal_get_profile();
     $this->profile = $prof;
     // Enable modules required for the test.
-    $enabled_modules = array(
+    $enabled_modules = [
       'libraries',
       'mandrill',
       'mandrill_test',
       'entity',
-    );
+    ];
     parent::setUp($enabled_modules);
-    variable_set('mandrill_api_classname', 'DrupalMandrillTest');
-    variable_set('mandrill_api_key', 'MANDRILL_TEST_API_KEY');
+    \Drupal::config('mandrill.settings')->set('mandrill_api_classname', 'DrupalMandrillTest')->save();
+    \Drupal::config('mandrill.settings')->set('mandrill_api_key', 'MANDRILL_TEST_API_KEY')->save();
   }
 
   /**
@@ -50,9 +55,9 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
   protected function tearDown() {
     parent::tearDown();
 
-    variable_del('mandrill_api_classname');
-    variable_del('mandrill_api_key');
-    variable_del('mandrill_test_mailsend_result');
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_classname')->save();
+    \Drupal::config('mandrill.settings')->clear('mandrill_api_key')->save();
+    \Drupal::config('mandrill.settings')->clear('mandrill_test_mailsend_result')->save();
   }
 
   /**
@@ -64,17 +69,17 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
      */
     $message = $this->getMessageTestData();
 
-    $mandrill_params = array(
+    $mandrill_params = [
       'message' => $message,
       'function' => 'mandrill_sender_plain',
-      'args' => array(),
-    );
+      'args' => [],
+    ];
 
     /**
      * Perform alterations on the message.
      * @see mandrill_test_mandrill_mail_alter()
      */
-    drupal_alter('mandrill_mail', $mandrill_params, $message);
+    \Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
 
     // Test altered values.
     $this->assertEqual($mandrill_params['message']['subject'], 'Altered Test Subject', 'Tested altered mail subject.');
@@ -89,17 +94,17 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    * Tests implementing hook_mandrill_valid_attachment_types_alter().
    */
   public function testValidAttachmentTypesAlterHook() {
-    $types = array(
+    $types = [
       'image/png',
       'image/jpeg',
       'image/gif',
-    );
+    ];
 
     /**
      * Perform alterations on the attachment types array.
      * @see mandrill_test_mandrill_valid_attachment_types_alter()
      */
-    drupal_alter('mandrill_valid_attachment_types', $types);
+    \Drupal::moduleHandler()->alter('mandrill_valid_attachment_types', $types);
 
     $this->assertTrue(in_array('application/pdf', $types), 'Tested altered attachment types.');
   }
@@ -115,7 +120,7 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
 
     $mail_system->mail($message);
 
-    $mailsend_result = variable_get('mandrill_test_mailsend_result', NULL);
+    $mailsend_result = \Drupal::config('mandrill.settings')->get('mandrill_test_mailsend_result');
 
     $this->assertNotNull($mailsend_result, 'Tested mailsend_result hook triggered.');
 
@@ -128,14 +133,16 @@ class MandrillHooksTestCase extends DrupalWebTestCase {
    * Gets message data used in tests.
    */
   protected function getMessageTestData() {
-    $message = array(
+    $message = [
       'id' => 1,
+      'module' => NULL,
       'body' => '<p>Mail content</p>',
       'subject' => 'Mail Subject',
       'from_email' => 'sender@example.com',
       'from_name' => 'Test Sender',
-    );
+    ];
 
     return $message;
   }
+
 }

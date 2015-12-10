@@ -1,9 +1,5 @@
 <?php
-
-/**
- * @file
- * Implements Mandrill as a Drupal MailSystemInterface
- */
+namespace Drupal\mandrill;
 
 /**
  * Modify the drupal mail system to use Mandrill when sending emails.
@@ -41,7 +37,7 @@ class MandrillMailSystem implements MailSystemInterface {
   public function mail(array $message) {
     // Optionally log mail keys not using Mandrill already. Helpful in
     // configuring Mandrill.
-    if (variable_get('mandrill_log_defaulted_sends', FALSE)) {
+    if (\Drupal::config('mandrill.settings')->get('mandrill_log_defaulted_sends')) {
       $systems = mailsystem_get();
       $registered = FALSE;
       foreach ($systems as $key => $system) {
@@ -49,22 +45,25 @@ class MandrillMailSystem implements MailSystemInterface {
           $registered = TRUE;
         }
         if (!$registered) {
-          watchdog(
-            'mandrill',
-            "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
-            array(
-              '%module' => $message['module'],
-              '%key' => $message['key'],
-              '!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
-            ),
-            WATCHDOG_INFO
-          );
+          // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// watchdog(
+//             'mandrill',
+//             "Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
+//             array(
+//               '%module' => $message['module'],
+//               '%key' => $message['key'],
+//               '!mailsystem' => l(t('Mail System'), 'admin/config/system/mailsystem'),
+//             ),
+//             WATCHDOG_INFO
+//           );
+
         }
       }
     }
 
     // Apply input format to body.
-    $format = variable_get('mandrill_filter_format', '');
+    $format = \Drupal::config('mandrill.settings')->get('mandrill_filter_format');
     if (!empty($format)) {
       $message['body'] = check_markup($message['body'], $format);
     }
@@ -97,7 +96,7 @@ class MandrillMailSystem implements MailSystemInterface {
     $blacklisted_keys = explode(',', mandrill_mail_key_blacklist());
     $view_content = TRUE;
     foreach ($blacklisted_keys as $key) {
-      if ($message['id'] == drupal_strtolower(trim($key))) {
+      if ($message['id'] == \Drupal\Component\Utility\Unicode::strtolower(trim($key))) {
         $view_content = FALSE;
         break;
       }
@@ -109,14 +108,25 @@ class MandrillMailSystem implements MailSystemInterface {
     // array as well.
     if (isset($message['params']['attachments']) && !empty($message['params']['attachments'])) {
       foreach ($message['params']['attachments'] as $attachment) {
-        $attachment_path = drupal_realpath($attachment['uri']);
-        if (is_file($attachment_path)) {
-          $struct = $this->getAttachmentStruct($attachment_path);
-          // Allow for customised filenames.
-          if (!empty($attachment['filename'])) {
-            $struct['name'] = $attachment['filename'];
+        if (isset($attachment['uri'])) {
+          $attachment_path = \Drupal::service('file_system')->realpath($attachment['uri']);
+          if (is_file($attachment_path)) {
+            $struct = $this->getAttachmentStruct($attachment_path);
+            // Allow for customised filenames.
+            if (!empty($attachment['filename'])) {
+              $struct['name'] = $attachment['filename'];
+            }
+            $attachments[] = $struct;
           }
-          $attachments[] = $struct;
+        }
+        // Support attachments that are directly included without a file in the
+        // filesystem.
+        elseif (isset($attachment['filecontent'])) {
+          $attachments[] = array(
+            'type' => $attachment['filemime'],
+            'name' => $attachment['filename'],
+            'content' => chunk_split(base64_encode($attachment['filecontent']), 76, "\n"),
+          );
         }
       }
       // Remove the file objects from $message['params']['attachments'].
@@ -132,7 +142,11 @@ class MandrillMailSystem implements MailSystemInterface {
 
     $from = mandrill_from();
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
-    $mandrill_message = $overrides + array(
+    // @FIXME
+// Could not extract the default value because it is either indeterminate, or
+// not scalar. You'll need to provide a default value in
+// config/install/mandrill.settings.yml and config/schema/mandrill.schema.yml.
+$mandrill_message = $overrides + array(
       'html' => $message['body'],
       'text' => $plain_text,
       'subject' => $message['subject'],
@@ -140,20 +154,20 @@ class MandrillMailSystem implements MailSystemInterface {
       'from_name' => isset($message['params']['mandrill']['from_name']) ? $message['params']['mandrill']['from_name'] : $from['name'],
       'to' => $to,
       'headers' => $headers,
-      'track_opens' => variable_get('mandrill_track_opens', TRUE),
-      'track_clicks' => variable_get('mandrill_track_clicks', TRUE),
+      'track_opens' => \Drupal::config('mandrill.settings')->get('mandrill_track_opens'),
+      'track_clicks' => \Drupal::config('mandrill.settings')->get('mandrill_track_clicks'),
       // We're handling this with drupal_html_to_text().
       'auto_text' => FALSE,
-      'url_strip_qs' => variable_get('mandrill_url_strip_qs', FALSE),
+      'url_strip_qs' => \Drupal::config('mandrill.settings')->get('mandrill_url_strip_qs'),
       'bcc_address' => isset($message['bcc_email']) ? $message['bcc_email'] : NULL,
       'tags' => array($message['id']),
-      'google_analytics_domains' => (variable_get('mandrill_analytics_domains', NULL)) ? explode(',', variable_get('mandrill_analytics_domains')) : array(),
-      'google_analytics_campaign' => variable_get('mandrill_analytics_campaign', ''),
+      'google_analytics_domains' => (\Drupal::config('mandrill.settings')->get('mandrill_analytics_domains')) ? explode(',', \Drupal::config('mandrill.settings')->get('mandrill_analytics_domains')) : array(),
+      'google_analytics_campaign' => \Drupal::config('mandrill.settings')->get('mandrill_analytics_campaign'),
       'attachments' => $attachments,
       'view_content_link' => $view_content,
       'metadata' => $metadata,
     );
-    $subaccount = variable_get('mandrill_subaccount', FALSE);
+    $subaccount = \Drupal::config('mandrill.settings')->get('mandrill_subaccount');
     if ($subaccount) {
       $mandrill_message['subaccount'] = $subaccount;
     }
@@ -163,19 +177,18 @@ class MandrillMailSystem implements MailSystemInterface {
       'function' => 'mandrill_sender_plain',
       'args' => array(),
     );
-    drupal_alter('mandrill_mail', $mandrill_params, $message);
+    \Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
 
     // Queue for processing during cron or send immediately.
     $status = NULL;
     if (mandrill_process_async()) {
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
       $queue->createItem($mandrill_params);
-      if (variable_get('mandrill_batch_log_queued', TRUE)) {
-        watchdog('mandrill', 'Message from %from to %to queued for delivery.',
-          array(
+      if (\Drupal::config('mandrill.settings')->get('mandrill_batch_log_queued')) {
+        \Drupal::logger('mandrill')->notice('Message from %from to %to queued for delivery.', array(
             '%from' => $from['email'],
             '%to' => $to[0]['email'],
-          ), WATCHDOG_NOTICE);
+          ));
       }
       return TRUE;
     }
@@ -235,7 +248,7 @@ class MandrillMailSystem implements MailSystemInterface {
       'application/pdf',
       'application/x-zip',
     );
-    drupal_alter('mandrill_valid_attachment_types', $valid_types);
+    \Drupal::moduleHandler()->alter('mandrill_valid_attachment_types', $valid_types);
 
     foreach ($valid_types as $vct) {
       if (strpos($file_type, $vct) !== FALSE) {

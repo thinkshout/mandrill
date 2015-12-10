@@ -1,0 +1,9 @@
+mandrill_reports.dashboard_page:
+  route_name: mandrill_reports.dashboard_page
+  title: Dashboard
+  weight: -10
+  base_route: mandrill_reports.dashboard_page
+mandrill_reports.summary_page:
+  route_name: mandrill_reports.summary_page
+  title: 'Account summary'
+  base_route: mandrill_reports.dashboard_page

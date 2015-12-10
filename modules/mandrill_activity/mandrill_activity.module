@@ -41,12 +41,20 @@ function mandrill_activity_entity_info() {
  * Access callback for mandrill_activity_entity.
  */
 function mandrill_activity_entity_access() {
-  return user_access('administer mandrill activity');
+  return \Drupal::currentUser()->hasPermission('administer mandrill activity');
 }
 
 /**
- * Implements hook_menu().
+ * @FIXME
+ * This implementation of hook_menu() cannot be automatically converted because
+ * it contains logic (i.e., branching statements, function calls, object
+ * instantiation, etc.) You will need to convert it manually. Sorry!
+ *
+ * For more information on how to convert hook_menu() to Drupal 8's new routing
+ * and linking systems, see https://api.drupal.org/api/drupal/core%21includes%21menu.inc/group/menu/8
  */
+
+
 function mandrill_activity_menu() {
   $items = array();
   $mandrill_activity_entities = mandrill_activity_load();
@@ -70,7 +78,7 @@ function mandrill_activity_menu() {
  * Access callback for activity menu items.
  */
 function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_entity) {
-  if ($mandrill_activity_entity->enabled && user_access('access Mandrill activity')) {
+  if ($mandrill_activity_entity->enabled && \Drupal::currentUser()->hasPermission('access Mandrill activity')) {
     return TRUE;
   }
   return FALSE;
@@ -186,7 +194,7 @@ function mandrill_activity_permission() {
   $return = array();
 
   $return['access mandrill activity'] = array(
-    'title' => t('Access Mandrill activity'),
+    'title' => t('Access Mandrill Activity'),
     'description' => t('View own Mandrill activity history.'),
   );
   $return['administer mandrill activity'] = array(

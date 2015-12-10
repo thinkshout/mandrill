@@ -1,0 +1,7 @@
+# Mandrill activity entity menu items definition
+entity.mandrill_activity_entity.collection:
+  title: 'Mandrill activity entity'
+  route_name: entity.mandrill_activity_entity.collection
+  description: 'List Mandrill activity entity'
+  parent: system.admin_structure
+
