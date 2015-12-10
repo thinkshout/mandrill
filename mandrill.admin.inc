@@ -206,9 +206,9 @@ function mandrill_admin_settings($form, &$form_state) {
       '#default_value' => mandrill_process_async(),
     );
     $form['asynchronous_options']['mandrill_batch_log_queued'] = array(
-      '#title' => t('Log queued emails in watchdog'),
+      '#title' => t('Log queued emails'),
       '#type' => 'checkbox',
-      '#description' => t('Do you want to create a watchdog entry when an email is queued to be sent?'),
+      '#description' => t('Do you want to create a log entry when an email is queued to be sent?'),
       '#default_value' => \Drupal::config('mandrill.settings')->get('mandrill_batch_log_queued'),
       '#states' => array(
         'invisible' => array(
