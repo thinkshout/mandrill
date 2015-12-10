@@ -68,7 +68,7 @@ class MandrillAPI implements MandrillAPIInterface {
    *
    * @return \Mandrill|bool
    *   Mandrill Object upon success
-   *   FALSE if variable_get('mandrill_api_key') is unset
+   *   FALSE if 'mandrill_api_key' is unset
    */
   private function getAPIObject($reset = FALSE) {
     $api =& drupal_static(__FUNCTION__, NULL);
