@@ -202,13 +202,6 @@ function mandrill_sender_plain($message) {
 
 /**
  * Return Mandrill API object for communication with the mandrill server.
- *
- * @param bool $reset
- *   Pass in TRUE to reset the statically cached object.
- *
- * @return Mandrill|bool
- *   Mandrill Object upon success
- *   FALSE if variable_get('mandrill_api_key') is unset
  */
 function mandrill_get_api_object($reset = FALSE) {
   throw new \Exception('This method has moved to the API service class, and is private. Use one of the abstracts for whatever call you require.');
