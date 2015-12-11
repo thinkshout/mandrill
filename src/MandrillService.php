@@ -1,11 +1,15 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\MandrillService.
  */
+
 namespace Drupal\mandrill;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+
 /**
  * Service class.
  */
@@ -21,6 +25,7 @@ class MandrillService implements MandrillServiceInterface {
     $this->config = $config_factory;
     $this->log = $logger_factory->get('mandrill');
   }
+
   /**
    * Check if the Mandrill PHP library is available.
    *
@@ -32,6 +37,7 @@ class MandrillService implements MandrillServiceInterface {
     $className = $this->config->get('mandrill.settings')->get('mandrill_api_classname');
     return class_exists($className);
   }
+
   /**
    * Get the mail systems defined in the mail system module.
    *
@@ -63,6 +69,7 @@ class MandrillService implements MandrillServiceInterface {
     }
     return $systems;
   }
+
   /**
    * Helper to generate an array of recipients.
    *
@@ -90,6 +97,7 @@ class MandrillService implements MandrillServiceInterface {
     }
     return $recipients;
   }
+
   /**
    * Abstracts sending of messages, allowing queueing option.
    *
