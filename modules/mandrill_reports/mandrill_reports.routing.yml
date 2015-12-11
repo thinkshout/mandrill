@@ -1,14 +1,14 @@
 mandrill_reports.dashboard_page:
   path: /admin/reports/mandrill
   defaults:
-    _title: Mandrill
+    _title: 'Mandrill Reports Dashboard'
     _controller: '\Drupal\mandrill_reports\Controller\DefaultController::mandrill_reports_dashboard_page'
   requirements:
     _permission: 'view mandrill reports'
 mandrill_reports.summary_page:
   path: /admin/reports/mandrill/summary
   defaults:
-    _title: 'Account summary'
+    _title: 'Mandrill Account Summary'
     _controller: '\Drupal\mandrill_reports\Controller\DefaultController::mandrill_reports_summary_page'
   requirements:
     _permission: 'view mandrill reports'
