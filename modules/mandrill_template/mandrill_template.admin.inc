@@ -109,12 +109,15 @@ function mandrill_template_map_form($form, &$form_state, MandrillTemplateMap $ma
     }
 
     if ($mandrill_in_use) {
+      $url = Url::fromRoute('mailsystem.settings');
+      $link = l(t('MailSystem'), $url);
+
       $form['mailsystem_key'] = array(
         '#type' => 'select',
         '#title' => t('Email key'),
         '#description' => t(
           'Select a module and mail key to use this template for outgoing email. Note that if an email has been selected in another Template Mapping, it will not appear in this list. These keys are defined through the !MailSystem interface.',
-          array('!MailSystem' => l(t('MailSystem'), 'admin/config/system/mailsystem'))
+          array('!MailSystem' => $link)
         ),
         '#options' => $mailsystem_options,
         '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',
