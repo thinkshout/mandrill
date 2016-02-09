@@ -4,11 +4,14 @@
  * Contains \Drupal\mandrill\MandrillAPI.
  * Abstract the Mandrill PHP Api.
  */
+
 namespace Drupal\mandrill;
+
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+
 /**
- * Serivce class to integrate with Twitter.
+ * Service class to integrate with Mandrill.
  */
 class MandrillAPI implements MandrillAPIInterface {
   /**
@@ -23,6 +26,7 @@ class MandrillAPI implements MandrillAPIInterface {
     $this->config = $config_factory->get('mandrill.settings');
     $this->log = $logger_factory->get('mandrill');
   }
+
   /**
    * Get a list of sub accounts from Mandrill.
    *
@@ -40,6 +44,7 @@ class MandrillAPI implements MandrillAPIInterface {
     }
     return $accounts;
   }
+
   /**
    * The function that calls the API send message.
    *
@@ -60,6 +65,7 @@ class MandrillAPI implements MandrillAPIInterface {
       throw new \Exception('Could not load Mandrill API.');
     }
   }
+
   /**
    * Return Mandrill API object for communication with the mandrill server.
    *
@@ -68,7 +74,7 @@ class MandrillAPI implements MandrillAPIInterface {
    *
    * @return \Mandrill|bool
    *   Mandrill Object upon success
-   *   FALSE if variable_get('mandrill_api_key') is unset
+   *   FALSE if 'mandrill_api_key' is unset
    */
   private function getAPIObject($reset = FALSE) {
     $api =& drupal_static(__FUNCTION__, NULL);

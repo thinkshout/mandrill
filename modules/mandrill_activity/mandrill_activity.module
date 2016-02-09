@@ -30,18 +30,10 @@ function mandrill_activity_entity_info() {
         'controller class' => 'MandrillActivityUIController',
       ),
       'label callback' => 'entity_class_label',
-      'access callback' => 'mandrill_activity_entity_access',
     ),
   );
 
   return $return;
-}
-
-/**
- * Access callback for mandrill_activity_entity.
- */
-function mandrill_activity_entity_access() {
-  return \Drupal::currentUser()->hasPermission('administer mandrill activity');
 }
 
 /**
