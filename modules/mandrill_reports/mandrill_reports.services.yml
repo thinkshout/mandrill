@@ -1,0 +1,4 @@
+services:
+  mandrill_reports.api:
+    class: Drupal\mandrill\MandrillReportsAPI
+    arguments: []

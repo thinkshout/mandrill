@@ -55,58 +55,8 @@ function mandrill_reports_data() {
   }
 
   $data = array();
-  $api = mandrill_get_api_object();
-
-  if ($api) {
-    // Basic user info.
-    $data['user'] = $api->users->info();
-
-    // Tags.
-    $tags = $api->tags->getList();
-    foreach ($tags as $tag) {
-      if (!empty($tag['tag'])) {
-        $data['tags'][$tag['tag']] = $api->tags->info($tag['tag']);
-        $data['tags'][$tag['tag']]['time_series'] = $api->tags->timeSeries($tag['tag']);
-      }
-    }
-
-    // All time.
-    $data['all_time_series'] = $api->tags->allTimeSeries();
-
-    // Senders: data is not being used, and the API currently (3/12/13) behaves
-    // badly if you have a bad email address anywhere in your sender history, so
-    // commenting out for now:
-    $senders = $api->senders->getList();
-    foreach ($senders as $sender) {
-      try {
-        $data['senders'][$sender['address']] = $api->senders->info($sender['address']);
-        $data['senders'][$sender['address']]['time_series'] = $api->senders->timeSeries($sender['address']);
-      }
-      catch (Mandrill_Error $e) {
-        \Drupal::logger('mandrill')->error('An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
-          '%address' => $sender['address'],
-          '%message' => $e->getMessage(),
-        ));
-      }
-    }
-
-    // Urls.
-    $urls = $api->urls->getList();
-    foreach ($urls as $url) {
-      // Api has been intermittently tacking on incomplete $url arrays,
-      // so we have to check validity first:
-      if (isset($url['url'])) {
-        $data['urls'][$url['url']] = $url;
-        $data['urls'][$url['url']]['time_series'] = $api->urls->timeSeries($url['url']);
-      }
-    }
-    \Drupal::cache('cache')->set('mandrill_report_data', $data, CACHE_TEMPORARY);
-  }
-  else {
-    drupal_set_message(t('Please enter a Mandrill API key to use reports.'));
-    drupal_goto('admin/config/services/mandrill');
-  }
-  return $data;
+  $api = \Drupal::service('mandrill_reports.api');
+  return $api->getReportData();
 }
 
 /**

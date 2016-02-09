@@ -46,6 +46,24 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
+   * Get a list of sub accounts from Mandrill.
+   *
+   * @return array
+   */
+  public function getSubAccounts() {
+    $accounts = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $accounts = $mandrill->subaccounts->getList();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $accounts;
+  }
+
+  /**
    * The function that calls the API send message.
    *
    * This is the default function used by mandrill_mailsend().
