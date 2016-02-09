@@ -1,6 +1,8 @@
 <?php
 namespace Drupal\mandrill;
 
+use Mandrill;
+
 /**
  * Class DrupalMandrill.
  */
@@ -24,7 +26,7 @@ class DrupalMandrill extends Mandrill {
 
     $this->root = rtrim($this->root, '/') . '/';
 
-    $this->templates = new Mandrill_Templates($this);
+    $this->templates = new Mandrill_Template($this);
     $this->exports = new Mandrill_Exports($this);
     $this->users = new Mandrill_Users($this);
     $this->rejects = new Mandrill_Rejects($this);
@@ -53,33 +55,24 @@ class DrupalMandrill extends Mandrill {
     $params['key'] = $this->apikey;
     $params = \Drupal\Component\Serialization\Json::encode($params);
 
-    // @FIXME
-// drupal_http_request() has been replaced by the Guzzle HTTP client, which is bundled
-// with Drupal core.
-// 
-// 
-// @see https://www.drupal.org/node/1862446
-// @see http://docs.guzzlephp.org/en/latest
-// $response = drupal_http_request(
-//       $this->root . $url . '.json',
-//       array(
-//         'method' => 'POST',
-//         'data' => $params,
-//         'headers' => array(
-//           'Content-Type' => 'application/json',
-//           'Accept-Language' => language_default()->language,
-//           'User-Agent' => $this->userAgent,
-//         ),
-//         'timeout' => $this->timeout,
-//       )
-//     );
+    $client = \Drupal::httpClient();
+    //@TODO: make sure createRequest format is right, in particular that the data is being sent correctly
+    // http://docs.guzzlephp.org/en/latest/quickstart.html#post-form-requests
+    $request = $client->createRequest('POST',  $this->root . $url . '.json', ['data' => $params]);
+    $request->addHeader('Content-Type', 'application/json');
+    $request->addHeader('Accept-Language', language_default()->language);
+    $request->addHeader('User-Agent', $this->userAgent);
 
-
-    if (!empty($response->error)) {
+    try {
+      $response = $client->send($request, ['timeout' => $this->timeout]);
+      // Expected result.
+      $data = $response->getBody(TRUE);
+      $result = \Drupal\Component\Serialization\Json::decode($data);
+    }
+    catch (RequestException $e) {
+      watchdog_exception('my_module', $e->getMessage());
       throw new Mandrill_HttpError(t('Mandrill API call to !url failed: @msg', array('!url' => $url, '@msg' => $response->error)));
     }
-
-    $result = \Drupal\Component\Serialization\Json::decode($response->data);
 
     if ($result === NULL) {
       throw new Mandrill_Error('We were unable to decode the JSON response from the Mandrill API: ' . $response->data);

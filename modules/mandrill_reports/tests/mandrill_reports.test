@@ -12,7 +12,7 @@ class MandrillReportsTestCase extends DrupalWebTestCase {
    *   Formatted as specified by simpletest.
    */
   public static function getInfo() {
-    // Note: getInfo() strings are not translated with t().
+    // TODO: getInfo() strings are not translated with t().
     return array(
       'name' => 'Mandrill Reports Tests',
       'description' => 'Tests Mandrill Reports functionality.',

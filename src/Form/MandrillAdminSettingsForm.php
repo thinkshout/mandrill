@@ -79,7 +79,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $mailSystemPath = Url::fromRoute('mailsystem.settings');
       $usage = [];
       foreach ($this->mandrill->getMailSystems() as $system) {
-        if ($this->mailConfigurationUsesMandrilMail($system)) {
+        if ($this->mailConfigurationUsesMandrillMail($system)) {
           $system['sender'] = $this->getPluginLabel($system['sender']);
           $system['formatter'] = $this->getPluginLabel($system['formatter']);
           $usage[] = $system;
@@ -236,9 +236,9 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#default_value' => $config->get('mandrill_process_async'),
       );
       $form['asynchronous_options']['mandrill_batch_log_queued'] = array(
-        '#title' => t('Log queued emails in watchdog'),
+        '#title' => t('Log queued emails'),
         '#type' => 'checkbox',
-        '#description' => t('Do you want to create a watchdog entry when an email is queued to be sent?'),
+        '#description' => t('Do you want to create a log entry when an email is queued to be sent?'),
         '#default_value' => $config->get('mandrill_batch_log_queued'),
         '#states' => array(
           'invisible' => array(
@@ -279,7 +279,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    * @return bool
    *   TRUE if configuration uses, FALSE otherwise.
    */
-  private function mailConfigurationUsesMandrilMail(array $configuration) {
+  private function mailConfigurationUsesMandrillMail(array $configuration) {
     // The sender and formatter is required keys.
     if (!isset($configuration['sender']) || !isset($configuration['formatter'])) {
       return FALSE;
@@ -299,7 +299,13 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    */
   private function getPluginLabel($plugin_id) {
     $definition = $this->mailManager->getDefinition($plugin_id);
-    return isset($definition['label']) ? $definition['label'] : $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+    if (isset($definition['label'])) {
+      $plugin_label = $definition['label'];
+    }
+    else {
+      $plugin_label = $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+    }
+    return $plugin_label;
   }
 
   /**

@@ -204,6 +204,7 @@ class MandrillMail implements MailInterface {
       return $this->mandrill->send($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
     }
   }
+
   /**
    * Return an array structure for a message attachment.
    *
@@ -232,6 +233,7 @@ class MandrillMail implements MailInterface {
     $struct['content'] = $file_buffer;
     return $struct;
   }
+
   /**
    * Helper to determine if an attachment is valid.
    *

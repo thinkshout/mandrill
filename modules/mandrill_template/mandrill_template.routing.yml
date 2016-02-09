@@ -1,0 +1,14 @@
+mandrill_template.admin:
+  path: /admin/config/mandrill/template
+  defaults:
+    _title: Mandrill
+    _controller: '\Drupal\mandrill_template\Controller\DefaultController::mandrill_template_admin'
+  requirements:
+    _permission: 'view mandrill reports'
+mandrill_reports.summary_page:
+  path: /admin/reports/mandrill/summary
+  defaults:
+    _title: 'Account summary'
+    _controller: '\Drupal\mandrill_reports\Controller\DefaultController::mandrill_reports_summary_page'
+  requirements:
+    _permission: 'view mandrill reports'

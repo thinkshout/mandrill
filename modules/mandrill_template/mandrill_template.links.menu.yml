@@ -1,0 +1,5 @@
+mandrill_reports.dashboard_page:
+  route_name: mandrill_template.admin
+  title: Mandrill
+  description: 'View Mandrill Templates.'
+  parent: system.config.mandrill

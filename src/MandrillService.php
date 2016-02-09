@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\MandrillService.
@@ -24,6 +25,7 @@ class MandrillService implements MandrillServiceInterface {
     $this->config = $config_factory;
     $this->log = $logger_factory->get('mandrill');
   }
+
   /**
    * Check if the Mandrill PHP library is available.
    *
@@ -35,14 +37,15 @@ class MandrillService implements MandrillServiceInterface {
     $className = $this->config->get('mandrill.settings')->get('mandrill_api_classname');
     return class_exists($className);
   }
+
   /**
    * Get the mail systems defined in the mail system module.
    *
    * @return array
-   *   Array of mail systems each with the key
+   *   Array of mail systems and keys
    *   - key Either the module-key or default for site wide system.
-   *   - sender The class to use for sending mails.
-   *   - formatter The class to use for formatting mails.
+   *   - sender The class to use for sending mail.
+   *   - formatter The class to use for formatting mail.
    */
   public function getMailSystems() {
     $systems = [];
@@ -66,6 +69,7 @@ class MandrillService implements MandrillServiceInterface {
     }
     return $systems;
   }
+
   /**
    * Helper to generate an array of recipients.
    *
@@ -93,6 +97,7 @@ class MandrillService implements MandrillServiceInterface {
     }
     return $recipients;
   }
+
   /**
    * Abstracts sending of messages, allowing queueing option.
    *

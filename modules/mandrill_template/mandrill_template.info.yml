@@ -1,0 +1,12 @@
+name: 'Mandrill Template'
+description: 'Use Mandrill templates for messages sent through Mandrill.'
+core: 8.x
+package: Mandrill
+dependencies:
+  - mandrill
+  - entity
+type: module
+configure: mailchimp_template.admin
+
+files:
+ - tests/mailchimp_template.test
