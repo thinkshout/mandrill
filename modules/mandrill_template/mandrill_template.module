@@ -52,7 +52,6 @@ function mandrill_template_entity_info() {
       'fieldable' => FALSE,
       'exportable' => TRUE,
       'module' => 'mandrill_template',
-      'access callback' => 'mandrill_template_map_access',
       'entity keys' => array(
         'id' => 'mandrill_template_map_entity_id',
         'label' => 'label',
@@ -67,19 +66,6 @@ function mandrill_template_entity_info() {
   );
 
   return $return;
-}
-
-/**
- * Access callback for mandrill_template_map.
- *
- * @return bool
- *   True if current user has acces to template maps, else false
- */
-function mandrill_template_map_access() {
-  $has_permission = \Drupal::currentUser()->hasPermission('configure mandrill templates');
-  $key = \Drupal::config('mandrill.settings')->get('mandrill_api_key');
-
-  return $has_permission & !empty($key);
 }
 
 /**
