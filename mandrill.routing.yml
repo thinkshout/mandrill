@@ -1,7 +1,15 @@
-mandrill.settings:
+mandrill.admin:
   path: 'admin/config/services/mandrill'
   defaults:
     _form: '\Drupal\mandrill\Form\MandrillAdminSettingsForm'
     _title: 'Mandrill Settings'
+  requirements:
+    _permission: 'administer mandrill'
+
+mandrill.test:
+  path: 'admin/config/services/mandrill/test'
+  defaults:
+    _form: '\Drupal\mandrill\Form\MandrillAdminTestForm'
+    _title: 'Send Test Email'
   requirements:
     _permission: 'administer mandrill'
