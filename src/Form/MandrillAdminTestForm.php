@@ -25,7 +25,7 @@ class MandrillAdminTestForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Send test email?');
+    return $this->t('Send Test Email');
   }
 
   /**
@@ -39,7 +39,7 @@ class MandrillAdminTestForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('mandrill.admin');
+    return new Url('mandrill.test');
   }
 
   /**
@@ -52,10 +52,49 @@ class MandrillAdminTestForm extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+
+    $click_tracking_url = Url::fromUri('http://www.drupal.org/project/mandrill');
+
+    $form['mandrill_test_address'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Email address to send a test email to'),
+      '#default_value' => \Drupal::config('system.site')->get('mail'),
+      '#description' => t('Type in an address to have a test email sent there.'),
+      '#required' => TRUE,
+    );
+    $form['mandrill_test_body'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Test body contents'),
+      '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: !link',
+        array('!link' => \Drupal::l(t('link'), $click_tracking_url))),
+    );
+    $form['include_attachment'] = array(
+      '#title' => t('Include attachment'),
+      '#type' => 'checkbox',
+      '#description' => t('If checked, the Drupal icon will be included as an attachment with the test email.'),
+      '#default_value' => TRUE,
+    );
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    if (mailchimp_campaign_send_campaign($this->entity)) {
-      drupal_set_message($this->t('Test email has been sent.'));
+    // TODO: Send mail.
+    $message = array(
+      'to' => $form_state['values']['mandrill_test_address'],
+      'body' => $form_state['values']['mandrill_test_body'],
+    );
+
+    if ($form_state['values']['include_attachment']) {
+
     }
+
+    drupal_set_message($this->t('Test email has been sent.'));
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
