@@ -93,7 +93,7 @@ class MandrillActivity extends ConfigEntityBase implements MandrillActivityInter
   /**
    * Whether or not this Mandrill activity stream is enabled.
    *
-   * @var string
+   * @var boolean
    */
   public $enabled;
 
