@@ -6,3 +6,27 @@ mandrill_activity.admin:
   requirements:
     _permission: 'administer mandrill activity'
     _mandrill_configuration_access_check: 'TRUE'
+
+mandrill_activity.add:
+  path: '/admin/config/services/mandrill/activity/add'
+  defaults:
+    _entity_form: 'mandrill_activity.add'
+    _title: 'Add Signup Form'
+  requirements:
+    _permission: 'administer mandrill activity'
+
+entity.mandrill_activity.edit_form:
+  path: '/admin/config/services/mandrill/activity/{mandrill_activity}'
+  defaults:
+    _entity_form: 'mandrill_activity.edit'
+    _title: 'Edit Mandrill Activity'
+  requirements:
+    _permission: 'administer mandrill activity'
+
+entity.mandrill_activity.delete_form:
+  path: '/admin/config/services/mandrill/activity/{mandrill_activity}/delete'
+  defaults:
+    _entity_form: 'mandrill_activity.delete'
+    _title: 'Delete Mandrill Activity'
+  requirements:
+    _permission: 'administer mandrill activity'
