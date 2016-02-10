@@ -6,7 +6,7 @@
  */
 namespace Drupal\mandrill_activity;
 
-use Drupal\Core\Entity\ConfigEntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
 /**
  * Provides an interface defining the MandrillActivity entity.
