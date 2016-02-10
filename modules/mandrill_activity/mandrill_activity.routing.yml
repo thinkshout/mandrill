@@ -1,34 +1,8 @@
-
-# MandrillActivityEntity routing definition
-entity.mandrill_activity_entity.collection:
-  path: '/admin/structure/mandrill_activity_entity'
+mandrill_activity.admin:
+  path: '/admin/config/services/mandrill/activity'
   defaults:
-    _entity_list: 'mandrill_activity_entity'
-    _title: 'Mandrill activity entity'
+    _entity_list: 'mandrill_activity'
+    _title: 'Mandrill Activity Entities'
   requirements:
-    _permission: 'administer site configuration'
-
-entity.mandrill_activity_entity.add_form:
-  path: '/admin/structure/mandrill_activity_entity/add'
-  defaults:
-    _entity_form: 'mandrill_activity_entity.add'
-    _title: 'Add Mandrill activity entity'
-  requirements:
-    _permission: 'administer site configuration'
-
-entity.mandrill_activity_entity.edit_form:
-  path: '/admin/structure/mandrill_activity_entity/{mandrill_activity_entity}'
-  defaults:
-    _entity_form: 'mandrill_activity_entity.edit'
-    _title: 'Edit Mandrill activity entity'
-  requirements:
-    _permission: 'administer site configuration'
-
-entity.mandrill_activity_entity.delete_form:
-  path: '/admin/structure/mandrill_activity_entity/{mandrill_activity_entity}/delete'
-  defaults:
-    _entity_form: 'mandrill_activity_entity.delete'
-    _title: 'Delete Mandrill activity entity'
-  requirements:
-    _permission: 'administer site configuration'
-
+    _permission: 'administer mandrill activity'
+    _mandrill_configuration_access_check: 'TRUE'
