@@ -180,20 +180,3 @@ function mandrill_activity_get_activity($email) {
   $mandrill = mandrill_get_api_object();
   return $mandrill->messages->search("email:{$email}");
 }
-
-/**
- * Implements hook_permission().
- */
-function mandrill_activity_permission() {
-  $return = array();
-
-  $return['access mandrill activity'] = array(
-    'title' => t('Access Mandrill Activity'),
-    'description' => t('View own Mandrill activity history.'),
-  );
-  $return['administer mandrill activity'] = array(
-    'title' => t('Administer Mandrill activity entities'),
-    'description' => t('Add, Delete, and Configure Mandrill Activity entity settings.'),
-  );
-  return $return;
-}
