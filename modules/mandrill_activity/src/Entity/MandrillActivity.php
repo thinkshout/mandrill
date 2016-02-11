@@ -48,13 +48,6 @@ class MandrillActivity extends ConfigEntityBase implements MandrillActivityInter
   public $id;
 
   /**
-   * The machine-readable name of this Mandrill Activity.
-   *
-   * @var string
-   */
-  public $name;
-
-  /**
    * The human-readable name of this mandrill_activity_entity.
    *
    * @var string

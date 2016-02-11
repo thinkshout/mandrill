@@ -1,13 +1,10 @@
-mandrill_activity.mandrill_activity_entity.*:
+mandrill_activity.mandrill_activity.*:
   type: config_entity
   label: 'Mandrill Activity config'
   mapping:
     id:
       type: string
       label: 'Machine Name'
-    name:
-      type: string
-      label: 'Name'
     label:
       type: string
       label: 'Label'

@@ -197,7 +197,7 @@ class MandrillActivityForm extends EntityForm {
 
     \Drupal::service('router.builder')->setRebuildNeeded();
 
-    $form_state->setRedirect('mandrill.admin');
+    $form_state->setRedirect('mandrill_activity.admin');
   }
 
   public function exists($id) {
