@@ -29,8 +29,6 @@ class MandrillActivityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    global $base_url;
-
     $row['label'] = $entity->label() . ' (Machine name: ' . $entity->id() . ')';
 
     return $row + parent::buildRow($entity);
