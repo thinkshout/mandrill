@@ -46,7 +46,7 @@ class MandrillActivityForm extends EntityForm {
     /* @var $activity \Drupal\mandrill_activity\Entity\MandrillActivity */
     $activity = $this->entity;
 
-    $entity_not_null = !empty($activity->mandrill_activity_entity_id);
+    $entity_not_null = !empty($activity->id);
 
     $form['label'] = array(
       '#type' => 'textfield',
