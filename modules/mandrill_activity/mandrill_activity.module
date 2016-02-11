@@ -5,38 +5,6 @@
  */
 
 /**
- * Implements hook_entity_info().
- */
-function mandrill_activity_entity_info() {
-  $return = array(
-    'mandrill_activity_entity' => array(
-      'label' => t('Mandrill Activity Entity'),
-      'controller class' => 'EntityAPIControllerExportable',
-      'entity class' => 'MandrillActivityEntity',
-      'base table' => 'mandrill_activity_entity',
-      'uri callback' => 'entity_class_uri',
-      'fieldable' => FALSE,
-      'exportable' => TRUE,
-      'module' => 'mandrill_activity',
-      'entity keys' => array(
-        'id' => 'mandrill_activity_entity_id',
-        'name' => 'name',
-        'label' => 'label',
-      ),
-      // Enable the entity API's admin UI.
-      'admin ui' => array(
-        'path' => 'admin/config/services/mandrill/activity',
-        'file' => 'mandrill_activity.admin.inc',
-        'controller class' => 'MandrillActivityUIController',
-      ),
-      'label callback' => 'entity_class_label',
-    ),
-  );
-
-  return $return;
-}
-
-/**
  * @FIXME
  * This implementation of hook_menu() cannot be automatically converted because
  * it contains logic (i.e., branching statements, function calls, object
