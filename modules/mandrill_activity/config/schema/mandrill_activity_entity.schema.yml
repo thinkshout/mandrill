@@ -1,12 +1,28 @@
 mandrill_activity.mandrill_activity_entity.*:
   type: config_entity
-  label: 'Mandrill activity entity config'
+  label: 'Mandrill Activity config'
   mapping:
     id:
       type: string
-      label: 'ID'
-    label:
-      type: label
-      label: 'Label'
-    uuid:
+      label: 'Machine Name'
+    name:
       type: string
+      label: 'Name'
+    label:
+      type: string
+      label: 'Label'
+    entity_type:
+      type: string
+      label: 'Entity Type'
+    bundle:
+      type: string
+      label: 'Bundle'
+    entity_path:
+      type: string
+      label: 'Entity Path'
+    email_property:
+      type: string
+      label: 'Email Property'
+    enabled:
+      type: string
+      label: 'Enabled'

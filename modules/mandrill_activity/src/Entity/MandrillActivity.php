@@ -30,8 +30,7 @@ use Drupal\mandrill_activity\MandrillActivityInterface;
  *   config_prefix = "mandrill_activity",
  *   admin_permission = "administer mandrill",
  *   entity_keys = {
- *     "id" = "mandrill_activity_entity_id",
- *     "uuid" = "uuid",
+ *     "id" = "id"
  *   },
  *   links = {
  *     "edit-form" = "/admin/config/services/mandrill/activity/{mandrill_activity}",
@@ -46,7 +45,7 @@ class MandrillActivity extends ConfigEntityBase implements MandrillActivityInter
    *
    * @var int
    */
-  public $mandrill_activity_entity_id;
+  public $id;
 
   /**
    * The machine-readable name of this Mandrill Activity.

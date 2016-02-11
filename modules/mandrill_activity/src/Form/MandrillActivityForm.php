@@ -7,6 +7,7 @@
 namespace Drupal\mandrill_activity\Form;
 
 use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -51,21 +52,20 @@ class MandrillActivityForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#default_value' => $activity->label,
-      '#description' => t('The human-readable name of this activity entity.'),
+      '#description' => t('The human-readable name of this Mandrill Activity entity.'),
       '#required' => TRUE,
     );
 
-    $form['name'] = array(
-      '#title' => t('Name'),
+    $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $activity->name,
-      '#description' => t('machine name should only contain lowercase letters & underscores.'),
-      '#disabled' => !empty($activity->name),
-      '#required' => TRUE,
+      '#default_value' => $activity->id,
+      '#maxlength' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
       '#machine_name' => array(
-        'exists' => 'mandrill_activity_load',
         'source' => array('label'),
+        'exists' => array($this, 'exists'),
       ),
+      '#description' => t('A unique machine-readable name for this Mandrill Activity entity. It must only contain lowercase letters, numbers, and underscores.'),
+      '#disabled' => !$activity->isNew(),
     );
 
     $form['drupal_entity'] = array(
@@ -142,8 +142,14 @@ class MandrillActivityForm extends EntityForm {
         '#options' => $bundles,
         '#default_value' => $activity->bundle,
         '#ajax' => array(
-          'callback' => 'mandrill_activity_mapping_form_callback',
+          'callback' => '::entity_callback',
           'wrapper' => 'entity-wrapper',
+          'method' => 'replace',
+          'effect' => 'fade',
+          'progress' => array(
+            'type' => 'throbber',
+            'message' => t('Retrieving email fields for this entity type.'),
+          ),
         ),
       );
 
@@ -153,17 +159,15 @@ class MandrillActivityForm extends EntityForm {
       }
 
       if (!empty($form_bundle)) {
-        // Prep the field & properties list before creating the form item:
-        //$fields = mandrill_activity_email_fieldmap_options($form_entity_type, $form_bundle);
-        //$form['drupal_entity']['email_property'] = array(
-          //'#title' => t('Email Property'),
-          //'#type' => 'select',
-          //'#required' => TRUE,
-          //'#description' => t('Select the field which contains the email address'),
-          //'#options' => $fields,
-          //'#default_value' => $entitynotnull ? $mandrill_activity_entity->email_property : 0,
-          //'#maxlength' => 127,
-        //);
+        $fields = $this->fieldmapOptions($form_entity_type, $form_bundle);
+        $form['drupal_entity']['email_property'] = array(
+          '#title' => t('Email Property'),
+          '#type' => 'select',
+          '#required' => TRUE,
+          '#description' => t('Select the field which contains the email address'),
+          '#options' => $fields,
+          '#default_value' => $activity->email_property,
+        );
       }
     }
 
@@ -189,8 +193,6 @@ class MandrillActivityForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     /* @var $activity \Drupal\mandrill_activity\Entity\MandrillActivity */
     $activity = $this->getEntity();
-    $activity->label = $form_state->getValue('label');
-
     $activity->save();
 
     \Drupal::service('router.builder')->setRebuildNeeded();
@@ -198,11 +200,42 @@ class MandrillActivityForm extends EntityForm {
     $form_state->setRedirect('mandrill.admin');
   }
 
-  public function exist($id) {
+  public function exists($id) {
     $entity = $this->entityQuery->get('mandrill_activity')
-      ->condition('mandrill_activity_entity_id', $id)
+      ->condition('id', $id)
       ->execute();
     return (bool) $entity;
+  }
+
+  /**
+   * Return all possible Drupal properties for a given entity type.
+   *
+   * @param string $entity_type
+   *   Name of entity whose properties to list.
+   * @param string $entity_bundle
+   *   Entity bundle to get properties for.
+   *
+   * @return array
+   *   List of entities that can be used as an #options list.
+   */
+  public function fieldmapOptions($entity_type, $entity_bundle = NULL) {
+    $options = array('' => t('-- Select --'));
+
+    $fields = \Drupal::entityManager()->getFieldMap();
+
+    if (isset($fields[$entity_type])) {
+      foreach ($fields[$entity_type] as $key => $field) {
+        // Limit to email fields.
+        if ($field['type'] == 'email') {
+          // Check this field appears in the selected entity bundle.
+          if (isset($field['bundles'][$entity_bundle])) {
+            $options[$key] = $key;
+          }
+        }
+      }
+    }
+
+    return $options;
   }
 
 }
