@@ -15,6 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Form controller for the MandrillActivity entity edit form.
  *
+ * TODO: Add validation; prevent multiple MandrillActivity entities being
+ * created for the same entity / bundle set.
+ *
  * @ingroup mandrill_activity
  */
 class MandrillActivityForm extends EntityForm {
