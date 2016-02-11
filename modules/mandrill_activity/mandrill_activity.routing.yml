@@ -11,7 +11,7 @@ mandrill_activity.add:
   path: '/admin/config/services/mandrill/activity/add'
   defaults:
     _entity_form: 'mandrill_activity.add'
-    _title: 'Add Signup Form'
+    _title: 'Add Mandrill Activity'
   requirements:
     _permission: 'administer mandrill activity'
 

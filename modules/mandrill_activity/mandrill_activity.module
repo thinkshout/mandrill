@@ -86,8 +86,10 @@ function mandrill_activity_access(MandrillActivityEntity $mandrill_activity_enti
  *   Array of MandrillActivityEntity's or a single MandrillActivityEntity.
  */
 function mandrill_activity_load($name = NULL) {
-  $types = entity_load_multiple_by_name('mandrill_activity_entity', isset($name) ? array($name) : FALSE);
-  return isset($name) ? reset($types) : $types;
+  //$types = entity_load_multiple_by_name('mandrill_activity_entity', isset($name) ? array($name) : FALSE);
+  //return isset($name) ? reset($types) : $types;
+  // TODO: Update for D8 entity API.
+  return NULL;
 }
 
 /**
