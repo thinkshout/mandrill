@@ -9,6 +9,7 @@ namespace Drupal\mandrill;
  */
 interface MandrillAPIInterface {
   public function isLibraryInstalled();
+  public function getMessages($email);
   public function getTemplates();
   public function getSubAccounts();
   public function getWebhooks();
@@ -18,5 +19,6 @@ interface MandrillAPIInterface {
   public function addWebhook($path, $events, $description = 'Drupal Webhook');
   public function deleteInboundDomain($domain);
   public function addInboundRoute($domain, $pattern, $url);
+  public function sendTemplate($message, $template_id, $template_content);
   public function send(array $message);
 }

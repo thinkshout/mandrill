@@ -52,6 +52,27 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
+   * Gets messages received by an email address.
+   *
+   * @param $email
+   *   The email address of the message recipient.
+   *
+   * @return array
+   */
+  public function getMessages($email) {
+    $messages = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $messages = $mandrill->messages->search("email:{$email}");
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $messages;
+  }
+
+  /**
    * Gets a list of mandrill template objects.
    *
    * @return array
@@ -214,24 +235,29 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
-   * Gets messages received by an email address.
+   * Sends a templated Mandrill message.
    *
-   * @param $email
-   *   The email address of the message recipient.
+   * This function checks for appropriate settings in the message, then uses the
+   * template API call to send the message if the settings are valid.
+   *
+   * @param array $message
+   * @param string $template_id
+   * @param array $template_content
    *
    * @return array
+   *   Array of message objects, one per recipient.
    */
-  public function getMessages($email) {
-    $messages = array();
+  public function sendTemplate($message, $template_id, $template_content) {
+    $result = NULL;
     try {
       if ($mandrill = $this->getAPIObject()) {
-        $messages = $mandrill->messages->search("email:{$email}");
+        $result = $mandrill->messages->sendTemplate($template_id, $template_content, $message);
       }
     } catch (\Exception $e) {
       drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
       $this->log->error($e->getMessage());
     }
-    return $messages;
+    return $result;
   }
 
   /**
