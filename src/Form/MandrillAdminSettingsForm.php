@@ -23,6 +23,42 @@ use Drupal\mandrill\MandrillAPIInterface;
  * Implements an Mandrill Admin Settings form.
  */
 class MandrillAdminSettingsForm extends ConfigFormBase {
+
+  /**
+   * The mail system manager.
+   *
+   * @var \Drupal\mailsystem\MailsystemManager
+   */
+  protected $mailManager;
+
+  /**
+   * The path validator.
+   *
+   * @var \Drupal\Core\Path\PathValidatorInterface
+   */
+  protected $pathValidator;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * The Mandrill service.
+   *
+   * @var \Drupal\mandrill\MandrillServiceInterface
+   */
+  protected $mandrill;
+
+  /**
+   * The Mandrill API service.
+   *
+   * @var \Drupal\mandrill\Form\MandrillAPIInterface
+   */
+  protected $mandrillAPI;
+
   /**
    * Constructor.
    *
@@ -30,7 +66,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
    * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
    * @param \Drupal\Core\Render\RendererInterface $renderer
    * @param \Drupal\mandrill\MandrillServiceInterface $mandrill
-   * @param \Drupal\mandrill\Form\MandrillAPIInterface $mandrill_api
+   * @param \Drupal\mandrill\MandrillAPIInterface $mandrill_api
    */
   public function __construct(MailsystemManager $mail_manager, PathValidatorInterface $path_validator, RendererInterface $renderer, MandrillServiceInterface $mandrill, MandrillAPIInterface $mandrill_api) {
     $this->mailManager = $mail_manager;
@@ -72,7 +108,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       '#description' => t('Create or grab your API key from the !link.', array('!link' => $this->l(t('Mandrill settings'), Url::fromUri('https://mandrillapp.com/settings/index')))),
       '#default_value' => $key,
     );
-    if (!$this->mandrill->isLibraryInstalled()) {
+    if (!$this->mandrillAPI->isLibraryInstalled()) {
       drupal_set_message(t('The Mandrill PHP library is not installed. Please see installation directions in README.txt'), 'warning');
     }
     else if ($key) {
