@@ -8,6 +8,7 @@ namespace Drupal\mandrill;
  * Interface for the Mandrill API.
  */
 interface MandrillAPIInterface {
+  public function isLibraryInstalled();
   public function getSubAccounts();
   public function send(array $message);
 }

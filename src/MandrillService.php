@@ -14,28 +14,41 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
  * Service class.
  */
 class MandrillService implements MandrillServiceInterface {
+
+  /**
+   * The Mandrill API service.
+   *
+   * @var \Drupal\mandrill\MandrillAPIInterface
+   */
+  protected $mandrill_api;
+
+  /**
+   * The Config Factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config;
+
+  /**
+   * The Logger Factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $log;
+
   /**
    * Constructs the service.
    *
+   * @param \Drupal\mandrill\MandrillAPIInterface $mandrill_api
+   *   The Mandrill API service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory service.
+   *   The Config Factory service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(MandrillAPIInterface $mandrill_api, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
+    $this->mandrill_api = $mandrill_api;
     $this->config = $config_factory;
     $this->log = $logger_factory->get('mandrill');
-  }
-
-  /**
-   * Check if the Mandrill PHP library is available.
-   *
-   * @return bool
-   *   TRUE if it is installed, FALSE otherwise.
-   */
-  public function isLibraryInstalled() {
-    $settings = $this->config->get('mandrill.settings');
-    $className = $this->config->get('mandrill.settings')->get('mandrill_api_classname');
-    return class_exists($className);
   }
 
   /**
