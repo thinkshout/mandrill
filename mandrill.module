@@ -160,159 +160,65 @@ function mandrill_get_module_key_names() {
 
 /**
  * Get a list of mandrill template objects.
- *
- * @return array
- *   An of available templates with complete data or NULL if none are available.
  */
 function mandrill_get_templates() {
-  // Only show the template settings if the mandrill api can be called.
-  $templates = NULL;
-  try {
-    if ($mailer = mandrill_get_api_object()) {
-      $templates = $mailer->templates->getList();
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-  return $templates;
+  throw new \Exception('Use the getTemplates() method on the API service class instead.');
 }
 
 /**
  * Get a list of subaccounts.
  */
 function mandrill_get_subaccounts() {
-  throw new \Exception('Use the getSubAccounts() method on the API service class instead');
+  throw new \Exception('Use the getSubAccounts() method on the API service class instead.');
 }
 
 /**
  * Get a list of webhooks.
  */
 function mandrill_get_webhooks() {
-  $webhooks = array();
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $webhooks = $mandrill->webhooks->getList();
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $webhooks;
+  throw new \Exception('Use the getWebhooks() method on the API service class instead.');
 }
 
 /**
  * Get a list of inbound email domains.
  */
 function mandrill_get_inbound_domains() {
-  $domains = array();
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $domains = $mandrill->inbound->domains();
-    }
-    else {
-      $domains = FALSE;
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $domains;
+  throw new \Exception('Use the getInboundDomains() method on the API service class instead.');
 }
 
 /**
  * Get a list of inbound email routes for a domain.
  */
 function mandrill_get_inbound_routes($domain) {
-  $routes = array();
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $routes = $mandrill->inbound->routes($domain);
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $routes;
+  throw new \Exception('Use the getInboundRoutes() method on the API service class instead.');
 }
 
 /**
  * Create a new inbound domain.
  */
 function mandrill_add_inbound_domain($domain) {
-  $result = NULL;
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $result = $mandrill->inbound->addDomain($domain);
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $result;
+  throw new \Exception('Use the addInboundDomain() method on the API service class instead.');
 }
 
 /**
  * Create a new inbound domain.
  */
 function mandrill_add_webhook($path, $events, $description = 'Drupal Webhook') {
-  $result = NULL;
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $result = $mandrill->webhooks->add($GLOBALS['base_url'] . '/' . $path, $description, $events);
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $result;
+  throw new \Exception('Use the addWebhook() method on the API service class instead.');
 }
 
 /**
  * Delete an inbound domain.
  */
 function mandrill_delete_inbound_domain($domain) {
-  $result = NULL;
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $result = $mandrill->inbound->deleteDomain($domain);
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $result;
+  throw new \Exception('Use the deleteInboundDomain() method on the API service class instead.');
 }
 
 /**
  * Create a new inbound route for a domain.
  */
 function mandrill_add_inbound_route($domain, $pattern, $url) {
-  $route = NULL;
-  try {
-    if ($mandrill = mandrill_get_api_object()) {
-      $route = $mandrill->inbound->addRoute($domain, $pattern, $url);
-    }
-  }
-  catch (Mandrill_Error $e) {
-    drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
-    watchdog_exception('mandrill', $e);
-  }
-
-  return $route;
+  throw new \Exception('Use the addInboundRoute() method on the API service class instead.');
 }
 
 /**

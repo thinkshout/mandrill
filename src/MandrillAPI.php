@@ -52,7 +52,26 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
-   * Get a list of sub accounts from Mandrill.
+   * Gets a list of mandrill template objects.
+   *
+   * @return array
+   *   An of available templates with complete data or NULL if none available.
+   */
+  public function getTemplates() {
+    $templates = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $templates = $mandrill->templates->getList();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $templates;
+  }
+
+  /**
+   * Gets a list of sub accounts.
    *
    * @return array
    */
@@ -67,6 +86,131 @@ class MandrillAPI implements MandrillAPIInterface {
       $this->log->error($e->getMessage());
     }
     return $accounts;
+  }
+
+  /**
+   * Gets a list of webhooks.
+   *
+   * @return array
+   */
+  public function getWebhooks() {
+    $webhooks = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $webhooks = $mandrill->webhooks->getList();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $webhooks;
+  }
+
+  /**
+   * Gets a list of inbound domains.
+   *
+   * @return array
+   */
+  public function getInboundDomains() {
+    $domains = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $domains = $mandrill->inbound->domains();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $domains;
+  }
+
+  /**
+   * Gets a list of inbound routes.
+   *
+   * @return array
+   */
+  public function getInboundRoutes() {
+    $routes = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $routes = $mandrill->inbound->routes();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $routes;
+  }
+
+  /**
+   * Creates a new inbound domain.
+   */
+  public function addInboundDomain($domain) {
+    $result = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $result = $mandrill->inbound->addDomain($domain);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $result;
+  }
+
+  /**
+   * Creates a new webhook.
+   *
+   * @param string $path
+   * @param array $events
+   * @param string $description
+   *
+   * @return object
+   *   The created Mandrill webhook object.
+   */
+  public function addWebhook($path, $events, $description = 'Drupal Webhook') {
+    $result = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $result = $mandrill->webhooks->add($GLOBALS['base_url'] . '/' . $path, $description, $events);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $result;
+  }
+
+  /**
+   * Deletes an inbound domain.
+   */
+  public function deleteInboundDomain($domain) {
+    $result = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $result = $mandrill->inbound->deleteDomain($domain);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $result;
+  }
+
+  /**
+   * Adds a new inbound route for a domain.
+   */
+  public function addInboundRoute($domain, $pattern, $url) {
+    $result = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $result = $mandrill->inbound->addRoute($domain, $pattern, $url);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $result;
   }
 
   /**
