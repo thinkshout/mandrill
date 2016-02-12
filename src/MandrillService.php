@@ -150,6 +150,10 @@ class MandrillService implements MandrillServiceInterface {
                 $to = isset($result['email']) ? $result['email'] : 'recipient';
                 $status = isset($result['status']) ? $result['status'] : 'message';
                 $error_message = isset($result['message']) ? $result['message'] : 'no message';
+                if (!isset($result['message']) && isset($result['reject_reason'])) {
+                  $error_message = $result['reject_reason'];
+                }
+
                 $this->log->error('Failed sending email from %from to %to. @status: @message', array(
                   '%from' => $message['from_email'],
                   '%to' => $to,
