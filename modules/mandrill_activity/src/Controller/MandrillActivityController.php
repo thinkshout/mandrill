@@ -31,8 +31,6 @@ class MandrillActivityController extends ControllerBase {
     $api = \Drupal::service('mandrill.api');
     $activity = $api->getMessages($user->getEmail());
 
-    //$activity = mandrill_activity_get_activity($user->getEmail());
-
     $content['activity'] = array(
       '#markup' => t('The 100 most recent Emails sent to %email via Mandrill.', array('%email' => $email)),
     );
