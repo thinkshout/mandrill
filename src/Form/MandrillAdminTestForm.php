@@ -9,6 +9,7 @@ namespace Drupal\mandrill\Form;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\mandrill\Plugin\Mail\MandrillMail;
 
 /**
  * Form controller for the Mandrill send test email form.
@@ -84,18 +85,22 @@ class MandrillAdminTestForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Send mail.
     $message = array(
-      'to' => $form_state['values']['mandrill_test_address'],
-      'body' => $form_state['values']['mandrill_test_body'],
+      'to' => $form_state->getValue('mandrill_test_address'),
+      'text' => $form_state->getValue('mandrill_test_body'),
+      'subject' => t('Drupal Mandrill test email'),
     );
 
-    if ($form_state['values']['include_attachment']) {
-
+    if ($form_state->getValue('include_attachment')) {
+      $message['attachments'][] = \Drupal::service('file_system')->realpath('core/themes/bartik/logo.svg');
+      $message['text'] .= ' ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
     }
 
-    drupal_set_message($this->t('Test email has been sent.'));
+    /* @var $mandrill \Drupal\mandrill\Plugin\Mail\MandrillMail */
+    $mailer = new MandrillMail();
 
-    $form_state->setRedirectUrl($this->getCancelUrl());
+    if ($mailer->mail($message)) {
+      drupal_set_message($this->t('Test email has been sent.'));
+    }
   }
 }
