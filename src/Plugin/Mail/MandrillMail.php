@@ -23,6 +23,33 @@ use Drupal\Core\Mail\MailFormatHelper;
  */
 class MandrillMail implements MailInterface {
 
+  /**
+   * The Config Factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $config;
+
+  /**
+   * The Mandrill service.
+   *
+   * @var \Drupal\mandrill\MandrillService
+   */
+  protected $mandrill;
+
+  /**
+   * The Logger Factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $log;
+
+  /**
+   * The MIME Type Guesser service.
+   *
+   * @var \Drupal\Core\File\MimeType\MimeTypeGuesser
+   */
+  protected $mimeTypeGuesser;
 
   /**
    * Constructor.
