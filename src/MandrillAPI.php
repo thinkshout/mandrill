@@ -47,7 +47,7 @@ class MandrillAPI implements MandrillAPIInterface {
    *   TRUE if it is installed, FALSE otherwise.
    */
   public function isLibraryInstalled() {
-    $className = $this->config->get('mandrill.settings')->get('mandrill_api_classname');
+    $className = $this->config->get('mandrill_api_classname');
     return class_exists($className);
   }
 
@@ -67,6 +67,27 @@ class MandrillAPI implements MandrillAPIInterface {
       $this->log->error($e->getMessage());
     }
     return $accounts;
+  }
+
+  /**
+   * Gets messages received by an email address.
+   *
+   * @param $email
+   *   The email address of the message recipient.
+   *
+   * @return array
+   */
+  public function getMessages($email) {
+    $messages = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $messages = $mandrill->messages->search("email:{$email}");
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $messages;
   }
 
   /**
@@ -103,7 +124,7 @@ class MandrillAPI implements MandrillAPIInterface {
   private function getAPIObject($reset = FALSE) {
     $api =& drupal_static(__FUNCTION__, NULL);
     if ($api === NULL || $reset) {
-      if (!$this->mandrillService->isLibraryInstalled()) {
+      if (!$this->isLibraryInstalled()) {
         $msg = t('Failed to load Mandrill PHP library. Please refer to the installation requirements.');
         $this->log->error($msg);
         drupal_set_message($msg, 'error');
