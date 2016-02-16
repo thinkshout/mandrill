@@ -65,29 +65,30 @@ function mandrill_template_map_load_entities($name = NULL) {
 function mandrill_template_map_load_by_mailsystem($module_key, $module) {
   // Append the default-system condition as a fallback.
   $params = array($module_key, $module, 'default-system');
-  $query = new EntityFieldQuery();
-  $query_result = $query
-    ->entityCondition('entity_type', 'mandrill_template_map')
-    ->propertyCondition('mailsystem_key', $params, 'IN')
+
+  $map_ids = \Drupal::entityQuery('mandrill_template_map')
+    ->condition('mailsystem_key', $params, 'IN')
     ->execute();
+
+  $template_maps = \Drupal\mandrill_template\Entity\MandrillTemplateMap::loadMultiple($map_ids);
+
   $module_match = FALSE;
-  if (!empty($query_result['mandrill_template_map'])) {
-    $template_maps = entity_load('mandrill_template_map', array_keys($query_result['mandrill_template_map']));
-    if (count($template_maps) > 1) {
-      foreach ($template_maps as $template_map) {
-        switch ($template_map->mailsystem_key) {
-          case $module_key:
-            return $template_map;
+  if (!empty($template_maps)) {
+    /* @var $map \Drupal\mandrill_template\Entity\MandrillTemplateMap */
+    foreach ($template_maps as $template_map) {
+      switch ($template_map->mailsystem_key) {
+        case $module_key:
+          return $template_map;
 
-          case $module:
-            $module_match = $template_map;
-            break;
-
-        }
+        case $module:
+          $module_match = $template_map;
+          break;
       }
     }
+
     return $module_match ? $module_match : reset($template_maps);
   }
+
   return NULL;
 }
 
@@ -102,9 +103,14 @@ function mandrill_template_map_load_by_mailsystem($module_key, $module) {
  */
 function mandrill_template_map_usage() {
   $mailsystem_config = \Drupal::service('config.factory')->getEditable('mailsystem.settings');
+  $defaults = $mailsystem_config->get('defaults');
   $modules = $mailsystem_config->get('modules');
 
   $system_assignments = array();
+
+  if ($defaults['sender'] == 'mandrill_mail') {
+    $system_assignments['default-system'] = NULL;
+  }
 
   foreach (array_keys($modules) as $module_name) {
     foreach ($modules[$module_name] as $key => $options) {
