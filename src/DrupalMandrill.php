@@ -71,7 +71,7 @@ class DrupalMandrill extends Mandrill {
     }
     catch (RequestException $e) {
       watchdog_exception('my_module', $e->getMessage());
-      throw new Mandrill_HttpError(t('Mandrill API call to !url failed: @msg', array('!url' => $url, '@msg' => $response->error)));
+      throw new Mandrill_HttpError(t('Mandrill API call to %url failed: %msg', array('%url' => $url, '%msg' => $response->error)));
     }
 
     if ($result === NULL) {

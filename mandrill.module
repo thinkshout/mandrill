@@ -128,8 +128,8 @@ function mandrill_get_module_key_names() {
   );
   $descriptions = array();
   foreach (system_rebuild_module_data() as $item) {
-    if ($item->status) {
-      $descriptions[strtolower($item->info['name'])] = (empty($item->info['package']) ? '' : $item->info['package']) . ' » ' . t('!module module', array('!module' => $item->info['name']));
+    if ($item->status && !empty($item->info['name'])) {
+      $descriptions[strtolower($item->info['name'])] = (empty($item->info['package']) ? '' : $item->info['package']) . ' » ' . t(':module module', array(':module' => $item->info['name']));
     }
   }
   asort($descriptions);

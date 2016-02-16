@@ -67,9 +67,9 @@ class DefaultController extends ControllerBase {
         ]
         ],
       'message' => [
-        '#markup' => t('The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your !dashboard. !cache to ensure the data is current.', [
-          '!dashboard' => \Drupal::l(t('Mandrill Dashboard'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/')),
-          '!cache' => \Drupal::l(t('Clear your cache'), \Drupal\Core\Url::fromRoute('system.performance_settings')),
+        '#markup' => t('The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your %dashboard. %cache to ensure the data is current.', [
+          '%dashboard' => \Drupal::l(t('Mandrill Dashboard'), \Drupal\Core\Url::fromUri('https://mandrillapp.com/')),
+          '%cache' => \Drupal::l(t('Clear your cache'), \Drupal\Core\Url::fromRoute('system.performance_settings')),
         ])
         ],
       'volume' => [

@@ -145,8 +145,8 @@ class MandrillTemplateMapForm extends EntityForm {
           '#type' => 'select',
           '#title' => t('Email key'),
           '#description' => t(
-            'Select a module and mail key to use this template for outgoing email. Note that if an email has been selected in another Template Mapping, it will not appear in this list. These keys are defined through the !MailSystem interface.',
-            array('!MailSystem' => \Drupal::l(t('!MailSystem'), Url::fromRoute('mailsystem.settings')))
+            'Select a module and mail key to use this template for outgoing email. Note that if an email has been selected in another Template Mapping, it will not appear in this list. These keys are defined through the %MailSystem interface.',
+            array('%MailSystem' => \Drupal::l(t('MailSystem'), Url::fromRoute('mailsystem.settings')))
           ),
           '#options' => $mailsystem_options,
           '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',

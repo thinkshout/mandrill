@@ -105,7 +105,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
     $form['mandrill_api_key'] = array(
       '#title' => t('Mandrill API Key'),
       '#type' => 'textfield',
-      '#description' => t('Create or grab your API key from the !link.', array('!link' => $this->l(t('Mandrill settings'), Url::fromUri('https://mandrillapp.com/settings/index')))),
+      '#description' => t('Create or grab your API key from the %link.', array('%link' => $this->l(t('Mandrill settings'), Url::fromUri('https://mandrillapp.com/settings/index')))),
       '#default_value' => $key,
     );
     if (!$this->mandrillAPI->isLibraryInstalled()) {
@@ -134,19 +134,19 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         $form['mandrill_status'] = array(
           '#type' => 'markup',
           '#markup' => t('Mandrill is currently configured to be used by the following Module Keys. To change these settings or '
-            . 'configure additional systems to use Mandrill, use !link.<br /><br />!table',
+            . 'configure additional systems to use Mandrill, use %link.<br /><br />%table',
             array(
-              '!link' => $this->l(t('Mail System'), $mailSystemPath),
-              '!table' => $this->renderer->render($usage_array),
+              '%link' => $this->l(t('Mail System'), $mailSystemPath),
+              '%table' => $this->renderer->render($usage_array),
             )),
         );
       }
       elseif (!$form_state->get('rebuild')) {
         drupal_set_message(t(
           'PLEASE NOTE: Mandrill is not currently configured for use by Drupal. In order to route your email through Mandrill, '
-          . 'you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in !link, or '
+          . 'you must configure at least one MailSystemInterface (other than mandrill) to use "MandrillMailSystem" in %link, or '
           . 'you will only be able to send Test Emails through Mandrill.',
-          array('!link' => $this->l(t('Mail System'), $mailSystemPath))), 'warning');
+          array('%link' => $this->l(t('Mail System'), $mailSystemPath))), 'warning');
       }
       $form['email_options'] = array(
         '#type' => 'fieldset',
@@ -233,10 +233,10 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $form['send_options']['mandrill_log_defaulted_sends'] = array(
         '#title' => t('Log sends from module/key pairs that are not registered independently in mailsystem.'),
         '#type' => 'checkbox',
-        '#description' => t('If you select Mandrill as the site-wide default email sender in !mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the !systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
+        '#description' => t('If you select Mandrill as the site-wide default email sender in %mailsystem and check this box, any messages that are sent through Mandrill using module/key pairs that are not specifically registered in mailsystem will cause a message to be written to the %systemlog (type: Mandrill, severity: info). Enable this to identify keys and modules for automated emails for which you would like to have more granular control. It is not recommended to leave this box checked for extended periods, as it slows Mandrill and can clog your logs.',
           array(
-            '!mailsystem' => $this->l(t('Mail System'), $mailSystemPath),
-            '!systemlog' => $this->l(t('system log'), Url::fromRoute('dblog.overview')),
+            '%mailsystem' => $this->l(t('Mail System'), $mailSystemPath),
+            '%systemlog' => $this->l(t('system log'), Url::fromRoute('dblog.overview')),
           )),
         '#default_value' => $config->get('mandrill_log_defaulted_sends'),
       );
@@ -339,7 +339,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
       $plugin_label = $definition['label'];
     }
     else {
-      $plugin_label = $this->t('Unknown Plugin (!id)', ['!id' => $plugin_id]);
+      $plugin_label = $this->t('Unknown Plugin (%id)', ['%id' => $plugin_id]);
     }
     return $plugin_label;
   }

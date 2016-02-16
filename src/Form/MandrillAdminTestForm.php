@@ -68,8 +68,8 @@ class MandrillAdminTestForm extends ConfirmFormBase {
     $form['mandrill_test_body'] = array(
       '#type' => 'textarea',
       '#title' => t('Test body contents'),
-      '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: !link',
-        array('!link' => \Drupal::l(t('link'), $click_tracking_url))),
+      '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: %link',
+        array('%link' => \Drupal::l(t('link'), $click_tracking_url))),
     );
     $form['include_attachment'] = array(
       '#title' => t('Include attachment'),

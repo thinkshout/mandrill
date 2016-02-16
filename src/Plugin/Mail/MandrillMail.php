@@ -98,11 +98,11 @@ class MandrillMail implements MailInterface {
         }
       }
       if (!$registered) {
-        $this->log->notice("Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in !mailsystem if this is not desirable.",
+        $this->log->notice("Module: %module Key: %key invoked Mandrill to send email because Mandrill is configured as the default mail system. Specify alternate configuration for this module & key in %mailsystem if this is not desirable.",
           [
             '%module' => $message['module'],
             '%key' => $message['id'],
-            '!mailsystem' => \Drupal::l(t('Mail System'), Url::fromRoute('mailsystem.settings')),
+            '%mailsystem' => \Drupal::l(t('Mail System'), Url::fromRoute('mailsystem.settings')),
           ]
         );
       }
