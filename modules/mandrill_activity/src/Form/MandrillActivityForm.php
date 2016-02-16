@@ -121,7 +121,7 @@ class MandrillActivityForm extends EntityForm {
       ),
     );
 
-    $form_entity_type = $user_input['entity_type'];
+    $form_entity_type = isset($user_input['entity_type']) ? $user_input['entity_type'] : NULL;
     if (empty($form_entity_type) && $entity_not_null) {
       $form_entity_type = $activity->entity_type;
     }
@@ -156,7 +156,7 @@ class MandrillActivityForm extends EntityForm {
         ),
       );
 
-      $form_bundle = $user_input['bundle'];
+      $form_bundle = isset($user_input['bundle']) ? $user_input['bundle'] : NULL;
       if (empty($form_bundle) && $entity_not_null) {
         $form_bundle = $activity->bundle;
       }
