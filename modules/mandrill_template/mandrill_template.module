@@ -38,17 +38,25 @@ function mandrill_template_entity_insert(Drupal\Core\Entity\EntityInterface $ent
 }
 
 /**
- * Loads a single mandrill_template_map or all of them if no name provided.
+ * Loads a single Mandrill Template Map, or all if no ID is provided.
  *
- * @param null $name
- *   name of the template map entity
+ * @param string $id
+ *   The ID of the Template Map to load.
  *
  * @return array
- *   array of template_map entities
+ *   Array of Template Maps.
  */
-function mandrill_template_map_load_entities($name = NULL) {
-  $maps = entity_load_multiple_by_name('mandrill_template_map', isset($name) ? array($name) : FALSE);
-  return isset($name) ? reset($maps) : $maps;
+function mandrill_template_map_load_entities($id = NULL) {
+  $query = \Drupal::entityQuery('mandrill_template_map');
+
+  if (!empty($id)) {
+    $query->condition('id', $id);
+  }
+
+  $map_ids = $query->execute();
+  $template_maps = \Drupal\mandrill_template\Entity\MandrillTemplateMap::loadMultiple($map_ids);
+
+  return (!empty($id)) ? reset($template_maps) : $template_maps;
 }
 
 /**
@@ -120,9 +128,6 @@ function mandrill_template_map_usage() {
     }
   }
 
-  // TODO: Port below functionality.
-
-  /*
   $maps = mandrill_template_map_load_entities();
   foreach ($maps as $map) {
     if (isset($map->mailsystem_key) && array_key_exists($map->mailsystem_key, $system_assignments)) {
@@ -130,7 +135,6 @@ function mandrill_template_map_usage() {
     }
   }
   uksort($system_assignments, '_mandrill_template_map_mailsystem_sort');
-  */
 
   return $system_assignments;
 }
