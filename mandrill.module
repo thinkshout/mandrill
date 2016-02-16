@@ -129,30 +129,23 @@ function mandrill_get_module_key_names() {
   $descriptions = array();
   foreach (system_rebuild_module_data() as $item) {
     if ($item->status) {
-      $descriptions[$item->name] = (empty($item->info['package']) ? '' : $item->info['package']) . ' » ' . t('!module module', array('!module' => $item->info['name']));
+      $descriptions[strtolower($item->info['name'])] = (empty($item->info['package']) ? '' : $item->info['package']) . ' » ' . t('!module module', array('!module' => $item->info['name']));
     }
   }
   asort($descriptions);
-  $mailsystem_settings = mailsystem_get();
-  unset($mailsystem_settings['default-system']);
-  foreach ($mailsystem_settings as $id => $class) {
-    // Separate $id into $module and $key.
-    $module = $id;
-    while ($module && empty($descriptions[$module])) {
-      // Remove a key from the end.
-      $module = implode('_', explode('_', $module, -1));
-    }
-    // If an array key of the $mail_system variable is neither "default-system"
-    // nor begins with a module name, then it should be unset.
-    if (empty($module)) {
-      // This shouldn't happen.
-    }
-    // Set $title to the human-readable module name.
-    $title = preg_replace('/^.* » /', '', $descriptions[$module]);
-    if ($key = substr($id, strlen($module) + 1)) {
+
+  $mailsystem_config = \Drupal::service('config.factory')->getEditable('mailsystem.settings');
+  $modules = $mailsystem_config->get('modules');
+
+  foreach (array_keys($modules) as $module_name) {
+    foreach ($modules[$module_name] as $key => $options) {
+      $id = $module_name . '_' . $key;
+
+      $title = preg_replace('/^.* » /', '', $descriptions[$module_name]);
       $title .= " ($key key)";
+
+      $name_array[$id] = $title;
     }
-    $name_array[$id] = $title;
   }
 
   return $name_array;

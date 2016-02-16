@@ -145,16 +145,22 @@ function mandrill_template_map_load_by_mailsystem($module_key, $module) {
  *   value is set to NULL.
  */
 function mandrill_template_map_usage() {
-  $system_assignments = mailsystem_get();
-  // Filter out the systems that aren't using Mandrill:
-  foreach ($system_assignments as $system => $assignment) {
-    if ($assignment != 'MandrillMailSystem') {
-      unset($system_assignments[$system]);
-    }
-    else {
-      $system_assignments[$system] = NULL;
+  $mailsystem_config = \Drupal::service('config.factory')->getEditable('mailsystem.settings');
+  $modules = $mailsystem_config->get('modules');
+
+  $system_assignments = array();
+
+  foreach (array_keys($modules) as $module_name) {
+    foreach ($modules[$module_name] as $key => $options) {
+      if ($options['sender'] == 'mandrill_mail') {
+        $system_assignments[$module_name . '_' . $key] = NULL;
+      }
     }
   }
+
+  // TODO: Port below functionality.
+
+  /*
   $maps = mandrill_template_map_load_entities();
   foreach ($maps as $map) {
     if (isset($map->mailsystem_key) && array_key_exists($map->mailsystem_key, $system_assignments)) {
@@ -162,6 +168,8 @@ function mandrill_template_map_usage() {
     }
   }
   uksort($system_assignments, '_mandrill_template_map_mailsystem_sort');
+  */
+
   return $system_assignments;
 }
 
