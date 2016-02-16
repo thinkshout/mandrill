@@ -183,7 +183,7 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
 function mandrill_template_sender($message, $template_id, $template_content) {
   /* @var $mandrill_api \Drupal\mandrill\MandrillAPI */
   $mandrill_api = \Drupal::service('mandrill.api');
-  $mandrill_api->sendTemplate($mandrill_api, $template_id, $template_content);
+  $mandrill_api->sendTemplate($message, $template_id, $template_content);
 }
 
 /**
