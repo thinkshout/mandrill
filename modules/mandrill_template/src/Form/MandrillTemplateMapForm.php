@@ -74,9 +74,8 @@ class MandrillTemplateMapForm extends EntityForm {
       '#type' => 'fieldset',
       '#title' => t('Template Map Settings'),
       '#collapsible' => FALSE,
-      '#attributes' => array(
-        'id' => array('mandrill-template-mapping'),
-      ),
+      '#prefix' => '<div id="template-wrapper">',
+      '#suffix' => '</div>',
     );
 
     $template_names = array();
@@ -100,8 +99,14 @@ class MandrillTemplateMapForm extends EntityForm {
         '#default_value' => isset($map->template_id) ? $map->template_id : '',
         '#required' => TRUE,
         '#ajax' => array(
-          'callback' => 'mandrill_template_map_form_callback',
-          'wrapper' => 'mandrill-template-mapping',
+          'callback' => '::template_callback',
+          'wrapper' => 'template-wrapper',
+          'method' => 'replace',
+          'effect' => 'fade',
+          'progress' => array(
+            'type' => 'throbber',
+            'message' => t('Retrieving template information.'),
+          ),
         ),
       );
 
@@ -112,7 +117,7 @@ class MandrillTemplateMapForm extends EntityForm {
       }
 
       if ($form_template_id) {
-        $regions = array('' => t('-- Select --')) + _mandrill_parse_regions($template_names[$form_template_id]['publish_code']);
+        $regions = array('' => t('-- Select --')) + $this->parseTemplateRegions($template_names[$form_template_id]['publish_code']);
         $form['map_settings']['main_section'] = array(
           '#type' => 'select',
           '#title' => t('Template region'),
@@ -163,6 +168,13 @@ class MandrillTemplateMapForm extends EntityForm {
   }
 
   /**
+   * AJAX callback handler for MandrillTemplateMapForm.
+   */
+  public function template_callback(&$form, FormStateInterface $form_state) {
+    return $form['map_settings'];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
@@ -180,6 +192,23 @@ class MandrillTemplateMapForm extends EntityForm {
       ->condition('id', $id)
       ->execute();
     return (bool) $entity;
+  }
+
+  /**
+   * Parses a Mandrill template to extract its regions.
+   */
+  private function parseTemplateRegions($html, $tag = 'mc:edit') {
+    $instances = array();
+    $offset = 0;
+    $inst = NULL;
+    while ($offset = strpos($html, $tag, $offset)) {
+      $start = 1 + strpos($html, '"', $offset);
+      $length = strpos($html, '"', $start) - $start;
+      $inst = substr($html, $start, $length);
+      $instances[$inst] = $inst;
+      $offset = $start + $length;
+    }
+    return $instances;
   }
 
 }
