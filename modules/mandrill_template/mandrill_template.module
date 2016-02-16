@@ -38,50 +38,6 @@ function mandrill_template_entity_insert(Drupal\Core\Entity\EntityInterface $ent
 }
 
 /**
- * Implements hook_entity_info().
- */
-function mandrill_template_entity_info() {
-  $return = array(
-    'mandrill_template_map' => array(
-      'label' => t('Mandrill Template Map'),
-      'plural label' => t('Mandrill Template Maps'),
-      'controller class' => 'EntityAPIControllerExportable',
-      'entity class' => 'MandrillTemplateMap',
-      'base table' => 'mandrill_template_map',
-      'uri callback' => 'entity_class_uri',
-      'fieldable' => FALSE,
-      'exportable' => TRUE,
-      'module' => 'mandrill_template',
-      'entity keys' => array(
-        'id' => 'mandrill_template_map_entity_id',
-        'label' => 'label',
-        'name' => 'name',
-      ),
-      'admin ui' => array(
-        'path' => 'admin/config/services/mandrill/templates',
-        'file' => 'mandrill_template.admin.inc',
-        'controller class' => 'MandrillTemplateMapUIController',
-      ),
-    ),
-  );
-
-  return $return;
-}
-
-/**
- * Implements hook_permission().
- */
-function mandrill_template_permission() {
-  return array(
-    'configure mandrill templates' => array(
-      'title' => t('Configure Mandrill Templates'),
-      'description' => t('Select & configure which Mandrill Templates to use for messages going through Mandrill.'),
-      "restrict access" => FALSE,
-    ),
-  );
-}
-
-/**
  * Loads a single mandrill_template_map or all of them if no name provided.
  *
  * @param null $name
