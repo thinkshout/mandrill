@@ -55,28 +55,28 @@ class MandrillTemplateMap extends ConfigEntityBase implements MandrillTemplateMa
   public $label;
 
   /**
-   *
+   * The MailSystem key that is using this map.
    *
    * @var string
    */
   public $mailsystem_key;
 
   /**
-   *
+   * The unique identifier of the Mandrill template this map uses.
    *
    * @var string
    */
   public $template_id;
 
   /**
-   *
+   * The name of the section where primary email content should go.
    *
    * @var string
    */
   public $main_section;
 
   /**
-   *
+   * An array of content sections for the template.
    *
    * @var string
    */
