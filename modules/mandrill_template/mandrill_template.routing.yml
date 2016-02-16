@@ -26,7 +26,7 @@ entity.mandrill_template_map.edit_form:
 entity.mandrill_template_map.delete_form:
   path: '/admin/config/services/mandrill/templates/{mandrill_template_map}/delete'
   defaults:
-    _entity_form: 'mandrill_template.delete'
+    _entity_form: 'mandrill_template_map.delete'
     _title: 'Delete Mandrill Map'
   requirements:
     _permission: 'configure mandrill templates'
