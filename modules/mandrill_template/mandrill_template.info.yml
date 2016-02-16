@@ -6,7 +6,4 @@ dependencies:
   - mandrill
   - entity
 type: module
-configure: mailchimp_template.admin
-
-files:
- - tests/mailchimp_template.test
+configure: mandrill_template.admin

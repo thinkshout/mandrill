@@ -6,3 +6,4 @@ dependencies:
   - mandrill
   - entity
 type: module
+configure: mandrill_activity.admin
