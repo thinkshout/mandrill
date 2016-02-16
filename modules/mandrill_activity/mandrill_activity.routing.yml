@@ -31,10 +31,5 @@ entity.mandrill_activity.delete_form:
   requirements:
     _permission: 'administer mandrill activity'
 
-entity.user.mandrill_activity:
-  path: 'user/{user}/mandrill_activity'
-  defaults:
-    _controller: '\Drupal\mandrill_activity\Controller\MandrillActivityController::overview'
-    _title: 'Mandrill Activity'
-  requirements:
-    _permission: 'access mandrill activity'
+route_callbacks:
+  - '\Drupal\mandrill_activity\Routing\MandrillActivityRoutes::routes'
