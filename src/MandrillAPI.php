@@ -146,6 +146,60 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
+   * Gets a list of users.
+   *
+   * @return array
+   */
+  public function getUsers() {
+    $users = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $users = $mandrill->users->info();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $users;
+  }
+
+  /**
+   * Gets a list of tags.
+   *
+   * @return array
+   */
+  public function getTags() {
+    $tags = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $tags = $mandrill->tags->info();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $tags;
+  }
+
+  /**
+   * Gets a list of senders.
+   *
+   * @return array
+   */
+  public function getSenders() {
+    $senders = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $senders = $mandrill->senders->getList();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $senders;
+  }
+
+  /**
    * Gets a list of inbound routes.
    *
    * @return array
