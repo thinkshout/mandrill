@@ -9,7 +9,7 @@ mandrill.settings:
       type: string
       label: 'Sender email'
     mandrill_subaccount:
-      type: boolean
+      type: string
     mandrill_filter_format:
       type: string
     mandrill_track_opens:
