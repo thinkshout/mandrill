@@ -7,4 +7,5 @@ core: 8.x
 configure: mandrill.admin
 
 dependencies:
+  - composer_manager
   - mailsystem
