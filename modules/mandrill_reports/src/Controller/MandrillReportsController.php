@@ -33,7 +33,6 @@ class MandrillReportsController extends ControllerBase {
     $data['all_time_series'] = $reports->getTagsAllTimeSeries();
     $data['senders'] = $reports->getSenders();
     $data['urls'] = $reports->getUrls();
-    $data['urls'] = array();
 
     $settings = array();
     // All time series chart data.
@@ -88,7 +87,7 @@ class MandrillReportsController extends ControllerBase {
       );
 
       $content['urls_table'][$row]['unique_clicks'] = array(
-        '#markup' => $url['unique_clicks'] . '(' . $percent . '%)',
+        '#markup' => $url['unique_clicks'] . ' (' . $percent . '%)',
       );
 
       $content['urls_table'][$row]['clicks'] = array(
