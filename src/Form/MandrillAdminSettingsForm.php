@@ -167,24 +167,24 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#default_value' => $config->get('from_name'),
         '#description' => t('Optionally enter a from name to be used.'),
       );
-      $subAccounts = $this->mandrillAPI->getSubAccounts();
-      $subAccountsOptions = array();
-      if (!empty($subAccounts)) {
-        foreach ($subAccounts as $account) {
+      $sub_accounts = $this->mandrillAPI->getSubAccounts();
+      $sub_accounts_options = array();
+      if (!empty($sub_accounts)) {
+        $sub_accounts_options = array('_none' => '-- Select --');
+        foreach ($sub_accounts as $account) {
           if ($account['status'] == 'active') {
-            $subAccountsOptions[$account['id']] = $account['name'] . ' (' . $account['reputation'] . ')';
+            $sub_accounts_options[$account['id']] = $account['name'] . ' (' . $account['reputation'] . ')';
           }
         }
       }
       elseif ($config->get('mandrill_subaccount')) {
         $config->set('mandrill_subaccount', FALSE)->save();
       }
-      if (!empty($subAccountsOptions)) {
-        array_unshift($subAccountsOptions, array('_none' => '-- Select --'));
+      if (!empty($sub_accounts_options)) {
         $form['email_options']['mandrill_subaccount'] = array(
           '#type' => 'select',
           '#title' => t('Subaccount'),
-          '#options' => $subAccountsOptions,
+          '#options' => $sub_accounts_options,
           '#default_value' => $config->get('mandrill_subaccount'),
           '#description' => t('Choose a subaccount to send through.'),
         );
