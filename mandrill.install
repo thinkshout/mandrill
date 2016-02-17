@@ -39,23 +39,36 @@ function mandrill_uninstall() {
 }
 
 /**
- * Implements hook_requirements().
- *
- * @TODO Update this
+ * Implements hook_requirements()
  */
 function mandrill_requirements($phase) {
-  $requirements = array();
-  // Ensure translations don't break at install time.
-  $t = 't';
+  $requirements = array(
+    'mandrill' => array(
+      'title' => t('Mandrill'),
+    ),
+  );
 
-  if ($phase == 'update') {
-    if (!\Drupal::moduleHandler()->moduleExists('mailsystem')) {
-      $requirements['mandrill'] = array(
-        'title' => $t('Mandrill'),
-        'value' => '7.x-1.4',
-        'description' => $t('Mail System module is required for Mandrill 7.x-1.3 or higher.'),
-        'severity' => REQUIREMENT_ERROR,
-      );
+  if ($phase == 'runtime') {
+    $config = \Drupal::config('mandrill.settings');
+
+    // Check for Mandrill library.
+    if (\Doctrine\Common\ClassLoader::classExists($config->get('mandrill_api_classname'))) {
+      $requirements['mandrill']['description'] = t('The Mandrill library is installed correctly.');
+      $requirements['mandrill']['severity'] = REQUIREMENT_OK;
+    }
+    else {
+      $requirements['mandrill']['description'] = t('The Mandrill library has not been installed correctly.');
+      $requirements['mandrill']['severity'] = REQUIREMENT_ERROR;
+    }
+
+    // Check for the Mail System module.
+    if (\Drupal::moduleHandler()->moduleExists('mailsystem')) {
+      $requirements['mandrill']['description'] = t('The Mail System module is installed.');
+      $requirements['mandrill']['severity'] = REQUIREMENT_OK;
+    }
+    else {
+      $requirements['mandrill']['description'] = t('The Mail System module is required for Mandrill.');
+      $requirements['mandrill']['severity'] = REQUIREMENT_ERROR;
     }
   }
 
