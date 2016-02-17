@@ -51,6 +51,13 @@ class MandrillReports implements MandrillReportsInterface {
    * @return array
    */
   public function getTags() {
+    $cache = \Drupal::cache('mandrill');
+    $cached_tags = $cache->get('tags');
+
+    if (!empty($cached_tags)) {
+      return $cached_tags->data;
+    }
+
     $data = array();
     $tags = $this->mandrill_api->getTags();
     foreach ($tags as $tag) {
@@ -59,6 +66,8 @@ class MandrillReports implements MandrillReportsInterface {
         $data[$tag['tag']]['time_series'] = $this->mandrill_api->getTagTimeSeries($tag['tag']);
       }
     }
+
+    $cache->set('tags', $data);
 
     return $data;
   }
@@ -69,7 +78,18 @@ class MandrillReports implements MandrillReportsInterface {
    * @return array
    */
   public function getTagsAllTimeSeries() {
-    return $this->mandrill_api->getTagsAllTimeSeries();
+    $cache = \Drupal::cache('mandrill');
+    $cached_tags_series = $cache->get('tags_series');
+
+    if (!empty($cached_tags_series)) {
+      return $cached_tags_series->data;
+    }
+
+    $data = $this->mandrill_api->getTagsAllTimeSeries();
+
+    $cache->set('tags_series', $data);
+
+    return $data;
   }
 
   /**
@@ -78,13 +98,20 @@ class MandrillReports implements MandrillReportsInterface {
    * @return array
    */
   public function getSenders() {
+    $cache = \Drupal::cache('mandrill');
+    $cached_senders = $cache->get('senders');
+
+    if (!empty($cached_senders)) {
+      return $cached_senders->data;
+    }
+
     $data = array();
     $senders = $this->mandrill_api->getSenders();
 
     foreach ($senders as $sender) {
       try {
-        $data['senders'][$sender['address']] = $this->mandrill_api->getSender($sender['address']);
-        $data['senders'][$sender['address']]['time_series'] = $this->mandrill_api->getSenderTimeSeries($sender['address']);
+        $data[$sender['address']] = $this->mandrill_api->getSender($sender['address']);
+        $data[$sender['address']]['time_series'] = $this->mandrill_api->getSenderTimeSeries($sender['address']);
       }
       catch (\Exception $e) {
         \Drupal::logger('mandrill')->error('An error occurred requesting sender information from Mandrill for address %address. "%message"', array(
@@ -94,7 +121,9 @@ class MandrillReports implements MandrillReportsInterface {
       }
     }
 
-    return $data['senders'];
+    $cache->set('senders', $data);
+
+    return $data;
   }
 
   /**
@@ -103,6 +132,13 @@ class MandrillReports implements MandrillReportsInterface {
    * @return array
    */
   public function getUrls() {
+    $cache = \Drupal::cache('mandrill');
+    $cached_urls = $cache->get('urls');
+
+    if (!empty($cached_urls)) {
+      return $cached_urls->data;
+    }
+
     $data = array();
     $urls = $this->mandrill_api->getURLs();
 
@@ -112,6 +148,8 @@ class MandrillReports implements MandrillReportsInterface {
         $data[$url['url']]['time_series'] = $this->mandrill_api->getURLTimeSeries($url['url']);
       }
     }
+
+    $cache->set('urls', $data);
 
     return $data;
   }
