@@ -15,6 +15,16 @@ interface MandrillAPIInterface {
   public function getWebhooks();
   public function getInboundDomains();
   public function getInboundRoutes();
+  public function getUser();
+  public function getTags();
+  public function getTag($tag);
+  public function getTagTimeSeries($tag);
+  public function getTagsAllTimeSeries();
+  public function getSenders();
+  public function getSender($email);
+  public function getSenderTimeSeries($email);
+  public function getURLs();
+  public function getURLTimeSeries($url);
   public function addInboundDomain($domain);
   public function addWebhook($path, $events, $description = 'Drupal Webhook');
   public function deleteInboundDomain($domain);

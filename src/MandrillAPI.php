@@ -146,11 +146,11 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
-   * Gets a list of users.
+   * Gets current API user information.
    *
    * @return array
    */
-  public function getUsers() {
+  public function getUser() {
     $users = array();
     try {
       if ($mandrill = $this->getAPIObject()) {
@@ -182,6 +182,69 @@ class MandrillAPI implements MandrillAPIInterface {
   }
 
   /**
+   * Gets a single tag.
+   *
+   * @param string $tag
+   *   The tag as a string.
+   *
+   * @return array
+   *   The tag information.
+   */
+  public function getTag($tag) {
+    $tag = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $tag = $mandrill->tags->info($tag);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $tag;
+  }
+
+  /**
+   * Gets recent history for a tag.
+   *
+   * @param string $tag
+   *   The tag as a string.
+   *
+   * @return array
+   *   Array of tag history.
+   */
+  public function getTagTimeSeries($tag) {
+    $data = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $data = $mandrill->tags->timeSeries($tag);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $data;
+  }
+
+  /**
+   * Gets recent history for all tags.
+   *
+   * @return array
+   *   Array of tag history.
+   */
+  public function getTagsAllTimeSeries() {
+    $data = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $data = $mandrill->tags->allTimeSeries();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $data;
+  }
+
+  /**
    * Gets a list of senders.
    *
    * @return array
@@ -197,6 +260,91 @@ class MandrillAPI implements MandrillAPIInterface {
       $this->log->error($e->getMessage());
     }
     return $senders;
+  }
+
+  /**
+   * Gets a single sender.
+   *
+   * @param string $email
+   *   The email address of the sender.
+   *
+   * @return array
+   *   The sender information.
+   */
+  public function getSender($email) {
+    $sender = NULL;
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $sender = $mandrill->senders->info($email);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $sender;
+  }
+
+  /**
+   * Gets recent history for a sender.
+   *
+   * @param string $email
+   *   The email address of the sender.
+   *
+   * @return array
+   *   Array of sender history.
+   */
+  public function getSenderTimeSeries($email) {
+    $data = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $data = $mandrill->senders->timeSeries($email);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $data;
+  }
+
+  /**
+   * Gets the 100 most-clicked URLs.
+   *
+   * @return array
+   *   Array of URL objects.
+   */
+  public function getURLs() {
+    $urls = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $urls = $mandrill->urls->getList();
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $urls;
+  }
+
+  /**
+   * Gets recent history for a URL.
+   *
+   * @param string $url
+   *   The URL.
+   *
+   * @return array
+   *   Array of URL history.
+   */
+  public function getURLTimeSeries($url) {
+    $data = array();
+    try {
+      if ($mandrill = $this->getAPIObject()) {
+        $data = $mandrill->urls->timeSeries($url);
+      }
+    } catch (\Exception $e) {
+      drupal_set_message(t('Mandrill: %message', array('%message' => $e->getMessage())), 'error');
+      $this->log->error($e->getMessage());
+    }
+    return $data;
   }
 
   /**
@@ -240,7 +388,7 @@ class MandrillAPI implements MandrillAPIInterface {
    * @param array $events
    * @param string $description
    *
-   * @return object
+   * @return array
    *   The created Mandrill webhook object.
    */
   public function addWebhook($path, $events, $description = 'Drupal Webhook') {
