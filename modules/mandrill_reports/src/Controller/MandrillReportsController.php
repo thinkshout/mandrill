@@ -33,7 +33,36 @@ class MandrillReportsController extends ControllerBase {
     $data['all_time_series'] = $reports->getTagsAllTimeSeries();
     $data['senders'] = $reports->getSenders();
     $data['urls'] = $reports->getUrls();
+    $data['urls'] = array();
 
+    $settings = array();
+    // All time series chart data.
+    foreach ($data['all_time_series'] as $series) {
+      $settings['mandrill_reports']['volume'][] = array(
+        'date' => $series['time'],
+        'sent' => $series['sent'],
+        'bounced' => $series['hard_bounces'] + $series['soft_bounces'],
+        'rejected' => $series['rejects'],
+      );
+
+      $settings['mandrill_reports']['engagement'][] = array(
+        'date' => $series['time'],
+        'open_rate' => $series['sent'] == 0 ? 0 : $series['unique_opens'] / $series['sent'],
+        'click_rate' => $series['sent'] == 0 ? 0 : $series['unique_clicks'] / $series['sent'],
+      );
+    }
+
+    $content['volume'] = array(
+      '#prefix' => '<h2>' . t('Sending Volume') . '</h2>',
+      '#markup' => '<div id="mandrill-volume-chart"></div>',
+    );
+
+    $content['engagement'] = array(
+      '#prefix' => '<h2>' . t('Average Open and Click Rate') . '</h2>',
+      '#markup' => '<div id="mandrill-engage-chart"></div>',
+    );
+
+    // URL tracking table.
     $content['urls_table'] = array(
       '#type' => 'table',
       '#header' => array(
@@ -42,7 +71,8 @@ class MandrillReportsController extends ControllerBase {
         t('Unique Clicks'),
         t('Total Clicks'),
       ),
-      '#empty' => 'No account activity yet.',
+      '#empty' => 'No activity yet.',
+      '#prefix' => '<h2>' . t('Tracked URLs') . '</h2>',
     );
 
     $row = 0;
@@ -67,6 +97,11 @@ class MandrillReportsController extends ControllerBase {
 
       $row++;
     }
+
+    $content['#attached']['library'][] = 'mandrill_reports/google-jsapi';
+    $content['#attached']['library'][] = 'mandrill_reports/reports-stats';
+
+    $content['#attached']['drupalSettings'] = $settings;
 
     return $content;
   }

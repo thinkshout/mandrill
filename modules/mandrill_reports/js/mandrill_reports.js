@@ -11,12 +11,12 @@ Drupal.behaviors.mandrill_reports = {
       dataTableVol.addColumn('number', Drupal.t('Bounced'));
       dataTableVol.addColumn('number', Drupal.t('Rejected'));
 
-      for (var key in settings.mandrill_reports.volume) {
+      for (var key in drupalSettings.mandrill_reports.volume) {
         dataTableVol.addRow([
-          new Date(settings.mandrill_reports.volume[key]['date']),
-          settings.mandrill_reports.volume[key]['sent'],
-          settings.mandrill_reports.volume[key]['bounced'],
-          settings.mandrill_reports.volume[key]['rejected']
+          new Date(drupalSettings.mandrill_reports.volume[key]['date']),
+          drupalSettings.mandrill_reports.volume[key]['sent'],
+          drupalSettings.mandrill_reports.volume[key]['bounced'],
+          drupalSettings.mandrill_reports.volume[key]['rejected']
         ]);
       }
 
@@ -33,11 +33,11 @@ Drupal.behaviors.mandrill_reports = {
       dataTableEng.addColumn('number', Drupal.t('Open rate'));
       dataTableEng.addColumn('number', Drupal.t('Click rate'));
 
-      for (var key in settings.mandrill_reports.engagement) {
+      for (var key in drupalSettings.mandrill_reports.engagement) {
         dataTableEng.addRow([
-          new Date(settings.mandrill_reports.engagement[key]['date']),
-          settings.mandrill_reports.engagement[key]['open_rate'],
-          settings.mandrill_reports.engagement[key]['click_rate']
+          new Date(drupalSettings.mandrill_reports.engagement[key]['date']),
+          drupalSettings.mandrill_reports.engagement[key]['open_rate'],
+          drupalSettings.mandrill_reports.engagement[key]['click_rate']
         ]);
       }
 
