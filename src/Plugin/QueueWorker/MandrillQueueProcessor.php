@@ -20,6 +20,11 @@ use Drupal\Core\Queue\QueueWorkerBase;
  */
 class MandrillQueueProcessor extends QueueWorkerBase {
 
+  public function __construct() {
+    $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
+    $this->cron['time'] = $config->get('mandrill_queue_worker_timeout', 60);
+  }
+
   /**
    * {@inheritdoc}
    */
