@@ -19,6 +19,7 @@ class MandrillReportsAPI extends MandrillAPI {
    *
    * @return array
    */
+  /*
   public function getUsers($mandrill) {
     $users = array();
     try {
@@ -29,12 +30,14 @@ class MandrillReportsAPI extends MandrillAPI {
     }
     return $users;
   }
+  */
 
   /**
    * Get tags from Mandrill.
    *
    * @return array
    */
+  /*
   public function getTags($mandrill) {
     $data = array();
     try {
@@ -51,12 +54,14 @@ class MandrillReportsAPI extends MandrillAPI {
     }
     return $data['tags'];
   }
+  */
 
   /**
    * Get senders from Mandrill.
    *
    * @return array
    */
+  /*
   public function getSenders($mandrill) {
     $data = array();
     try {
@@ -79,12 +84,14 @@ class MandrillReportsAPI extends MandrillAPI {
     }
     return $data['senders'];
   }
+  */
 
   /**
    * Get urls from Mandrill.
    *
    * @return array
    */
+  /*
   public function getUrls($mandrill) {
     $data = array();
     $urls = array();
@@ -103,6 +110,7 @@ class MandrillReportsAPI extends MandrillAPI {
     }
     return $data['urls'];
   }
+  */
 
   /**
    * Mandrill report data.

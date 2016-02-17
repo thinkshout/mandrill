@@ -5,10 +5,11 @@ mandrill_reports.dashboard_page:
     _controller: '\Drupal\mandrill_reports\Controller\DefaultController::mandrill_reports_dashboard_page'
   requirements:
     _permission: 'view mandrill reports'
+
 mandrill_reports.summary_page:
   path: 'admin/reports/mandrill/summary'
   defaults:
     _title: 'Mandrill Account Summary'
-    _controller: '\Drupal\mandrill_reports\Controller\DefaultController::mandrill_reports_summary_page'
+    _controller: '\Drupal\mandrill_reports\Controller\MandrillReportsController::summary'
   requirements:
     _permission: 'view mandrill reports'
