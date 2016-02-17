@@ -36,6 +36,9 @@ function mandrill_uninstall() {
   $config->clear('mandrill_track_opens')->save();
   $config->clear('mandrill_url_strip_qs')->save();
   $config->clear('mandrill_process_async')->save();
+
+  $queue = \Drupal::queue(MANDRILL_QUEUE);
+  $queue->deleteQueue();
 }
 
 /**
