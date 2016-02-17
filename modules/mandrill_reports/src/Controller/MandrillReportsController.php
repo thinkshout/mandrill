@@ -8,6 +8,7 @@
 namespace Drupal\mandrill_reports\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 
 /**
  * MandrillReports controller.
@@ -48,6 +49,16 @@ class MandrillReportsController extends ControllerBase {
         'click_rate' => $series['sent'] == 0 ? 0 : $series['unique_clicks'] / $series['sent'],
       );
     }
+
+    $content['info'] = array(
+      '#markup' => t(
+        'The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your %dashboard. %cache to ensure the data is current.',
+        array(
+          '%dashboard' => \Drupal::l(t('Mandrill Dashboard'), Url::fromUri('https://mandrillapp.com/')),
+          '%cache' => \Drupal::l(t('Clear your cache'), Url::fromRoute('system.performance_settings')),
+        )
+      ),
+    );
 
     $content['volume'] = array(
       '#prefix' => '<h2>' . t('Sending Volume') . '</h2>',
