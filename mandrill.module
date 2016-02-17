@@ -35,31 +35,6 @@ function mandrill_test_access() {
 }
 
 /**
- * Implements hook_cron_queue_info().
- */
-function mandrill_cron_queue_info() {
-  $queues = array();
-  $queues[MANDRILL_QUEUE] = array(
-    'worker callback' => 'mandrill_queue_worker_mailsend',
-    'time' => \Drupal::config('mandrill.settings')->get('mandrill_queue_worker_timeout'),
-  );
-  return $queues;
-}
-
-/**
- * Sends a queued email.
- * @see mandrill_cron_queue_info()
- */
-function mandrill_queue_worker_mailsend($data) {
-  // Send the message stored in the queue item.
-  mandrill_mailsend(
-    $data['message'],
-    $data['function'],
-    $data['args']
-  );
-}
-
-/**
  * Implements hook_mail().
  */
 function mandrill_mail($key, &$message, $params) {
