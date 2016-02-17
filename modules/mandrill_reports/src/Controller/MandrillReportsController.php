@@ -28,11 +28,45 @@ class MandrillReportsController extends ControllerBase {
 
     $data = array();
 
-    $data['user'] = $reports->getUsers();
+    $data['user'] = $reports->getUser();
     $data['tags'] = $reports->getTags();
     $data['all_time_series'] = $reports->getTagsAllTimeSeries();
     $data['senders'] = $reports->getSenders();
     $data['urls'] = $reports->getUrls();
+
+    $content['urls_table'] = array(
+      '#type' => 'table',
+      '#header' => array(
+        t('URL'),
+        t('Delivered'),
+        t('Unique Clicks'),
+        t('Total Clicks'),
+      ),
+      '#empty' => 'No account activity yet.',
+    );
+
+    $row = 0;
+    foreach ($data['urls'] as $url) {
+      $percent = number_format($url['unique_clicks'] / $url['sent'], 2) * 100;
+
+      $content['urls_table'][$row]['url'] = array(
+        '#markup' => $url['url'],
+      );
+
+      $content['urls_table'][$row]['sent'] = array(
+        '#markup' => $url['sent'],
+      );
+
+      $content['urls_table'][$row]['unique_clicks'] = array(
+        '#markup' => $url['unique_clicks'] . '(' . $percent . '%)',
+      );
+
+      $content['urls_table'][$row]['clicks'] = array(
+        '#markup' => $url['clicks'],
+      );
+
+      $row++;
+    }
 
     return $content;
   }
