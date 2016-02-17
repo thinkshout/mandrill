@@ -1,8 +1,0 @@
-name = Mandrill Reports
-description = "Providing reporting on activity through Mandrill."
-core = 7.x
-package = Mandrill
-
-dependencies[] = mandrill
-
-files[] = tests/mandrill_reports.test
