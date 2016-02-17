@@ -29,9 +29,7 @@ class MandrillReportsController extends ControllerBase {
     $data = array();
 
     $data['user'] = $reports->getUser();
-    $data['tags'] = $reports->getTags();
     $data['all_time_series'] = $reports->getTagsAllTimeSeries();
-    $data['senders'] = $reports->getSenders();
     $data['urls'] = $reports->getUrls();
 
     $settings = array();
