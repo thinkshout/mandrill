@@ -149,6 +149,8 @@ class MandrillService implements MandrillServiceInterface {
             case "error":
             case "invalid":
             case "rejected":
+              // TODO: It should be possible to remove mandrill_test_mode and
+              // replace the below functionality inside MandrillTestService.
               if (!$this->config->get('mandrill.settings')->get('mandrill_test_mode')) {
                 $to = isset($result['email']) ? $result['email'] : 'recipient';
                 $status = isset($result['status']) ? $result['status'] : 'message';

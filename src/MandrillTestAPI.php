@@ -15,6 +15,47 @@ class MandrillTestAPI extends MandrillAPI {
   /**
    * {@inheritdoc}
    */
+  public function getSubAccounts() {
+    $subaccounts = array();
+
+    // Test Customer One
+    $subaccount = array(
+      'id' => 'test-customer-1',
+      'name' => 'Test Customer One',
+      'custom_quota' => 42,
+      'status' => 'active',
+      'reputation' => 42,
+      'created_at' => '2013-01-01 15:30:27',
+      'first_sent_at' => '2013-01-01 15:30:29',
+      'sent_weekly' => 42,
+      'sent_monthly' => 42,
+      'sent_total' => 42,
+    );
+
+    $subaccounts[] = $subaccount;
+
+    // Test Customer Two
+    $subaccount = array(
+      'id' => 'test-customer-2',
+      'name' => 'Test Customer Two',
+      'custom_quota' => 42,
+      'status' => 'active',
+      'reputation' => 42,
+      'created_at' => '2013-01-01 15:30:27',
+      'first_sent_at' => '2013-01-01 15:30:29',
+      'sent_weekly' => 42,
+      'sent_monthly' => 42,
+      'sent_total' => 42,
+    );
+
+    $subaccounts[] = $subaccount;
+
+    return $subaccounts;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function send(array $message) {
     if (!isset($message['to']) || empty($message['to'])) {
       return $this->getErrorResponse(12, 'ValidationError', 'No recipients defined.');

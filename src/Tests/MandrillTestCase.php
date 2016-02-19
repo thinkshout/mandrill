@@ -76,7 +76,7 @@ class MandrillTestCase extends WebTestBase {
   /**
    * Gets getting a list of templates for a given label.
    *
-   * @TODO: Implement.
+   * @TODO: This belongs in the mandrill_template module.
    *
   public function testGetTemplates() {
   $templates = mandrill_get_templates();
@@ -92,7 +92,7 @@ class MandrillTestCase extends WebTestBase {
    * Tests getting a list of subaccounts.
    */
   public function testGetSubAccounts() {
-    $mandrillAPI = \Drupal::service('mandrill.api');
+    $mandrillAPI = \Drupal::service('mandrill.test.api');
     $subAccounts = $mandrillAPI->getSubAccounts();
     $this->assertTrue(!empty($subAccounts), 'Tested retrieving sub-accounts.');
     if (!empty($subAccounts) && is_array($subAccounts)) {
