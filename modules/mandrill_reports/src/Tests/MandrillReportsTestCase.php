@@ -7,7 +7,6 @@
 namespace Drupal\mandrill_reports\Tests;
 
 use Drupal\simpletest\WebTestBase;
-use Drupal\mandrill_reports\Plugin\Reports;
 
 /**
  * Test Mandrill Reports functionality.
@@ -15,12 +14,14 @@ use Drupal\mandrill_reports\Plugin\Reports;
  * @group mandrill
  */
 class MandrillReportsTestCase extends WebTestBase {
+
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = ['libraries', 'mandrill', 'mandrill_reports', 'entity'];
+  public static $modules = ['mandrill', 'mandrill_reports'];
+
   /**
    * Pre-test setup function.
    *
@@ -30,7 +31,6 @@ class MandrillReportsTestCase extends WebTestBase {
   protected function setUp() {
     parent::setUp();
     $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
-    $config->set('mandrill_api_classname', 'DrupalMandrillTest');
     $config->set('mandrill_api_key', MANDRILL_TEST_API_KEY);
   }
 
@@ -48,12 +48,4 @@ class MandrillReportsTestCase extends WebTestBase {
     $this->assertTrue(!empty($reports_data['urls']), 'Tested URLs report data exists.');
   }
 
-  /**
-   * Get the Mandrill Reports plugin.
-   *
-   * @return \Drupal\mandrill_reports\Plugin\Reports\MandrillReports
-   */
-  private function getMandrillReports() {
-    return new MandrillReports();
-  }
 }

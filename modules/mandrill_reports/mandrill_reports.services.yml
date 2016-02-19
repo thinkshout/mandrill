@@ -1,4 +1,4 @@
 services:
-  mandrill_reports.reports:
-    class: Drupal\mandrill_reports\MandrillReports
+  mandrill_reports.service:
+    class: Drupal\mandrill_reports\MandrillReportsService
     arguments: ['@mandrill.api', '@config.factory']

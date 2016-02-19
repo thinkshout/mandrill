@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\mandrill_reports\MandrillReports.
+ * Contains \Drupal\mandrill_reports\MandrillReportsService.
  */
 
 namespace Drupal\mandrill_reports;
@@ -13,7 +13,7 @@ use Drupal\mandrill\MandrillAPIInterface;
 /**
  * Mandrill Reports service.
  */
-class MandrillReports implements MandrillReportsInterface {
+class MandrillReportsService implements MandrillReportsInterface {
 
   /**
    * The Mandrill API service.
