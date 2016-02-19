@@ -15,6 +15,26 @@ class MandrillTestAPI extends MandrillAPI {
   /**
    * {@inheritdoc}
    */
+  public function getMessages($email) {
+    $matched_messages = array();
+
+    $query_key = 'email';
+    $query_value = $email;
+
+    $messages = $this->getTestMessagesData();
+
+    foreach ($messages as $message) {
+      if (isset($message[$query_key]) && ($message[$query_key] == $query_value)) {
+        $matched_messages[] = $message;
+      }
+    }
+
+    return $matched_messages;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSubAccounts() {
     $subaccounts = array();
 
@@ -98,7 +118,7 @@ class MandrillTestAPI extends MandrillAPI {
    * @return array
    *   Formatted error response.
    */
-  private function getErrorResponse($code, $name, $message) {
+  protected function getErrorResponse($code, $name, $message) {
     $response = array(
       'status' => 'error',
       'code' => $code,
@@ -110,10 +130,46 @@ class MandrillTestAPI extends MandrillAPI {
   }
 
   /**
-   * {@inheritdoc}
+   * Gets an array of messages used in tests.
    */
-  private function getAPIObject($reset = FALSE) {
+  protected function getTestMessagesData() {
+    $messages = array();
 
+    $message = array(
+      'ts' => 1365190000,
+      '_id' => 'abc123abc123abc123abc123',
+      'sender' => 'sender@example.com',
+      'template' => 'test-template',
+      'subject' => 'Test Subject',
+      'email' => 'recipient@example.com',
+      'tags' => array(
+        'test-tag'
+      ),
+      'opens' => 42,
+      'opens_detail' => array(
+        'ts' => 1365190001,
+        'ip' => '55.55.55.55',
+        'location' => 'Georgia, US',
+        'ua' => 'Linux/Ubuntu/Chrome/Chrome 28.0.1500.53',
+      ),
+      'clicks' => 42,
+      'clicks_detail' => array(
+        'ts' => 1365190001,
+        'url' => 'http://www.example.com',
+        'ip' => '55.55.55.55',
+        'location' => 'Georgia, US',
+        'ua' => 'Linux/Ubuntu/Chrome/Chrome 28.0.1500.53',
+      ),
+      'state' => 'sent',
+      'metadata' => array(
+        'user_id' => 123,
+        'website' => 'www.example.com',
+      ),
+    );
+
+    $messages[] = $message;
+
+    return $messages;
   }
 
 }

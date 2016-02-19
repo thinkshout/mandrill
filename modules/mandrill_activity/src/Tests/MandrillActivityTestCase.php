@@ -6,10 +6,13 @@
 
 namespace Drupal\mandrill_activity\Tests;
 
-use Drupal\mandrill_activity\Plugin\Activity\MandrillActivity;
 use Drupal\simpletest\WebTestBase;
-use Drupal\mandrill_reports\Plugin\Reports;
 
+/**
+ * Test Mandrill Activity functionality.
+ *
+ * @group mandrill
+ */
 class MandrillActivityTestCase extends WebTestBase {
 
   /**
@@ -17,7 +20,7 @@ class MandrillActivityTestCase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = ['libraries', 'mandrill', 'mandrill_activity', 'entity'];
+  public static $modules = ['mandrill', 'mandrill_activity'];
 
   /**
    * Pre-test setup function.
@@ -28,7 +31,6 @@ class MandrillActivityTestCase extends WebTestBase {
   protected function setUp() {
     parent::setUp();
     $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
-    $config->set('mandrill_api_classname', 'DrupalMandrillTest');
     $config->set('mandrill_api_key', MANDRILL_TEST_API_KEY);
   }
 
@@ -38,11 +40,10 @@ class MandrillActivityTestCase extends WebTestBase {
   public function testGetActivity() {
     $email = 'recipient@example.com';
 
-    // TODO: This should be using the MandrillAPI service.
-    // See MandrillActivityController::overview
+    /* @var $mandrillAPI \Drupal\mandrill\MandrillTestAPI */
+    $mandrillAPI = \Drupal::service('mandrill.test.api');
 
-    /*
-    $activity = $this->getMandrillActivity($email);
+    $activity = $mandrillAPI->getMessages($email);
 
     $this->assertTrue(!empty($activity), 'Tested retrieving activity.');
 
@@ -51,7 +52,6 @@ class MandrillActivityTestCase extends WebTestBase {
         $this->assertEqual($message['email'], $email, 'Tested valid message: ' . $message['subject']);
       }
     }
-    */
   }
 
 }
