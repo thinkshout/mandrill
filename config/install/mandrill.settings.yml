@@ -1,4 +1,4 @@
-mandrill_subaccount: false
+mandrill_subaccount: ''
 mandrill_filter_format: ''
 mandrill_track_opens: true
 mandrill_track_clicks: true
