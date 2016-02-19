@@ -24,7 +24,7 @@ class MandrillReportsController extends ControllerBase {
   public function dashboard() {
     $content = array();
 
-    /* @var $reports \Drupal\mandrill_reports\MandrillReports */
+    /* @var $reports \Drupal\mandrill_reports\MandrillReportsService */
     $reports = \Drupal::service('mandrill_reports.service');
 
     $data = array();
@@ -123,7 +123,7 @@ class MandrillReportsController extends ControllerBase {
   public function summary() {
     $content = array();
 
-    /* @var $reports \Drupal\mandrill_reports\MandrillReports */
+    /* @var $reports \Drupal\mandrill_reports\MandrillReportsService */
     $reports = \Drupal::service('mandrill_reports.service');
 
     $user = $reports->getUser();
