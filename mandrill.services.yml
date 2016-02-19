@@ -7,6 +7,14 @@ services:
     class: Drupal\mandrill\MandrillAPI
     arguments: ['@config.factory', '@logger.factory']
 
+  mandrill.test.service:
+    class: Drupal\mandrill\MandrillTestService
+    arguments: ['@mandrill.api', '@config.factory', '@logger.factory']
+
+  mandrill.test.api:
+    class: Drupal\mandrill\MandrillTestAPI
+    arguments: ['@config.factory', '@logger.factory']
+
   cache.mandrill:
     class: Drupal\Core\Cache\CacheBackendInterface
     tags:

@@ -6,8 +6,8 @@
 
 namespace Drupal\mandrill\Tests;
 
+use Drupal\mandrill\Plugin\Mail\MandrillTestMail;
 use Drupal\simpletest\WebTestBase;
-use Drupal\mandrill\Plugin\Mail\MandrillMail;
 
 /**
  * Test core Mandrill functionality.
@@ -15,12 +15,14 @@ use Drupal\mandrill\Plugin\Mail\MandrillMail;
  * @group mandrill
  */
 class MandrillTestCase extends WebTestBase {
+
   /**
    * Modules to enable.
    *
    * @var array
    */
   public static $modules = ['mandrill'];
+
   /**
    * Pre-test setup function.
    *
@@ -37,6 +39,7 @@ class MandrillTestCase extends WebTestBase {
     // $config->set('mandrill_api_classname', 'DrupalMandrillTest');
     // $config->set('mandrill_test_mode', TRUE);
   }
+
   /**
    * Tests sending a message to multiple recipients.
    */
@@ -98,14 +101,16 @@ class MandrillTestCase extends WebTestBase {
       }
     }
   }
+
   /**
-   * Get the Mandrill Mail plugin.
+   * Get the Mandrill Mail test plugin.
    *
-   * @return \Drupal\mandrill\Plugin\Mail\MandrillMail
+   * @return \Drupal\mandrill\Plugin\Mail\MandrillTestMail
    */
   private function getMandrillMail() {
-    return new MandrillMail();
+    return new MandrillTestMail();
   }
+
   /**
    * Gets message data used in tests.
    *
