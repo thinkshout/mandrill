@@ -9,7 +9,7 @@ services:
 
   mandrill.test.service:
     class: Drupal\mandrill\MandrillTestService
-    arguments: ['@mandrill.api', '@config.factory', '@logger.factory']
+    arguments: ['@mandrill.test.api', '@config.factory', '@logger.factory']
 
   mandrill.test.api:
     class: Drupal\mandrill\MandrillTestAPI
