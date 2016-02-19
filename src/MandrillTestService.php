@@ -12,11 +12,4 @@ namespace Drupal\mandrill;
  */
 class MandrillTestService extends MandrillService {
 
-  /**
-   * {@inheritdoc}
-   */
-  public function send($message, $function, array $args = array()) {
-
-  }
-
 }
