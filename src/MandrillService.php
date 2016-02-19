@@ -127,6 +127,7 @@ class MandrillService implements MandrillServiceInterface {
    *   TRUE if no exception thrown
    */
   public function send($message, $function, array $args = array()) {
+    // TODO: $function and $args are deprecated and need to be removed.
     try {
       if (!function_exists($function)) {
         $this->log->error('Error sending email from %from to %to. Function %function not found.', array(
@@ -136,8 +137,10 @@ class MandrillService implements MandrillServiceInterface {
         ));
         return FALSE;
       }
-      $params = array($message) + $args;
-      $response = call_user_func_array($function, $params);
+
+      $response = $this->mandrill_api->send($message);
+
+      // TODO: Break response handling out into seperate function.
       if (!isset($response['status'])) {
         foreach ($response as $result) {
           // Allow other modules to react based on a send result.
