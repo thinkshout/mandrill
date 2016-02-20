@@ -140,52 +140,7 @@ class MandrillService implements MandrillServiceInterface {
 
       $response = $this->mandrill_api->send($message);
 
-      // TODO: Break response handling out into seperate function.
-      if (!isset($response['status'])) {
-        foreach ($response as $result) {
-          // Allow other modules to react based on a send result.
-          \Drupal::moduleHandler()->invokeAll('mandrill_mailsend_result', [$result]);
-          switch ($result['status']) {
-            case "error":
-            case "invalid":
-            case "rejected":
-              // TODO: It should be possible to remove mandrill_test_mode and
-              // replace the below functionality inside MandrillTestService.
-              if (!$this->config->get('mandrill.settings')->get('mandrill_test_mode')) {
-                $to = isset($result['email']) ? $result['email'] : 'recipient';
-                $status = isset($result['status']) ? $result['status'] : 'message';
-                $error_message = isset($result['message']) ? $result['message'] : 'no message';
-                if (!isset($result['message']) && isset($result['reject_reason'])) {
-                  $error_message = $result['reject_reason'];
-                }
-
-                $this->log->error('Failed sending email from %from to %to. @status: @message', array(
-                  '%from' => $message['from_email'],
-                  '%to' => $to,
-                  '@status' => $status,
-                  '@message' => $error_message,
-                ));
-              }
-              return FALSE;
-            case "queued":
-              $this->log->info('Email from %from to %to queued by Mandrill App.', array(
-                '%from' => $message['from_email'],
-                '%to' => $result['email'],
-              ));
-              break;
-          }
-        }
-      }
-      else {
-        $this->log->warning('Mail send failed with status %status: code %code, %name, %message', array(
-          '%status' => $response['status'],
-          '%code' => $response['code'],
-          '%name' => $response['name'],
-          '%message' => $response['message'],
-        ));
-        return FALSE;
-      }
-      return TRUE;
+      return $this->handleSendResponse($response, $message);
     }
     catch (\Exception $e) {
       $this->log->error('Error sending email from %from to %to. @code: @message', array(
@@ -197,4 +152,58 @@ class MandrillService implements MandrillServiceInterface {
       return FALSE;
     }
   }
+
+  /**
+   * @param $response
+   * @param $message
+   * @return bool
+   */
+  protected function handleSendResponse($response, $message) {
+    if (!isset($response['status'])) {
+      foreach ($response as $result) {
+        // Allow other modules to react based on a send result.
+        \Drupal::moduleHandler()->invokeAll('mandrill_mailsend_result', [$result]);
+        switch ($result['status']) {
+          case "error":
+          case "invalid":
+          case "rejected":
+            // TODO: It should be possible to remove mandrill_test_mode and
+            // replace the below functionality inside MandrillTestService.
+            if (!$this->config->get('mandrill.settings')->get('mandrill_test_mode')) {
+              $to = isset($result['email']) ? $result['email'] : 'recipient';
+              $status = isset($result['status']) ? $result['status'] : 'message';
+              $error_message = isset($result['message']) ? $result['message'] : 'no message';
+              if (!isset($result['message']) && isset($result['reject_reason'])) {
+                $error_message = $result['reject_reason'];
+              }
+
+              $this->log->error('Failed sending email from %from to %to. @status: @message', array(
+                '%from' => $message['from_email'],
+                '%to' => $to,
+                '@status' => $status,
+                '@message' => $error_message,
+              ));
+            }
+            return FALSE;
+          case "queued":
+            $this->log->info('Email from %from to %to queued by Mandrill App.', array(
+              '%from' => $message['from_email'],
+              '%to' => $result['email'],
+            ));
+            break;
+        }
+      }
+    }
+    else {
+      $this->log->warning('Mail send failed with status %status: code %code, %name, %message', array(
+        '%status' => $response['status'],
+        '%code' => $response['code'],
+        '%name' => $response['name'],
+        '%message' => $response['message'],
+      ));
+      return FALSE;
+    }
+    return TRUE;
+  }
+
 }
