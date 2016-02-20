@@ -126,17 +126,17 @@ class MandrillService implements MandrillServiceInterface {
    * @return bool
    *   TRUE if no exception thrown
    */
-  public function send($message, $function, array $args = array()) {
+  public function send($message, $function = '', array $args = array()) {
     // TODO: $function and $args are deprecated and need to be removed.
     try {
-      if (!function_exists($function)) {
-        $this->log->error('Error sending email from %from to %to. Function %function not found.', array(
-          '%from' => $message['from_email'],
-          '%to' => $message['to'],
-          '%function' => $function,
-        ));
-        return FALSE;
-      }
+      //if (!function_exists($function)) {
+        //$this->log->error('Error sending email from %from to %to. Function %function not found.', array(
+          //'%from' => $message['from_email'],
+          //'%to' => $message['to'],
+          //'%function' => $function,
+        //));
+        //return FALSE;
+      //}
 
       $response = $this->mandrill_api->send($message);
 

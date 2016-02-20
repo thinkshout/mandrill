@@ -183,6 +183,8 @@ class MandrillMail implements MailInterface {
     );
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
     $mandrill_message = $overrides + array(
+        'id' => $message['id'],
+        'module' => $message['module'],
         'html' => $message['body'],
         'text' => $plain_text,
         'subject' => $message['subject'],
