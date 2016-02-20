@@ -51,8 +51,10 @@ class MandrillTemplateTestCase extends WebTestBase {
       'name' => 'Recipient',
     );
 
-    // TODO: Update to use MandrillService.
-    $response = mandrill_template_sender($message, $template_id, $template_content);
+    /* @var $mandrillAPI \Drupal\mandrill\MandrillTestAPI */
+    $mandrillAPI = \Drupal::service('mandrill.test.api');
+
+    $response = $mandrillAPI->sendTemplate($message, $template_id, $template_content);
 
     $this->assertNotNull($response, 'Tested response from sending templated message.');
 
@@ -75,8 +77,10 @@ class MandrillTemplateTestCase extends WebTestBase {
       'name' => 'Recipient',
     );
 
-    // TODO: Update to use MandrillService.
-    $response = mandrill_template_sender($message, $template_id, $template_content);
+    /* @var $mandrillAPI \Drupal\mandrill\MandrillTestAPI */
+    $mandrillAPI = \Drupal::service('mandrill.test.api');
+
+    $response = $mandrillAPI->sendTemplate($message, $template_id, $template_content);
 
     $this->assertNotNull($response, 'Tested response from sending invalid templated message.');
 

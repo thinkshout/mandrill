@@ -35,6 +35,13 @@ class MandrillTestAPI extends MandrillAPI {
   /**
    * {@inheritdoc}
    */
+  public function getTemplates() {
+    return $this->getTestTemplatesData();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSubAccounts() {
     $subaccounts = array();
 
@@ -146,6 +153,46 @@ class MandrillTestAPI extends MandrillAPI {
   /**
    * {@inheritdoc}
    */
+  public function sendTemplate($message, $template_id, $template_content) {
+    if (!isset($message['to']) || empty($message['to'])) {
+      return $this->getErrorResponse(12, 'ValidationError', 'No recipients defined.');
+    }
+
+    $response = array();
+
+    $templates = $this->getTemplates();
+
+    $matched_template = NULL;
+    foreach ($templates as $template) {
+      if ($template['name'] == $template_id) {
+        $matched_template = $template;
+        continue;
+      }
+    }
+
+    if ($matched_template == NULL) {
+      return $this->getErrorResponse(12, 'Unknown_Template', 'No template with name: ' . $template_id);
+    }
+
+    $recipients = mandrill_get_to($message['to']);
+
+    foreach ($recipients as $recipient) {
+      $recipient_response = array(
+        'email' => $recipient['email'],
+        'status' => 'sent',
+        'reject_reason' => '',
+        '_id' => uniqid(),
+      );
+
+      $response[] = $recipient_response;
+    }
+
+    return $response;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function send(array $message) {
     if (!isset($message['to']) || empty($message['to'])) {
       return $this->getErrorResponse(12, 'ValidationError', 'No recipients defined.');
@@ -240,6 +287,39 @@ class MandrillTestAPI extends MandrillAPI {
     $messages[] = $message;
 
     return $messages;
+  }
+
+  /**
+   * Gets an array of templates used in tests.
+   */
+  protected function getTestTemplatesData() {
+    $templates = array();
+
+    $template = array(
+      'slug' => 'test-template',
+      'name' => 'Test Template',
+      'labels' => array(
+        'test-label'
+      ),
+      'code' => '<div>editable content</div>',
+      'subject' => 'Test Subject',
+      'from_email' => 'admin@example.com',
+      'from_name' => 'Admin',
+      'text' => 'Test text',
+      'publish_name' => 'Test Template',
+      'publish_code' => '<div>different than draft content</div>',
+      'publish_subject' => 'Test Publish Subject',
+      'publish_from_email' => 'admin@example.com',
+      'publish_from_name' => 'Test Publish Name',
+      'publish_text' => 'Test publish text',
+      'published_at' => '2013-01-01 15:30:40',
+      'created_at' => '2013-01-01 15:30:27',
+      'updated_at' => '2013-01-01 15:30:49',
+    );
+
+    $templates[] = $template;
+
+    return $templates;
   }
 
   /**
