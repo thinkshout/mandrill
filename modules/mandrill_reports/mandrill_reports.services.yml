@@ -2,3 +2,7 @@ services:
   mandrill_reports.service:
     class: Drupal\mandrill_reports\MandrillReportsService
     arguments: ['@mandrill.api', '@config.factory']
+
+  mandrill_reports.test.service:
+    class: Drupal\mandrill_reports\MandrillReportsService
+    arguments: ['@mandrill.test.api', '@config.factory']

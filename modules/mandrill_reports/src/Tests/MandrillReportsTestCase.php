@@ -38,9 +38,17 @@ class MandrillReportsTestCase extends WebTestBase {
    * Tests getting Mandrill reports data.
    */
   public function testGetReportsData() {
-    $reports_data = $this->getMandrillReports();
+    /* @var $reports \Drupal\mandrill_reports\MandrillReportsService */
+    $reports = \Drupal::service('mandrill_reports.test.service');
 
-    $this->assertTrue(!empty($reports_data), 'Tested retrieving reports data.');
+    $reports_data = array(
+      'user' => $reports->getUser(),
+      'tags' => $reports->getTags(),
+      'all_time_series' => $reports->getTagsAllTimeSeries(),
+      'senders' => $reports->getSenders(),
+      'urls' => $reports->getUrls(),
+    );
+
     $this->assertTrue(!empty($reports_data['user']), 'Tested user report data exists.');
     $this->assertTrue(!empty($reports_data['tags']), 'Tested tags report data exists.');
     $this->assertTrue(!empty($reports_data['all_time_series']), 'Tested all time series report data exists.');
