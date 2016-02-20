@@ -32,7 +32,7 @@ class MandrillQueueProcessor extends QueueWorkerBase {
     /* @var $mandrill \Drupal\mandrill\MandrillService */
     $mandrill = \Drupal::service('mandrill.service');
 
-    $mandrill->send($data['message'], $data['function'], $data['args']);
+    $mandrill->send($data['message']);
   }
 
 }

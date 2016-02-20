@@ -115,29 +115,13 @@ class MandrillService implements MandrillServiceInterface {
    * Abstracts sending of messages, allowing queueing option.
    *
    * @param array $message
-   *   A message array formatted for Mandrill's sending API, plus 2 additional
-   *   indexes for the send_function and an array of $args, if needed by the send
-   *   function.
-   * @param string $function
-   *   The name of the function to use to send the message.
-   * @param array $args
-   *   Array of arguments to pass to the function provided by $function.
+   *   A message array formatted for Mandrill's sending API.
    *
    * @return bool
-   *   TRUE if no exception thrown
+   *   TRUE if no exception thrown.
    */
-  public function send($message, $function = '', array $args = array()) {
-    // TODO: $function and $args are deprecated and need to be removed.
+  public function send($message) {
     try {
-      //if (!function_exists($function)) {
-        //$this->log->error('Error sending email from %from to %to. Function %function not found.', array(
-          //'%from' => $message['from_email'],
-          //'%to' => $message['to'],
-          //'%function' => $function,
-        //));
-        //return FALSE;
-      //}
-
       $response = $this->mandrill_api->send($message);
 
       return $this->handleSendResponse($response, $message);

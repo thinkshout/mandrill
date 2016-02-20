@@ -209,13 +209,11 @@ class MandrillMail implements MailInterface {
     if ($subaccount) {
       $mandrill_message['subaccount'] = $subaccount;
     }
-    // Allow other modules to alter the Mandrill message, and sender/args.
+    // Allow other modules to alter the Mandrill message.
     $mandrill_params = array(
       'message' => $mandrill_message,
-      'function' => 'mandrill_sender_plain',
-      'args' => array(),
     );
-    \Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
+    //\Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
     // Queue for processing during cron or send immediately.
     $status = NULL;
     if ($this->config->get('mandrill_process_async')) {
@@ -230,7 +228,7 @@ class MandrillMail implements MailInterface {
       return TRUE;
     }
     else {
-      return $this->mandrill->send($mandrill_params['message'], $mandrill_params['function'], $mandrill_params['args']);
+      return $this->mandrill->send($mandrill_params['message']);
     }
   }
 
