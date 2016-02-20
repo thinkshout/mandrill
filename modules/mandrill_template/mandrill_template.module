@@ -140,28 +140,6 @@ function mandrill_template_map_usage() {
 }
 
 /**
- * Send a templated Mandrill message.
- *
- * This function checks for appropriate settings in the message, then uses the
- * template API call to send the message if the settings are valid.
- *
- * @param array $message
- *   Mandrill message to send.
- * @param string $template_id
- *   Name of the template to use.
- * @param array $template_content
- *   Associative array mapping template regions and content.
- *
- * @return array
- *   Message response.
- */
-function mandrill_template_sender($message, $template_id, $template_content) {
-  /* @var $mandrill_api \Drupal\mandrill\MandrillAPI */
-  $mandrill_api = \Drupal::service('mandrill.api');
-  $mandrill_api->sendTemplate($message, $template_id, $template_content);
-}
-
-/**
  * Simple sorting algorithm to organize mailsystems arrays in a logical way.
  * 
  * @param string $a
