@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill_template\Form\MandrillTemplateMapForm.
@@ -19,6 +20,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup mandrill_template
  */
 class MandrillTemplateMapForm extends EntityForm {
+
+  /**
+   * The entity query.
+   *
+   * @var \Drupal\Core\Entity\Query\QueryFactory
+   */
+  protected $entityQuery;
 
   /**
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query

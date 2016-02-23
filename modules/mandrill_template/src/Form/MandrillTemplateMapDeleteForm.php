@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill_template\Form\MandrillTemplateMapDeleteForm.
@@ -50,4 +51,5 @@ class MandrillTemplateMapDeleteForm extends EntityConfirmFormBase {
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
+
 }

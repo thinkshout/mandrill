@@ -4,6 +4,7 @@
  * @file
  * Contains \Drupal\mandrill_activity\MandrillActivityInterface.
  */
+
 namespace Drupal\mandrill_activity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill_activity\Form\MandrillActivityForm.
@@ -21,6 +22,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @ingroup mandrill_activity
  */
 class MandrillActivityForm extends EntityForm {
+
+  /**
+   * The entity query.
+   *
+   * @var \Drupal\Core\Entity\Query\QueryFactory
+   */
+  protected $entityQuery;
 
   /**
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query

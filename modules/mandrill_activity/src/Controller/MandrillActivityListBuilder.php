@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill_activity\Controller\MandrillActivityListBuilder.

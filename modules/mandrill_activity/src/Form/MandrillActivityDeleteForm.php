@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill_activity\Form\MandrillActivityDeleteForm.
@@ -50,4 +51,5 @@ class MandrillActivityDeleteForm extends EntityConfirmFormBase {
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }
+
 }

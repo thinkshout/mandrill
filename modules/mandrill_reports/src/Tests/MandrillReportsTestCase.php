@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Test class and methods for the Mandrill Reports module.
