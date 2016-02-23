@@ -7,8 +7,7 @@
 /**
  * Implements hook_install().
  */
-function modulename_install() {
-
+function mandrill_install() {
   // Set default values for config which require dynamic values.
   \Drupal::configFactory()->getEditable('mandrill.settings')
     ->set('mandrill_from', \Drupal::config('system.site')->get('mail'))
@@ -20,7 +19,6 @@ function modulename_install() {
  * Implements hook_uninstall().
  */
 function mandrill_uninstall() {
-
   // Delete other variables:
   $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
   $config->clear('mandrill_analytics_campaign')->save();
