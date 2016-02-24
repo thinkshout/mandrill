@@ -13,3 +13,4 @@ mandrill.test:
     _title: 'Send Test Email'
   requirements:
     _permission: 'administer mandrill'
+    _mandrill_configuration_access_check: 'TRUE'
