@@ -60,6 +60,7 @@ class MandrillMail implements MailInterface {
     $this->log = \Drupal::service('logger.factory')->get('mandrill');
     $this->mimeTypeGuesser = \Drupal::service('file.mime_type.guesser');
   }
+
   /**
    * Concatenate and wrap the email body for either plain-text or HTML emails.
    *
@@ -76,6 +77,7 @@ class MandrillMail implements MailInterface {
     }
     return $message;
   }
+
   /**
    * Send the email message.
    *
@@ -285,4 +287,5 @@ class MandrillMail implements MailInterface {
     }
     return FALSE;
   }
+
 }

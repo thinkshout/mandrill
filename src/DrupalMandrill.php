@@ -1,10 +1,16 @@
 <?php
+
+/**
+ * @file
+ * Contains \Drupal\mandrill\DrupalMandrill.
+ */
+
 namespace Drupal\mandrill;
 
 use Mandrill;
 
 /**
- * Class DrupalMandrill.
+ * Overrides default Mandrill library to provide custom API call function.
  */
 class DrupalMandrill extends Mandrill {
 
@@ -12,6 +18,8 @@ class DrupalMandrill extends Mandrill {
   protected $timeout;
 
   /**
+   * {@inheritdoc}
+   *
    * Override constructor to remove curl operations.
    */
   public function __construct($apikey = NULL, $timeout = 60) {
@@ -44,11 +52,15 @@ class DrupalMandrill extends Mandrill {
   }
 
   /**
-   * Override _destruct() to prevent calling curl_close().
+   * {@inheritdoc}
+   *
+   * Override __destruct() to prevent calling curl_close().
    */
   public function __destruct() {}
 
   /**
+   * {@inheritdoc}
+   *
    * Override call method to user Drupal's HTTP handling.
    */
   public function call($url, $params) {

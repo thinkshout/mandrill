@@ -8,7 +8,7 @@
 namespace Drupal\mandrill;
 
 /**
- * Test Mandrill API service.
+ * Overrides functions in the Mandrill API service for testing.
  */
 class MandrillTestAPI extends MandrillAPI {
 

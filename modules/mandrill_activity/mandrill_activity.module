@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Main module functions for mandrill_activity.
@@ -12,6 +13,8 @@
  *
  * @return array
  *   Array of activity.
+ *
+ * @throws \Exception
  */
 function mandrill_activity_get_activity($email) {
   throw new \Exception('Use the getMessages() method on the API service class instead.');

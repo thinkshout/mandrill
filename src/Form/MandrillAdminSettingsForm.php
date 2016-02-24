@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\example\Form\MandrillAdminSettingsForm
@@ -329,7 +330,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
   /**
    * Get the label for a mail plugin.
    *
-   * @param $plugin_id
+   * @param string $plugin_id
    *
    * @return string
    */

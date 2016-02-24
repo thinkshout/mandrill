@@ -211,6 +211,15 @@ class MandrillActivityForm extends EntityForm {
     $form_state->setRedirect('mandrill_activity.admin');
   }
 
+  /**
+   * Determines if a Mandrill Activity entity exists.
+   *
+   * @param int $id
+   *   The unique ID of the Mandrill Activity entity.
+   *
+   * @return bool
+   *   TRUE if the entity exists.
+   */
   public function exists($id) {
     $entity = $this->entityQuery->get('mandrill_activity')
       ->condition('id', $id)

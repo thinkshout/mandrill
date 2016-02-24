@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\MandrillAPI.
@@ -367,6 +368,11 @@ class MandrillAPI implements MandrillAPIInterface {
 
   /**
    * Creates a new inbound domain.
+   *
+   * @param string $domain
+   *   The domain name.
+   *
+   * @return array
    */
   public function addInboundDomain($domain) {
     $result = NULL;
@@ -406,6 +412,11 @@ class MandrillAPI implements MandrillAPIInterface {
 
   /**
    * Deletes an inbound domain.
+   *
+   * @param string $domain
+   *   The domain name.
+   *
+   * @return array
    */
   public function deleteInboundDomain($domain) {
     $result = NULL;
@@ -422,6 +433,15 @@ class MandrillAPI implements MandrillAPIInterface {
 
   /**
    * Adds a new inbound route for a domain.
+   *
+   * @param string $domain
+   *   An existing inbound domain name.
+   * @param string $pattern
+   *   The search pattern that the mailbox name should match.
+   * @param string $url
+   *   The webhook URL where the inbound messages will be published.
+   *
+   * @return array
    */
   public function addInboundRoute($domain, $pattern, $url) {
     $result = NULL;

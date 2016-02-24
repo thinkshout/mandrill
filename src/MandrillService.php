@@ -11,7 +11,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
- * Service class.
+ * Mandrill Service.
  */
 class MandrillService implements MandrillServiceInterface {
 
@@ -138,9 +138,15 @@ class MandrillService implements MandrillServiceInterface {
   }
 
   /**
-   * @param $response
-   * @param $message
+   * Response handler for sent messages.
+   *
+   * @param array $response
+   *   Response from the Mandrill API.
+   * @param array $message
+   *   The sent message.
+   *
    * @return bool
+   *   TRUE if the message was sent or queued without error.
    */
   protected function handleSendResponse($response, $message) {
     if (!isset($response['status'])) {

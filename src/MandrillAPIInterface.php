@@ -1,9 +1,12 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\MandrillAPIInterface.
  */
+
 namespace Drupal\mandrill;
+
 /**
  * Interface for the Mandrill API.
  */

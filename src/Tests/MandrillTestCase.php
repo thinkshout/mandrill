@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\Tests\MandrillTestCase.
@@ -126,4 +127,5 @@ class MandrillTestCase extends WebTestBase {
       'from_name' => 'Test Sender',
     ];
   }
+
 }

@@ -24,7 +24,6 @@ class MandrillTestMail extends MandrillMail {
   public function __construct() {
     parent::__construct();
 
-    //$this->config = \Drupal::service('config.factory')->get('mandrill.settings');
     $this->mandrill = \Drupal::service('mandrill.test.service');
   }
 

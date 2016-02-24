@@ -60,15 +60,17 @@ function mandrill_template_map_load_entities($id = NULL) {
 }
 
 /**
- * Tells you which template_map is configured for a mailsystem key, if any.
+ * Gets the Mandrill Template Map configured for a mailsystem key, if any.
  *
  * Will search for a default-system mapping if none is availble for a given key.
  * 
- * @param string $mailsystem
- *   Mail key to search for a template mapping.
+ * @param string $module_key
+ *   Module key to use when searching for a template mapping.
+ * @param string $module
+ *   Module name to use when searching for a template mapping.
  *
  * @return entity
- *   Mandrill template map.
+ *   The Mandrill Template Map, if found.
  */
 function mandrill_template_map_load_by_mailsystem($module_key, $module) {
   // Append the default-system condition as a fallback.
