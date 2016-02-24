@@ -157,23 +157,19 @@ class MandrillService implements MandrillServiceInterface {
           case "error":
           case "invalid":
           case "rejected":
-            // TODO: It should be possible to remove mandrill_test_mode and
-            // replace the below functionality inside MandrillTestService.
-            if (!$this->config->get('mandrill.settings')->get('mandrill_test_mode')) {
-              $to = isset($result['email']) ? $result['email'] : 'recipient';
-              $status = isset($result['status']) ? $result['status'] : 'message';
-              $error_message = isset($result['message']) ? $result['message'] : 'no message';
-              if (!isset($result['message']) && isset($result['reject_reason'])) {
-                $error_message = $result['reject_reason'];
-              }
-
-              $this->log->error('Failed sending email from %from to %to. @status: @message', array(
-                '%from' => $message['from_email'],
-                '%to' => $to,
-                '@status' => $status,
-                '@message' => $error_message,
-              ));
+            $to = isset($result['email']) ? $result['email'] : 'recipient';
+            $status = isset($result['status']) ? $result['status'] : 'message';
+            $error_message = isset($result['message']) ? $result['message'] : 'no message';
+            if (!isset($result['message']) && isset($result['reject_reason'])) {
+              $error_message = $result['reject_reason'];
             }
+
+            $this->log->error('Failed sending email from %from to %to. @status: @message', array(
+              '%from' => $message['from_email'],
+              '%to' => $to,
+              '@status' => $status,
+              '@message' => $error_message,
+            ));
             return FALSE;
           case "queued":
             $this->log->info('Email from %from to %to queued by Mandrill App.', array(
