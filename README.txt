@@ -141,8 +141,9 @@ account under Settings -> Sending Options. For more info, see
 "http://help.mandrill.com/entries/24460141-Does-Mandrill-inline-CSS-automatically-".
 
 ## Reports
-The mandrill_reports sub-module provides reports on various metrics. It may
-take a long time to load. This module is due for some attention.
+The mandrill_reports sub-module provides reports on various metrics. For
+performance, metrics are cached after the initial load. Clear your cache for
+the most current metrics.
 
 ### Dashboard
 Displays charts that show volume and engagement, along with a tabular list of
@@ -159,5 +160,4 @@ sub-module's README file.
 ## Advanced Options
 If you would like to use additional template (or other) Mandrill API
 variables not implemented in this module, set them in hook_mail_alter under:
-$params['mandrill']. Have a look at mandrill.mail.inc to learn more.
-(Search for "mandrill parameters".)
+$params['mandrill'].
