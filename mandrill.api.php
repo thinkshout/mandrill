@@ -8,21 +8,6 @@
  */
 
 /**
- * Allows other modules to alter the Mandrill message and sender arguments.
- *
- * @array $mandrill_params
- *   The Mandrill message array
- * @see MandrillMailSystem::mail()
- *
- * @array $message
- *   The drupal_mail message array.
- * @see drupal_mail()
- */
-function hook_mandrill_mail_alter(&$mandrill_params, $message) {
-  // No example.
-}
-
-/**
  * Allows other modules to alter the allowed attachment file types.
  *
  * @array $types
