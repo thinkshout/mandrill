@@ -208,8 +208,7 @@ class MandrillTestAPI extends MandrillAPI {
         '_id' => uniqid(),
       );
 
-      // TODO: Replace deprecated valid_email_address().
-      if (valid_email_address($recipient['email'])) {
+      if (\Drupal::service('email.validator')->isValid($recipient['email'])) {
         $recipient_response['status'] = 'sent';
       }
       else {
