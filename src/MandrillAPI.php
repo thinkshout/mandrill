@@ -523,7 +523,6 @@ class MandrillAPI implements MandrillAPIInterface {
         return NULL;
       }
 
-      // @TODO: mandrill_api_key is undefined when tests are run
       $api_key = $this->config->get('mandrill_api_key');
       $api_timeout = $this->config->get('mandrill_api_timeout');
       if (empty($api_key)) {
@@ -533,8 +532,7 @@ class MandrillAPI implements MandrillAPIInterface {
         return FALSE;
       }
       // We allow the class name to be overridden, following the example of core's
-      // mailsystem, in order to use alternate Mandrill classes. The bundled tests
-      // use this approach to extend the Mandrill class with a test server.
+      // mailsystem, in order to use alternate Mandrill classes.
       $className = $this->config->get('mandrill_api_classname');
       $api = new $className($api_key, $api_timeout);
     }
