@@ -69,12 +69,20 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       '#description' => t('Type in an address to have a test email sent there.'),
       '#required' => TRUE,
     );
+
+    $form['mandrill_test_bcc_address'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Email address to BCC on this test email'),
+      '#description' => t('Type in an address to have a test email sent there.'),
+    );
+
     $form['mandrill_test_body'] = array(
       '#type' => 'textarea',
       '#title' => t('Test body contents'),
       '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: %link',
         array('%link' => \Drupal::l(t('link'), $click_tracking_url))),
     );
+
     $form['include_attachment'] = array(
       '#title' => t('Include attachment'),
       '#type' => 'checkbox',
@@ -94,6 +102,12 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       'text' => $form_state->getValue('mandrill_test_body'),
       'subject' => t('Drupal Mandrill test email'),
     );
+
+    $bcc_email = $form_state->getValue('mandrill_test_bcc_address');
+
+    if (!empty($bcc_email)) {
+      $message['bcc_email'] = $bcc_email;
+    }
 
     if ($form_state->getValue('include_attachment')) {
       $message['attachments'][] = \Drupal::service('file_system')->realpath('core/themes/bartik/logo.svg');
