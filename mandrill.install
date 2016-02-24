@@ -11,7 +11,7 @@
 function mandrill_install() {
   // Set default values for config which require dynamic values.
   \Drupal::configFactory()->getEditable('mandrill.settings')
-    ->set('mandrill_from', \Drupal::config('system.site')->get('mail'))
+    ->set('mandrill_from_email', \Drupal::config('system.site')->get('mail'))
     ->set('mandrill_from_name', \Drupal::config('system.site')->get('site_name'))
     ->save();
 }
@@ -26,7 +26,7 @@ function mandrill_uninstall() {
   $config->clear('mandrill_analytics_domains')->save();
   $config->clear('mandrill_api_key')->save();
   $config->clear('mandrill_filter_format')->save();
-  $config->clear('mandrill_from')->save();
+  $config->clear('mandrill_from_email')->save();
   $config->clear('mandrill_from_name')->save();
   $config->clear('mandrill_mail_key_blacklist')->save();
   $config->clear('mandrill_test_address')->save();

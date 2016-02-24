@@ -2,10 +2,10 @@ mandrill.settings:
   type: config_object
   label: 'Mandrill settings'
   mapping:
-    from_name:
+    mandrill_from_name:
       type: string
       label: 'Sender name'
-    from_email:
+    mandrill_from_email:
       type: string
       label: 'Sender email'
     mandrill_subaccount:

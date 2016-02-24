@@ -247,7 +247,7 @@ function mandrill_process_async() {
  *   )
  */
 function mandrill_from() {
-  $email = \Drupal::config('mandrill.settings')->get('mandrill_from');
+  $email = \Drupal::config('mandrill.settings')->get('mandrill_from_email');
   $name = \Drupal::config('mandrill.settings')->get('mandrill_from_name');
 
   return array(

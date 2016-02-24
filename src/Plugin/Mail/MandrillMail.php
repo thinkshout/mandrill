@@ -180,8 +180,8 @@ class MandrillMail implements MailInterface {
     // Get metadata.
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
     $from = array(
-      'email' => $this->config->get('from_email'),
-      'name' => $this->config->get('from_name'),
+      'email' => $this->config->get('mandrill_from_email'),
+      'name' => $this->config->get('mandrill_from_name'),
     );
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
     $mandrill_message = $overrides + array(

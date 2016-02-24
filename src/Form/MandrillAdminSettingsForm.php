@@ -160,12 +160,12 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
         '#description' => t('The sender email address. If this address has not been verified, messages will be queued and not sent until it is. '
           . 'This address will appear in the "from" field, and any emails sent through Mandrill with a "from" address will have that '
           . 'address moved to the Reply-To field.'),
-        '#default_value' => $config->get('from_email'),
+        '#default_value' => $config->get('mandrill_from_email'),
       );
       $form['email_options']['mandrill_from_name'] = array(
         '#type' => 'textfield',
         '#title' => t('From name'),
-        '#default_value' => $config->get('from_name'),
+        '#default_value' => $config->get('mandrill_from_name'),
         '#description' => t('Optionally enter a from name to be used.'),
       );
       $sub_accounts = $this->mandrillAPI->getSubAccounts();
@@ -351,8 +351,8 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     \Drupal::configFactory()->getEditable('mandrill.settings')
       ->set('mandrill_api_key', $form_state->getValue('mandrill_api_key'))
-      ->set('from_email', $form_state->getValue('mandrill_from'))
-      ->set('from_name', $form_state->getValue('mandrill_from_name'))
+      ->set('mandrill_from_email', $form_state->getValue('mandrill_from'))
+      ->set('mandrill_from_name', $form_state->getValue('mandrill_from_name'))
       ->set('mandrill_subaccount', $form_state->getValue('mandrill_subaccount'))
       ->set('mandrill_filter_format', $form_state->getValue('mandrill_filter_format'))
       ->set('mandrill_track_opens', $form_state->getValue('mandrill_track_opens'))

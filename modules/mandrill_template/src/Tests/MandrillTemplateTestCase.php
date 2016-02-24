@@ -36,6 +36,23 @@ class MandrillTemplateTestCase extends WebTestBase {
   }
 
   /**
+   * Tests getting a list of templates for a given label.
+   */
+  public function testGetTemplates() {
+    /* @var $mandrillAPI \Drupal\mandrill\MandrillTestAPI */
+    $mandrillAPI = \Drupal::service('mandrill.test.api');
+
+    $templates = $mandrillAPI->getTemplates();
+    $this->assertTrue(!empty($templates), 'Tested retrieving templates.');
+
+    if (!empty($templates) && is_array($templates)) {
+      foreach ($templates as $template) {
+        $this->assertTrue(!empty($template['name']), 'Tested valid template: ' . $template['name']);
+      }
+    }
+  }
+
+  /**
    * Test sending a templated message to multiple recipients.
    */
   public function testSendTemplatedMessage() {

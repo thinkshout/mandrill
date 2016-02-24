@@ -33,12 +33,10 @@ class MandrillTestCase extends WebTestBase {
   protected function setUp() {
     parent::setUp();
     $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
-    $config->set('from_email', 'foo@bar.com');
-    $config->set('from_name', 'foo');
+    $config->set('mandrill_from_email', 'foo@bar.com');
+    $config->set('mandrill_from_name', 'foo');
     $config->set('mandrill_api_key', MANDRILL_TEST_API_KEY);
     $config->save();
-    // $config->set('mandrill_api_classname', 'DrupalMandrillTest');
-    // $config->set('mandrill_test_mode', TRUE);
   }
 
   /**
@@ -72,21 +70,6 @@ class MandrillTestCase extends WebTestBase {
     $message['to'] = '';
     $response = $mailSystem->mail($message);
     $this->assertFalse($response, 'Tested sending message to no recipients.');
-  }
-
-  /**
-   * Gets getting a list of templates for a given label.
-   *
-   * @TODO: This belongs in the mandrill_template module.
-   *
-  public function testGetTemplates() {
-  $templates = mandrill_get_templates();
-  $this->assertTrue(!empty($templates), 'Tested retrieving templates.');
-  if (!empty($templates) && is_array($templates)) {
-  foreach ($templates as $template) {
-  $this->assertTrue(!empty($template['name']), 'Tested valid template: ' . $template['name']);
-  }
-  }
   }
 
   /**
