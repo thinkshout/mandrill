@@ -1,20 +1,50 @@
 ## SUMMARY
 
-Integrates Drupal's mail system with Mandrill transactional emails, a service
-by the folks behind MailChimp. Learn more about Mandrill and how to sign up at
-[their website](http://mandrill.com). (Or don't, but then this module isn't
-terribly useful...)
+This module integrates Drupals mail system with Mandrill, a transactional
+email delivery API from the folks behind MailChimp.
 
-## D8 VERSION STATUS
-The Drupal 8 version of this module does not yet function.
+Learn more at http://mandrillapp.com
+
+## IMPORTANT CHANGES BETWEEN D7 and D8 RELEASES
+
+### The "mandrill_test_mode" variable has been removed
+
+In the D7 version of this module, a "mandrill_test_mode" variable was being used
+to alter mail sending functionality when tests were run.
+
+In the D8 version, this functionality is overridden in the MandrillTestService class.
+
+### The "mandrill_api_classname" variable is no longer used in tests
+
+This variable defines the name of the main class in Mandrill's PHP library.
+
+While the variable still exists, it is no longer used as part of the included tests.
+
+During testing, the D7 version of this module would set the value of
+"mandrill_api_classname" to the name of a class in a spoof version of Mandrill's
+PHP library, which was included in the module.
+
+In D8, we have removed the spoof library entirely and moved its functionality
+into the MandrillTestAPI class. This class overrides functions in the MandrillAPI
+class to add functionality for testing.
+
+### hook_mandrill_mail_alter() has been removed
+
+In the D7 module, this hook allowed the message and mail sending function to be
+changed.
+
+In D8, changes should be made by overriding the send() function of MandrillService.
+See MandrillTemplateService in the mandrill_template module for an example.
 
 ## REQUIREMENTS
 
-* mailsystem module (https://drupal.org/project/mailsystem)
+* Composer Manager (https://drupal.org/project/composer_manager)
+* Mail System (https://drupal.org/project/mailsystem)
 * Mandrill PHP library (https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.zip)
 
 ## INSTALLATION
-* You need to have a Mandrill API Key.
+
+* Acquire a Mandrill API key from http://mandrillapp.com
 * Set up Composer Manager to manage the Mandrill library: https://www.drupal.org/node/2405811
 
 ## INSTALLATION NOTES
