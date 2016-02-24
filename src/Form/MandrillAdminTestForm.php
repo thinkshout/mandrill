@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains \Drupal\mandrill\Form\MandrillAdminTestForm
@@ -18,6 +19,9 @@ use Drupal\mandrill\Plugin\Mail\MandrillMail;
  */
 class MandrillAdminTestForm extends ConfirmFormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   function getFormID() {
     return 'mandrill_test_email';
   }
@@ -103,4 +107,5 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       drupal_set_message($this->t('Test email has been sent.'));
     }
   }
+
 }
