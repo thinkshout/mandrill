@@ -9,6 +9,6 @@ mandrill_queue_worker_timeout: 15
 mandrill_log_defaulted_sends: false
 mandrill_api_key: ''
 mandrill_api_timeout: 60
-mandrill_api_classname: Mandrill
+mandrill_api_classname: DrupalMandrill
 mandrill_mail_key_blacklist: user_password_reset
 mandrill_process_async: false

@@ -14,7 +14,18 @@ use Mandrill;
  */
 class DrupalMandrill extends Mandrill {
 
+  /**
+   * The user agent sent to the Mandrill API.
+   *
+   * @var string
+   */
   protected $userAgent;
+
+  /**
+   * The timeout length in seconds for requests to the Mandrill API.
+   *
+   * @var int
+   */
   protected $timeout;
 
   /**
@@ -28,27 +39,26 @@ class DrupalMandrill extends Mandrill {
     }
     $this->apikey = $apikey;
 
-    $library = libraries_load('mandrill');
-    $this->userAgent = "Mandrill-PHP/{$library['version']}";
+    $this->userAgent = "Mandrill-PHP/1.0.55";
     $this->timeout = $timeout;
 
     $this->root = rtrim($this->root, '/') . '/';
 
-    $this->templates = new Mandrill_Template($this);
-    $this->exports = new Mandrill_Exports($this);
-    $this->users = new Mandrill_Users($this);
-    $this->rejects = new Mandrill_Rejects($this);
-    $this->inbound = new Mandrill_Inbound($this);
-    $this->tags = new Mandrill_Tags($this);
-    $this->messages = new Mandrill_Messages($this);
-    $this->whitelists = new Mandrill_Whitelists($this);
-    $this->ips = new Mandrill_Ips($this);
-    $this->internal = new Mandrill_Internal($this);
-    $this->subaccounts = new Mandrill_Subaccounts($this);
-    $this->urls = new Mandrill_Urls($this);
-    $this->webhooks = new Mandrill_Webhooks($this);
-    $this->senders = new Mandrill_Senders($this);
-    $this->metadata = new Mandrill_Metadata($this);
+    $this->templates = new \Mandrill_Templates($this);
+    $this->exports = new \Mandrill_Exports($this);
+    $this->users = new \Mandrill_Users($this);
+    $this->rejects = new \Mandrill_Rejects($this);
+    $this->inbound = new \Mandrill_Inbound($this);
+    $this->tags = new \Mandrill_Tags($this);
+    $this->messages = new \Mandrill_Messages($this);
+    $this->whitelists = new \Mandrill_Whitelists($this);
+    $this->ips = new \Mandrill_Ips($this);
+    $this->internal = new \Mandrill_Internal($this);
+    $this->subaccounts = new \Mandrill_Subaccounts($this);
+    $this->urls = new \Mandrill_Urls($this);
+    $this->webhooks = new \Mandrill_Webhooks($this);
+    $this->senders = new \Mandrill_Senders($this);
+    $this->metadata = new \Mandrill_Metadata($this);
   }
 
   /**
@@ -67,16 +77,19 @@ class DrupalMandrill extends Mandrill {
     $params['key'] = $this->apikey;
     $params = \Drupal\Component\Serialization\Json::encode($params);
 
+    /* @var $client \GuzzleHttp\Client */
     $client = \Drupal::httpClient();
-    //@TODO: make sure createRequest format is right, in particular that the data is being sent correctly
-    // http://docs.guzzlephp.org/en/latest/quickstart.html#post-form-requests
-    $request = $client->createRequest('POST',  $this->root . $url . '.json', ['data' => $params]);
-    $request->addHeader('Content-Type', 'application/json');
-    $request->addHeader('Accept-Language', language_default()->language);
-    $request->addHeader('User-Agent', $this->userAgent);
+
+    $options = array(
+      'headers' => array(
+        'Content-Type' => 'application/json',
+        'User-Agent', $this->userAgent,
+      ),
+      'body' => $params,
+    );
 
     try {
-      $response = $client->send($request, ['timeout' => $this->timeout]);
+      $response = $client->post($this->root . $url . '.json', $options);
       // Expected result.
       $data = $response->getBody(TRUE);
       $result = \Drupal\Component\Serialization\Json::decode($data);
