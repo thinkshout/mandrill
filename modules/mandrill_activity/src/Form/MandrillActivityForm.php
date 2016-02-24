@@ -16,9 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Form controller for the MandrillActivity entity edit form.
  *
- * TODO: Add validation; prevent multiple MandrillActivity entities being
- * created for the same entity / bundle set.
- *
  * @ingroup mandrill_activity
  */
 class MandrillActivityForm extends EntityForm {
@@ -196,6 +193,22 @@ class MandrillActivityForm extends EntityForm {
    */
   public function entity_callback(&$form, FormStateInterface $form_state) {
     return $form['drupal_entity'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    if ($form_state->isSubmitted()) {
+      $entity = $this->entityQuery->get('mandrill_activity')
+        ->condition('entity_type', $form_state->getValue('entity_type'))
+        ->condition('bundle', $form_state->getValue('bundle'))
+        ->execute();
+
+      if (!empty($entity)) {
+        $form_state->setErrorByName('bundle', $this->t('A Mandrill Activity Entity already exists for this Bundle.'));
+      }
+    }
   }
 
   /**
