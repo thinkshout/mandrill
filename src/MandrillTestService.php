@@ -51,7 +51,15 @@ class MandrillTestService extends MandrillService {
     // information than we need because it's formatted for Mandrill's sending
     // API.
     $to = $message['to'][0]['email'];
-    $subject = $message['subject']->render();
+    // Check for subject as string.
+    if (gettype($message['subject']) == 'string') {
+      $subject = $message['subject'];
+    }
+    // If subject is not a string we assume it's TranslatableMarkup and call
+    // its render() function.
+    else {
+      $subject = $message['subject']->render();
+    }
     $body = $message['text'];
 
     // Send email using PHP's mail() function.
