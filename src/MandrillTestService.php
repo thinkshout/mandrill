@@ -35,4 +35,30 @@ class MandrillTestService extends MandrillService {
     return TRUE;
   }
 
+  /**
+   * Abstracts sending of messages using PHP's built-in mail() function
+   * instead of Mandrill's sending API.
+   *
+   * @param array $message
+   *   A message array formatted for Mandrill's sending API.
+   *
+   * @return bool
+   *   TRUE if the mail was successfully accepted for delivery, FALSE otherwise.
+   */
+  public function send($message) {
+
+    // Construct simple email using values from $message, which has much more
+    // information than we need because it's formatted for Mandrill's sending
+    // API.
+    $to = $message['to'][0]['email'];
+    $subject = $message['subject']->render();
+    $body = $message['text'];
+
+    // Send email using PHP's mail() function.
+    $result = mail($to, $subject, $body);
+
+    // Return result of attempt to send mail.
+    return $result;
+  }
+
 }
