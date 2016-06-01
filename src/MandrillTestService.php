@@ -61,9 +61,14 @@ class MandrillTestService extends MandrillService {
       $subject = $message['subject']->render();
     }
     $body = $message['text'];
+    // Add headers to message.
+    $additional_headers = '';
+    foreach ($message['headers'] as $key => $value) {
+      $additional_headers .= implode(':', [$key, $value]) . "\r\n";
+    }
 
     // Send email using PHP's mail() function.
-    $result = mail($to, $subject, $body);
+    $result = mail($to, $subject, $body, $additional_headers);
 
     // Return result of attempt to send mail.
     return $result;
