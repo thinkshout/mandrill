@@ -14,3 +14,4 @@ mandrill.test:
   requirements:
     _permission: 'administer mandrill'
     _mandrill_configuration_access_check: 'TRUE'
+    _mandrill_mailer_access_check: 'TRUE'

@@ -27,3 +27,8 @@ services:
     arguments: ['@current_user']
     tags:
       - { name: access_check, applies_to: _mandrill_configuration_access_check }
+
+  access_check.mandrill.mailer:
+    class: Drupal\mandrill\Access\MandrillMailerAccessCheck
+    tags:
+      - { name: access_check, applies_to: _mandrill_mailer_access_check }
