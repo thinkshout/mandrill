@@ -112,8 +112,10 @@ class MandrillAdminTestForm extends ConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $message = array(
+      'id' => 'mandrill_test_email',
+      'module' => 'mandrill',
       'to' => $form_state->getValue('mandrill_test_address'),
-      'text' => $form_state->getValue('mandrill_test_body'),
+      'body' => $form_state->getValue('mandrill_test_body'),
       'subject' => t('Drupal Mandrill test email'),
     );
 
@@ -125,7 +127,7 @@ class MandrillAdminTestForm extends ConfirmFormBase {
 
     if ($form_state->getValue('include_attachment')) {
       $message['attachments'][] = \Drupal::service('file_system')->realpath('core/themes/bartik/logo.svg');
-      $message['text'] .= ' ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
+      $message['body'] .= ' ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
     }
 
     // Get Mandrill mailer service specified in Mailsystem settings.
