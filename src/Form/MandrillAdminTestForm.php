@@ -62,6 +62,10 @@ class MandrillAdminTestForm extends ConfirmFormBase {
 
     $click_tracking_url = Url::fromUri('http://www.drupal.org/project/mandrill');
 
+    // If sending using the mandrill_test_mail service, attachments and bcc are
+    // not supported.
+    $mandrill_test_mail = \Drupal::config('mailsystem.settings')->get('defaults')['sender'] == 'mandrill_test_mail';
+
     $form['mandrill_test_address'] = array(
       '#type' => 'textfield',
       '#title' => t('Email address to send a test email to'),
@@ -70,11 +74,16 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       '#required' => TRUE,
     );
 
-    $form['mandrill_test_bcc_address'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Email address to BCC on this test email'),
-      '#description' => t('Type in an address to have a test email sent there.'),
-    );
+    // If sending using the mandrill_test_mail service, bcc is not
+    // supported so we hide the "Email address to BCC on this test email" text
+    // input field.
+    if (!$mandrill_test_mail) {
+      $form['mandrill_test_bcc_address'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Email address to BCC on this test email'),
+        '#description' => t('Type in an address to have a test email sent there.'),
+      );
+    }
 
     $form['mandrill_test_body'] = array(
       '#type' => 'textarea',
@@ -83,12 +92,16 @@ class MandrillAdminTestForm extends ConfirmFormBase {
         array('%link' => \Drupal::l(t('link'), $click_tracking_url))),
     );
 
-    $form['include_attachment'] = array(
-      '#title' => t('Include attachment'),
-      '#type' => 'checkbox',
-      '#description' => t('If checked, the Drupal icon will be included as an attachment with the test email.'),
-      '#default_value' => TRUE,
-    );
+    // If sending using the mandrill_test_mail service, attachments are not
+    // supported so we hide the "Include attachment" checkbox.
+    if (!$mandrill_test_mail) {
+      $form['include_attachment'] = array(
+        '#title' => t('Include attachment'),
+        '#type' => 'checkbox',
+        '#description' => t('If checked, the Drupal icon will be included as an attachment with the test email.'),
+        '#default_value' => TRUE,
+      );
+    }
 
     return $form;
   }
