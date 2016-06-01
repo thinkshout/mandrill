@@ -11,6 +11,7 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\mandrill\Plugin\Mail\MandrillMail;
+use Drupal\mandrill\Plugin\Mail\MandrillTestMail;
 
 /**
  * Form controller for the Mandrill send test email form.
@@ -127,10 +128,22 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       $message['text'] .= ' ' . t('The Drupal icon is included as an attachment to test the attachment functionality.');
     }
 
-    /* @var $mandrill \Drupal\mandrill\Plugin\Mail\MandrillMail */
-    $mailer = new MandrillMail();
+    // Get Mandrill mailer service specified in Mailsystem settings.
+    // This service will either be mandrill_mail or mandrill_test_mail or the
+    // route that exposes this form won't even show up - see
+    // MandrillMailerAccessCheck.php.
+    $sender = \Drupal::config('mailsystem.settings')->get('defaults')['sender'];
+    if ($sender == 'mandrill_mail') {
+      /* @var $mandrill \Drupal\mandrill\Plugin\Mail\MandrillMail */
+      $mailer = new MandrillMail();
+    }
+    elseif ($sender == 'mandrill_test_mail') {
+      /* @var $mandrill \Drupal\mandrill\Plugin\Mail\MandrillTestMail */
+      $mailer = new MandrillTestMail();
+    }
 
-    if ($mailer->mail($message)) {
+    // Ensure we have a mailer and send the message.
+    if (isset($mailer) && $mailer->mail($message)) {
       drupal_set_message($this->t('Test email has been sent.'));
     }
   }
