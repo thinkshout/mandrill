@@ -122,10 +122,12 @@ function mandrill_template_map_usage() {
     $system_assignments['default-system'] = NULL;
   }
 
-  foreach (array_keys($modules) as $module_name) {
-    foreach ($modules[$module_name] as $key => $options) {
-      if ($options['sender'] == 'mandrill_mail') {
-        $system_assignments[$module_name . '_' . $key] = NULL;
+  if (!empty($modules)) {
+    foreach (array_keys($modules) as $module_name) {
+      foreach ($modules[$module_name] as $key => $options) {
+        if ($options['sender'] == 'mandrill_mail') {
+          $system_assignments[$module_name . '_' . $key] = NULL;
+        }
       }
     }
   }

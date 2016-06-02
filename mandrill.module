@@ -112,14 +112,16 @@ function mandrill_get_module_key_names() {
   $mailsystem_config = \Drupal::service('config.factory')->getEditable('mailsystem.settings');
   $modules = $mailsystem_config->get('modules');
 
-  foreach (array_keys($modules) as $module_name) {
-    foreach ($modules[$module_name] as $key => $options) {
-      $id = $module_name . '_' . $key;
+  if (!empty($modules)) {
+    foreach (array_keys($modules) as $module_name) {
+      foreach ($modules[$module_name] as $key => $options) {
+        $id = $module_name . '_' . $key;
 
-      $title = preg_replace('/^.* » /', '', $descriptions[$module_name]);
-      $title .= " ($key key)";
+        $title = preg_replace('/^.* » /', '', $descriptions[$module_name]);
+        $title .= " ($key key)";
 
-      $name_array[$id] = $title;
+        $name_array[$id] = $title;
+      }
     }
   }
 
