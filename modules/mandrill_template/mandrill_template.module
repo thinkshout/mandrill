@@ -134,8 +134,11 @@ function mandrill_template_map_usage() {
 
   $maps = mandrill_template_map_load_entities();
   foreach ($maps as $map) {
-    if (isset($map->mailsystem_key) && array_key_exists($map->mailsystem_key, $system_assignments)) {
-      $system_assignments[$map->mailsystem_key] = $map->mandrill_template_map_entity_id;
+    if (isset($map->mailsystem_key) &&
+      array_key_exists($map->mailsystem_key, $system_assignments) &&
+      isset($map->mandrill_template_map_entity_id)
+    ) {
+        $system_assignments[$map->mailsystem_key] = $map->mandrill_template_map_entity_id;
     }
   }
   uksort($system_assignments, '_mandrill_template_map_mailsystem_sort');
