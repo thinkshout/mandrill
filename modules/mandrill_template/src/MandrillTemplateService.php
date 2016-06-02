@@ -33,7 +33,7 @@ class MandrillTemplateService extends MandrillService {
         $template_content = array(
           array(
             'name' => $template_map->main_section,
-            'content' => $message['body'],
+            'content' => $message['html'],
           ),
         );
 
