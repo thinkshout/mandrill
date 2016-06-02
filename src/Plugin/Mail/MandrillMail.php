@@ -215,7 +215,8 @@ class MandrillMail implements MailInterface {
     $mandrill_params = array(
       'message' => $mandrill_message,
     );
-    //\Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
+    \Drupal::moduleHandler()->alter('mandrill_mail', $mandrill_params, $message);
+
     // Queue for processing during cron or send immediately.
     $status = NULL;
     if ($this->config->get('mandrill_process_async')) {
