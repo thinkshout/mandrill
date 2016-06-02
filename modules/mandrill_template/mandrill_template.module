@@ -118,14 +118,14 @@ function mandrill_template_map_usage() {
 
   $system_assignments = array();
 
-  if ($defaults['sender'] == 'mandrill_mail') {
+  if (in_array($defaults['sender'], ['mandrill_mail', 'mandrill_test_mail'])) {
     $system_assignments['default-system'] = NULL;
   }
 
   if (!empty($modules)) {
     foreach (array_keys($modules) as $module_name) {
       foreach ($modules[$module_name] as $key => $options) {
-        if ($options['sender'] == 'mandrill_mail') {
+        if (in_array($options['sender'], ['mandrill_mail', 'mandrill_test_mail'])) {
           $system_assignments[$module_name . '_' . $key] = NULL;
         }
       }
