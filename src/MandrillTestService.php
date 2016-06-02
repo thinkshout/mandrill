@@ -60,7 +60,7 @@ class MandrillTestService extends MandrillService {
     else {
       $subject = $message['subject']->render();
     }
-    $body = $message['text'];
+    $body = $message['html'];
     // Add headers to message.
     $additional_headers = '';
     foreach ($message['headers'] as $key => $value) {
