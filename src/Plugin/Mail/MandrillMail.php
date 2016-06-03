@@ -180,8 +180,8 @@ class MandrillMail implements MailInterface {
     // Get metadata.
     $metadata = isset($message['metadata']) ? $message['metadata'] : array();
     $from = array(
-      'email' => $this->config->get('mandrill_from_email'),
-      'name' => $this->config->get('mandrill_from_name'),
+      'email' => !empty($this->config->get('mandrill_from_email')) ? $this->config->get('mandrill_from_email') : $from['email'] = \Drupal::config('system.site')->get('mail'),
+      'name' => !empty($this->config->get('mandrill_from_name')) ? $this->config->get('mandrill_from_name') : $from['name'] = \Drupal::config('system.site')->get('name'),
     );
     $overrides = isset($message['params']['mandrill']['overrides']) ? $message['params']['mandrill']['overrides'] : array();
     $mandrill_message = $overrides + array(
@@ -190,7 +190,7 @@ class MandrillMail implements MailInterface {
         'html' => $message['body'],
         'text' => $plain_text,
         'subject' => $message['subject'],
-        'from_email' => !empty($from['email']) ? $from['email'] : \Drupal::config('system.site')->get('mail'),
+        'from_email' => $from['email'],
         'from_name' => isset($message['params']['mandrill']['from_name']) ? $message['params']['mandrill']['from_name'] : $from['name'],
         'to' => $to,
         'headers' => $headers,
