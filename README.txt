@@ -38,14 +38,12 @@ See MandrillTemplateService in the mandrill_template module for an example.
 
 ## REQUIREMENTS
 
-* Composer Manager (https://drupal.org/project/composer_manager)
 * Mail System (https://drupal.org/project/mailsystem)
 * Mandrill PHP library (https://bitbucket.org/mailchimp/mandrill-api-php/get/1.0.52.zip)
 
 ## INSTALLATION
 
 * Acquire a Mandrill API key from http://mandrillapp.com
-* Set up Composer Manager to manage the Mandrill library: https://www.drupal.org/node/2405811
 
 ## INSTALLATION NOTES
 
