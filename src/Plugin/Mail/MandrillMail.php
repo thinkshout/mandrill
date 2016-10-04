@@ -190,7 +190,7 @@ class MandrillMail implements MailInterface {
         'html' => $message['body'],
         'text' => $plain_text,
         'subject' => $message['subject'],
-        'from_email' => $from['email'],
+        'from_email' => isset($message['params']['mandrill']['from_email']) ? $message['params']['mandrill']['from_email'] : $from['email'],
         'from_name' => isset($message['params']['mandrill']['from_name']) ? $message['params']['mandrill']['from_name'] : $from['name'],
         'to' => $to,
         'headers' => $headers,
