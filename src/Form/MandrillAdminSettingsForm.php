@@ -2,14 +2,13 @@
 
 namespace Drupal\mandrill\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Mail\MailManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\mailsystem\MailsystemManager;
 use Drupal\mandrill\MandrillServiceInterface;
 use Drupal\mandrill\MandrillAPIInterface;
 
@@ -21,7 +20,7 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
   /**
    * The mail system manager.
    *
-   * @var \Drupal\mailsystem\MailsystemManager
+   * @var \Drupal\Core\Mail\MailManagerInterface
    */
   protected $mailManager;
 
@@ -49,20 +48,20 @@ class MandrillAdminSettingsForm extends ConfigFormBase {
   /**
    * The Mandrill API service.
    *
-   * @var \Drupal\mandrill\Form\MandrillAPIInterface
+   * @var \Drupal\mandrill\MandrillAPIInterface
    */
   protected $mandrillAPI;
 
   /**
    * Constructor.
    *
-   * @param \Drupal\mailsystem\MailsystemManager $mail_manager
+   * @param \Drupal\Core\Mail\MailManagerInterface $mail_manager
    * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
    * @param \Drupal\Core\Render\RendererInterface $renderer
    * @param \Drupal\mandrill\MandrillServiceInterface $mandrill
    * @param \Drupal\mandrill\MandrillAPIInterface $mandrill_api
    */
-  public function __construct(MailsystemManager $mail_manager, PathValidatorInterface $path_validator, RendererInterface $renderer, MandrillServiceInterface $mandrill, MandrillAPIInterface $mandrill_api) {
+  public function __construct(MailManagerInterface $mail_manager, PathValidatorInterface $path_validator, RendererInterface $renderer, MandrillServiceInterface $mandrill, MandrillAPIInterface $mandrill_api) {
     $this->mailManager = $mail_manager;
     $this->pathValidator = $path_validator;
     $this->renderer = $renderer;
