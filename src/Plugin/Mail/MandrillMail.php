@@ -203,7 +203,7 @@ class MandrillMail implements MailInterface {
         'metadata' => $metadata,
       );
     $subaccount = $this->config->get('mandrill_subaccount');
-    if ($subaccount) {
+    if ($subaccount && $subaccount != '_none') {
       $mandrill_message['subaccount'] = $subaccount;
     }
     // Allow other modules to alter the Mandrill message.
