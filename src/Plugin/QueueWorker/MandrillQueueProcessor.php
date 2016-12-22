@@ -19,7 +19,7 @@ class MandrillQueueProcessor extends QueueWorkerBase {
    * Constructor.
    */
   public function __construct() {
-    $config = \Drupal::service('config.factory')->getEditable('mandrill.settings');
+    $config = \Drupal::service('config.factory')->get('mandrill.settings');
     $this->cron['time'] = $config->get('mandrill_queue_worker_timeout', 60);
   }
 

@@ -31,7 +31,7 @@ class MandrillAPI implements MandrillAPIInterface {
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory.
    */
   public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
-    $this->config = $config_factory->getEditable('mandrill.settings');
+    $this->config = $config_factory->get('mandrill.settings');
     $this->log = $logger_factory->get('mandrill');
   }
 
