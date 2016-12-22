@@ -3,6 +3,7 @@
 namespace Drupal\mandrill\Plugin\Mail;
 
 use Drupal\Core\Mail\MailInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Mail\MailFormatHelper;
@@ -99,7 +100,7 @@ class MandrillMail implements MailInterface {
           [
             '%module' => $message['module'],
             '%key' => $message['id'],
-            '%mailsystem' => \Drupal::l(t('Mail System'), Url::fromRoute('mailsystem.settings')),
+            '%mailsystem' => Link::fromTextAndUrl(t('Mail System'), Url::fromRoute('mailsystem.settings'))->toString(),
           ]
         );
       }

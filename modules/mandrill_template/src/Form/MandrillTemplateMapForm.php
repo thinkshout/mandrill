@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -154,7 +155,7 @@ class MandrillTemplateMapForm extends EntityForm {
           '#title' => t('Email key'),
           '#description' => t(
             'Select a module and mail key to use this template for outgoing email. Note that if an email has been selected in another Template Mapping, it will not appear in this list. These keys are defined through the %MailSystem interface.',
-            array('%MailSystem' => \Drupal::l(t('MailSystem'), Url::fromRoute('mailsystem.settings')))
+            array('%MailSystem' => Link::fromTextAndUrl(t('MailSystem'), Url::fromRoute('mailsystem.settings'))->toString())
           ),
           '#options' => $mailsystem_options,
           '#default_value' => isset($map->mailsystem_key) ? $map->mailsystem_key : '',

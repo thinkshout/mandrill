@@ -3,6 +3,7 @@
 namespace Drupal\mandrill\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\mandrill\Plugin\Mail\MandrillMail;
@@ -85,7 +86,7 @@ class MandrillAdminTestForm extends ConfirmFormBase {
       '#type' => 'textarea',
       '#title' => t('Test body contents'),
       '#default_value' => t('If you receive this message it means your site is capable of using Mandrill to send email. This url is here to test click tracking: %link',
-        array('%link' => \Drupal::l(t('link'), $click_tracking_url))),
+        array('%link' => Link::fromTextAndUrl(t('link'), $click_tracking_url)->toString())),
     );
 
     // If sending using the mandrill_test_mail service, attachments are not

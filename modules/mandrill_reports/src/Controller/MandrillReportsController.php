@@ -8,6 +8,7 @@
 namespace Drupal\mandrill_reports\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
@@ -54,8 +55,8 @@ class MandrillReportsController extends ControllerBase {
       '#markup' => t(
         'The following reports are based on Mandrill data from the last 30 days. For more comprehensive data, please visit your %dashboard. %cache to ensure the data is current.',
         array(
-          '%dashboard' => \Drupal::l(t('Mandrill Dashboard'), Url::fromUri('https://mandrillapp.com/')),
-          '%cache' => \Drupal::l(t('Clear your cache'), Url::fromRoute('system.performance_settings')),
+          '%dashboard' => Link::fromTextAndUrl(t('Mandrill Dashboard'), Url::fromUri('https://mandrillapp.com/'))->toString(),
+          '%cache' => Link::fromTextAndUrl(t('Clear your cache'), Url::fromRoute('system.performance_settings'))->toString(),
         )
       ),
     );
