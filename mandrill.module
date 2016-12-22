@@ -9,6 +9,11 @@ define('MANDRILL_TEST_API_KEY', 'undefined');
 define('MANDRILL_QUEUE', 'mandrill_queue');
 define('MANDRILL_EMAIL_REGEX', '/^\s*(.+?)\s*<\s*([^>]+)\s*>$/');
 
+// Load Mandrill library if found in module's /lib directory.
+if (file_exists(drupal_get_path('module', 'mandrill') . '/lib/mandrill/src/Mandrill.php')) {
+  require drupal_get_path('module', 'mandrill') . '/lib/mandrill/src/Mandrill.php';
+}
+
 /**
  * Implements hook_help().
  */
