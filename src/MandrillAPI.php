@@ -42,8 +42,7 @@ class MandrillAPI implements MandrillAPIInterface {
    *   TRUE if it is installed, FALSE otherwise.
    */
   public function isLibraryInstalled() {
-    $className = $this->config->get('mandrill_api_classname');
-    return class_exists($className);
+    return class_exists('Mandrill');
   }
 
   /**

@@ -51,10 +51,8 @@ function mandrill_requirements($phase) {
   );
 
   if ($phase == 'runtime') {
-    $config = \Drupal::config('mandrill.settings');
-
     // Check for Mandrill library.
-    if (\Doctrine\Common\ClassLoader::classExists($config->get('mandrill_api_classname'))) {
+    if (\Doctrine\Common\ClassLoader::classExists('Mandrill')) {
       $requirements['mandrill']['description'] = t('The Mandrill library is installed correctly.');
       $requirements['mandrill']['severity'] = REQUIREMENT_OK;
     }
