@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\Plugin\Mail\MandrillTestMail.
- */
-
 namespace Drupal\mandrill\Plugin\Mail;
 
 /**

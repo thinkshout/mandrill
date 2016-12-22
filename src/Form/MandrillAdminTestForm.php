@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\Form\MandrillAdminTestForm
- */
-
 namespace Drupal\mandrill\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;

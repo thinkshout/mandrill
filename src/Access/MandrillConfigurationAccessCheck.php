@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\Access\MandrillConfigurationAccessCheck.
- */
-
 namespace Drupal\mandrill\Access;
 
 use Drupal\Core\Access\AccessResult;

@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\DrupalMandrill.
- */
-
 namespace Drupal\mandrill;
 
 use Mandrill;

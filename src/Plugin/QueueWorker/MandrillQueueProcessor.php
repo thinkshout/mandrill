@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\Plugin\QueueWorker\MandrillQueueProcessor.
- */
-
 namespace Drupal\mandrill\Plugin\QueueWorker;
 
 use Drupal\Core\Queue\QueueWorkerBase;

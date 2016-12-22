@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\MandrillTestService.
- */
-
 namespace Drupal\mandrill;
 
 /**

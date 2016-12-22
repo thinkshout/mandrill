@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\mandrill\MandrillAPI.
- * Abstract the Mandrill PHP Api.
- */
-
 namespace Drupal\mandrill;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\example\Form\MandrillAdminSettingsForm
- *
- * https://www.drupal.org/node/2117411
- */
-
 namespace Drupal\mandrill\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
