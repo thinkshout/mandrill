@@ -117,8 +117,8 @@ class MandrillMail implements MailInterface {
     if (isset($message['params']['mandrill']['header'])) {
       $headers = $message['params']['mandrill']['header'] + $headers;
     }
-    if (!empty($message['from']) && empty($headers['Reply-To'])) {
-      $headers['Reply-To'] = $message['from'];
+    if (!empty($message['from_email']) && empty($headers['Reply-To'])) {
+      $headers['Reply-To'] = $message['from_email'];
     }
     // Prepare attachments.
     $attachments = array();
