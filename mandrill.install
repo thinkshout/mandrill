@@ -24,6 +24,7 @@ function mandrill_uninstall() {
   variable_del('mandrill_track_opens');
   variable_del('mandrill_url_strip_qs');
   variable_del('mandrill_process_async');
+  variable_del('mandrill_process_queued');
 }
 
 /**
@@ -93,4 +94,14 @@ function mandrill_update_7003() {
  */
 function mandrill_update_7004() {
   cache_clear_all();
+}
+
+/**
+ * Converts variable mandrill_process_async to mandrill_process_queued.
+ */
+function mandrill_update_7005() {
+  $mandrill_process_async = variable_get('mandrill_process_async', FALSE);
+  if ($mandrill_process_async !== FALSE) {
+    variable_set('mandrill_process_queued', TRUE);
+  }
 }
