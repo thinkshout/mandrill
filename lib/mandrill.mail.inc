@@ -187,7 +187,7 @@ class MandrillMailSystem implements MailSystemInterface {
 
     // Queue for processing during cron or send immediately.
     $status = NULL;
-    if (mandrill_process_async()) {
+    if (mandrill_process_queued()) {
       $queue = DrupalQueue::get(MANDRILL_QUEUE, TRUE);
       $queue->createItem($mandrill_params);
       if (variable_get('mandrill_batch_log_queued', TRUE)) {

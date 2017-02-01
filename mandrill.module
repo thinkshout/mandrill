@@ -598,10 +598,20 @@ function mandrill_get_to($to) {
  * Determine if mail should be processed asynchronously.
  *
  * @return bool
- *   True if asyncronous processing is enabled
+ *   True if asynchronous processing is enabled.
  */
 function mandrill_process_async() {
   return variable_get('mandrill_process_async', FALSE);
+}
+
+/**
+ * Determine if mail should be added to a queue and processed on cron.
+ *
+ * @return bool
+ *   True if queued processing is enabled.
+ */
+function mandrill_process_queued() {
+  return variable_get('mandrill_process_queued', FALSE);
 }
 
 /**
