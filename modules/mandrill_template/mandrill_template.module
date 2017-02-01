@@ -189,7 +189,8 @@ function mandrill_template_mandrill_mail_alter(&$mandrill_params, $message) {
  */
 function mandrill_template_sender($message, $template_id, $template_content) {
   if ($mailer = mandrill_get_api_object()) {
-    return $mailer->messages->sendTemplate($template_id, $template_content, $message);
+    $async = mandrill_process_async();
+    return $mailer->messages->sendTemplate($template_id, $template_content, $message, $async);
   }
   return NULL;
 }

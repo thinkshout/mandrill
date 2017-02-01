@@ -256,7 +256,8 @@ function mandrill_mailsend($message, $function, $args = array()) {
  */
 function mandrill_sender_plain($message) {
   if ($mailer = mandrill_get_api_object()) {
-    return $mailer->messages->send($message);
+    $async = mandrill_process_async();
+    return $mailer->messages->send($message, $async);
   }
   else {
     throw new Mandrill_Error('Missing API key.');
@@ -601,7 +602,7 @@ function mandrill_get_to($to) {
  *   True if asynchronous processing is enabled.
  */
 function mandrill_process_async() {
-  return variable_get('mandrill_process_async', FALSE);
+  return (bool) variable_get('mandrill_process_async', FALSE);
 }
 
 /**
@@ -611,7 +612,7 @@ function mandrill_process_async() {
  *   True if queued processing is enabled.
  */
 function mandrill_process_queued() {
-  return variable_get('mandrill_process_queued', FALSE);
+  return (bool) variable_get('mandrill_process_queued', FALSE);
 }
 
 /**
