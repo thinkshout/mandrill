@@ -104,4 +104,6 @@ function mandrill_update_7005() {
   if ($mandrill_process_async !== FALSE) {
     variable_set('mandrill_process_queued', TRUE);
   }
+  // mandrill_process_async is considered a new variable now, so set to FALSE.
+  variable_set('mandrill_process_async', FALSE);
 }
